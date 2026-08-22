@@ -274,3 +274,9 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 
 - [x] Remove Incident Objectives, Operational Task Board, and Responder Posture from the Overview workspace.
 - [x] Refine the remaining Overview layout and verify the hosted interface, tests, and production build.
+
+## Overview rapid-information dashboard
+
+- [x] Reformat the Overview workspace around immediate operational status, priority queues, readiness signals, and quick actions.
+- [x] Preserve live decision-support data while making the Overview faster to scan on desktop and mobile layouts.
+- [x] Validate the redesigned Overview in tests, production build, and hosted browser review.

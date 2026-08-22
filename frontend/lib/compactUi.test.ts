@@ -28,4 +28,14 @@ describe("compact operational interface", () => {
     expect(dashboardSource).not.toContain("Responder posture");
     expect(dashboardSource).not.toContain("<ObjectiveBoard");
   });
+
+  it("uses a compact rapid-information dashboard layout on the Overview", () => {
+    expect(dashboardSource).toContain("overview-command-grid");
+    expect(dashboardSource).toContain("OverviewQuickActions");
+    expect(dashboardSource).toContain("overview-queues-grid");
+    expect(dashboardSource).toContain('title="Operational checks"');
+    expect(stylesSource).toContain(".overview-command-grid");
+    expect(stylesSource).toContain(".overview-queues-grid");
+    expect(stylesSource).toContain(".quick-actions-grid");
+  });
 });
