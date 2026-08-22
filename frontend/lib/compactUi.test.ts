@@ -75,4 +75,20 @@ describe("compact operational interface", () => {
     expect(dashboardSource).toContain("!verificationComplete");
     expect(dashboardSource).toContain("lg:grid-cols-[minmax(0,35%)_minmax(0,65%)]");
   });
+
+  it("provides a responsive Fleet and Responder Safety workspace with advisory safety safeguards", () => {
+    expect(dashboardSource).toContain('"Fleet & Responder Safety"');
+    expect(dashboardSource).toContain("function FleetResponderSafetyView");
+    expect(dashboardSource).toContain("TOTAL FLEET READINESS");
+    expect(dashboardSource).toContain("SAFETY BREACHES");
+    expect(dashboardSource).toContain("DEPLOYMENT MATRIX");
+    expect(dashboardSource).toContain("HAZARD PROXIMITY MONITOR");
+    expect(dashboardSource).toContain("DYNAMIC ROUTING CONSOLE");
+    expect(dashboardSource).toContain("lg:grid-cols-[minmax(0,60%)_minmax(360px,40%)]");
+    expect(dashboardSource).toContain("setSelectedId(unit.group.id)");
+    expect(dashboardSource).toContain("optimizeGisRoute");
+    expect(dashboardSource).toContain("No mobile delivery endpoint is configured");
+    expect(dashboardSource).toContain("OPERATOR CONFIRMATION");
+    expect(dashboardSource).toContain("does not force a field reroute");
+  });
 });

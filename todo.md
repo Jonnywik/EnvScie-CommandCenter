@@ -309,3 +309,11 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Add dynamic incident details, decoded payload accordion, LGU verification checklist, ranked WMCDA recommendations, and safeguarded deployment action.
 - [x] Preserve high-volume scanning, mobile responsiveness, accessibility, auditability, responder-safety boundaries, and existing SOS workflows.
 - [x] Validate selection, sorting, verification, dispatch behavior, tests, Next.js 15 production build, browser flows, and GitHub synchronization.
+
+## Fleet & Responder Safety dashboard
+
+- [x] Verify the available response-group, responder-safety, communications, GIS, and route/telemetry data boundaries.
+- [x] Build Fleet KPI cards and a selectable, searchable deployment matrix with dense operational status information.
+- [x] Add selected-unit hazard proximity monitoring, mini-map telemetry, and routing-control interfaces with explicit safety safeguards.
+- [x] Preserve responsive behavior, accessibility, action auditability, responder-safety holds, and route-clearance boundaries.
+- [x] Validate selection propagation, safety-state presentation, controls, tests, Next.js 15 production build, browser flows, and GitHub synchronization.
