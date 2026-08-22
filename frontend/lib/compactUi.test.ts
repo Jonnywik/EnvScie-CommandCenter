@@ -61,6 +61,10 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("command-map-navigation");
     expect(workspaceSource).toContain("Open Command Center navigation");
     expect(workspaceSource).toContain("Close Command Center navigation");
+    expect(workspaceSource).toContain("Switch to light mode");
+    expect(workspaceSource).toContain("Switch to dark mode");
+    expect(workspaceSource).toContain("appearance-${appearance}");
+    expect(dashboardSource).toContain("cfr_appearance");
     expect(workspaceSource).toContain("Fleet & Responder Safety");
     expect(workspaceSource).toContain("DRRMO Intelligence");
     expect(workspaceSource).toContain("Verified Alerts");
@@ -71,6 +75,8 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain(".command-map-shell");
     expect(stylesSource).toContain(".command-map-topbar");
     expect(stylesSource).toContain(".mass-notification-modal");
+    expect(stylesSource).toContain('html[data-appearance="dark"]');
+    expect(stylesSource).toContain(".command-map-shell.appearance-light");
   });
 
   it("contains wheel and touch gestures within the operational map", () => {

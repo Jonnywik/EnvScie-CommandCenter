@@ -359,3 +359,10 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Add a contrasting three-line menu control with an accessible collapsible list of every Command Center tab.
 - [x] Preserve map interaction, responsive containment, menu keyboard semantics, and existing workspace navigation behavior.
 - [x] Validate tab access, desktop/mobile menu layout, regression tests, TypeScript, Next.js 15 production build, hosted behavior, documentation, and GitHub synchronization.
+
+## Command Center dark/light appearance control
+
+- [x] Audit the current Command Map palette, legacy palette, header session controls, and cross-workspace styling boundaries.
+- [x] Add an accessible dark/light toggle beside the profile placeholder, preserving the current palette as dark mode and the earlier palette as light mode.
+- [x] Persist the selected appearance across workspace navigation and reloads without disrupting map controls or safety states.
+- [x] Validate both modes at desktop and narrow widths with regression tests, TypeScript, Next.js 15 production build, hosted behavior, and GitHub synchronization.
