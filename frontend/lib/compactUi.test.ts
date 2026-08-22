@@ -21,4 +21,11 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain(".manual-intake-form .callout");
     expect(stylesSource).toContain("display: flex;");
   });
+
+  it("removes the requested Overview planning and posture panels", () => {
+    expect(dashboardSource).not.toContain("Incident objectives");
+    expect(dashboardSource).not.toContain("Operational task board");
+    expect(dashboardSource).not.toContain("Responder posture");
+    expect(dashboardSource).not.toContain("<ObjectiveBoard");
+  });
 });
