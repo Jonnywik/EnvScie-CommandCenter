@@ -286,3 +286,9 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Prevent wheel and gesture input over the operational map from scrolling the surrounding page.
 - [x] Retain accessible map zoom, pan, and reset controls while preserving normal page scrolling outside the map.
 - [x] Validate map interaction containment, tests, production build, and hosted browser behavior.
+
+## Complete interface-overhaul preparation
+
+- [ ] Record the current validated interface baseline, operational workspaces, and non-negotiable safety behaviors.
+- [ ] Create an interface-overhaul preparation guide that isolates the primary UI ownership boundaries and proposed validation gates.
+- [ ] Establish a named Git baseline and verify the hosted Command Center remains healthy before redesign work begins.
