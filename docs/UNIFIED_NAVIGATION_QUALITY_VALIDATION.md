@@ -36,3 +36,9 @@ No responsiveness, routing, active-state, or contrast defect was confirmed by th
 The shared left navigation now exposes an accessible **Collapse Command Center navigation** control in the expanded desktop state and an **Expand Command Center navigation** control in the icon-only state. In hosted checks, collapsing Command Map reduced the rail to icon-only tab controls and enlarged the usable map canvas without covering the header, GIS tool rail, responder radar, or broadcast-draft entry point.
 
 The collapsed icon rail successfully opened Incident Triage, where the collapsed state persisted. Expanding the rail again restored full workspace labels without disrupting the active Incident Triage content. At narrow widths, the collapse control is intentionally suppressed and the responsive horizontal tab strip remains fully labeled and scrollable.
+
+## Collapsed-navigation accessibility audit
+
+An automated semantics and keyboard audit identified one improvement opportunity: the icon-only tab controls relied on their visible text and `title` fallback once the labels were visually hidden. The controls now carry explicit `aria-label` values, and the legacy sidebar uses the same labels and titles when collapsed. A `:focus-visible` outline was also added to every tab control.
+
+The hosted collapsed-state audit passed after the correction. The navigation landmark exposes **“Command Center workspaces”**; the expand control exposes `aria-expanded="false"`, references the workspace list with `aria-controls`, and remains keyboard-focusable. All 12 tabs expose explicit labels, exactly one reports `aria-current="page"`, and native keyboard traversal moved focus from the expand control to Overview and then Incident Triage. Pressing Enter on Incident Triage successfully loaded its workspace while preserving the collapsed rail.

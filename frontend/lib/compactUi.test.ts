@@ -66,6 +66,7 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("cfr_navigation_collapsed");
     expect(workspaceSource).toContain("Collapse Command Center navigation");
     expect(workspaceSource).toContain("Expand Command Center navigation");
+    expect(workspaceSource).toContain("aria-label={item.label}");
     expect(workspaceSource).not.toContain("Open Command Center navigation");
     expect(workspaceSource).toContain("Switch to ${targetMode} mode");
     expect(workspaceSource).toContain("appearance-${appearance}");
@@ -91,6 +92,7 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain(".command-map-sidebar");
     expect(stylesSource).toContain(".sidebar.is-collapsed");
     expect(stylesSource).toContain(".nav-collapse-toggle");
+    expect(stylesSource).toContain(".nav-item:focus-visible");
     expect(stylesSource).toContain("Appearance compliance: shared legacy surfaces");
     expect(stylesSource).toContain('html[data-appearance="dark"] .sidebar');
     expect(stylesSource).toContain('html[data-appearance="dark"] .panel');

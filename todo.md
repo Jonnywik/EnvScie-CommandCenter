@@ -401,3 +401,10 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Add an accessible persistent collapse/expand control that gives the workspace a wider desktop view while retaining tab navigation.
 - [x] Preserve Command Map control containment, responsive compact navigation, active states, and dark/light styling.
 - [x] Validate collapse behavior, regression tests, TypeScript, Next.js 15 production build, hosted behavior, and GitHub synchronization.
+
+## Collapsed-navigation accessibility audit
+
+- [x] Audit collapsed navigation semantics, accessible names, state attributes, focus visibility, and keyboard order.
+- [x] Run automated keyboard traversal and screen-reader-oriented DOM checks against the hosted collapsed state.
+- [x] Correct confirmed accessibility issues and rerun the audit.
+- [x] Document final audit outcomes and synchronize the validation record.
