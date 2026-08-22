@@ -58,6 +58,16 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("Flood Risk Zones");
     expect(workspaceSource).toContain("command-map-layer-rail");
     expect(workspaceSource).toContain('aria-controls="command-map-layer-drawer"');
+    expect(workspaceSource).toContain("command-map-navigation");
+    expect(workspaceSource).toContain("Open Command Center navigation");
+    expect(workspaceSource).toContain("Close Command Center navigation");
+    expect(workspaceSource).toContain("Fleet & Responder Safety");
+    expect(workspaceSource).toContain("DRRMO Intelligence");
+    expect(workspaceSource).toContain("Verified Alerts");
+    expect(workspaceSource).toContain("Provincial Weather");
+    expect(workspaceSource).toContain("Evacuation Centers");
+    expect(workspaceSource).toContain("Response Groups");
+    expect(workspaceSource).toContain("Communications");
     expect(stylesSource).toContain(".command-map-shell");
     expect(stylesSource).toContain(".command-map-topbar");
     expect(stylesSource).toContain(".mass-notification-modal");
@@ -80,6 +90,9 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain(".gis-tool-rail { position: absolute");
     expect(stylesSource).toContain(".command-map-layer-rail { position: relative");
     expect(stylesSource).toContain(".command-map-layer-rail.is-open .command-map-layer-trigger");
+    expect(stylesSource).toContain(".command-map-navigation { position: fixed");
+    expect(stylesSource).toContain(".command-map-navigation-list { display: grid");
+    expect(stylesSource).toContain(".command-map-shell:has(.command-map-navigation.is-open) .broadcast-fab");
   });
 
   it("provides a selectable split-pane Incident Triage workspace with guarded recommendations", () => {

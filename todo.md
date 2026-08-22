@@ -352,3 +352,10 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Inspect the Priority Feed markup and responsive Command Map dependencies.
 - [x] Remove the Priority Feed container while preserving situational awareness controls, map interactions, and responsive spacing.
 - [x] Validate the decluttered map view with regression tests, TypeScript, Next.js 15 production build, hosted desktop/mobile rendering, documentation, and GitHub synchronization.
+
+## Command Map all-tabs navigation menu
+
+- [x] Inspect the current tab registry, Command Map navigation callbacks, and former Priority Feed placement area.
+- [x] Add a contrasting three-line menu control with an accessible collapsible list of every Command Center tab.
+- [x] Preserve map interaction, responsive containment, menu keyboard semantics, and existing workspace navigation behavior.
+- [x] Validate tab access, desktop/mobile menu layout, regression tests, TypeScript, Next.js 15 production build, hosted behavior, documentation, and GitHub synchronization.

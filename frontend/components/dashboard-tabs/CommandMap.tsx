@@ -26,6 +26,21 @@ function PanelHeader({ title, subtitle, action }: { title: string; subtitle: str
 
 type CommandMapLayers = { weatherRadar: boolean; floodRisk: boolean; terrain: boolean };
 
+const commandMapNavigationItems: Array<{ icon: string; label: CommandCenterTab }> = [
+  { icon: "▦", label: "Overview" },
+  { icon: "↯", label: "Incident Triage" },
+  { icon: "▰", label: "Fleet & Responder Safety" },
+  { icon: "◫", label: "DRRMO Intelligence" },
+  { icon: "!", label: "Live SOS" },
+  { icon: "◈", label: "Verified Alerts" },
+  { icon: "☁", label: "Provincial Weather" },
+  { icon: "⌖", label: "Risk Map" },
+  { icon: "⌂", label: "Evacuation Centers" },
+  { icon: "▣", label: "Resources" },
+  { icon: "◎", label: "Response Groups" },
+  { icon: "◌", label: "Communications" },
+];
+
 export function GISMapPanel({ snapshot, route, onAction, variant = "panel", commandLayers, layerTool }: { snapshot: GisMapSnapshot; route?: OptimizedRoute | null; onAction: OperationalAction; variant?: "panel" | "command"; commandLayers?: CommandMapLayers; layerTool?: React.ReactNode }) {
   const [layers, setLayers] = useState({ hazards: true, resources: true, sos: true, centers: true, route: true, radar: true, typhoon: true });
   const [basemap, setBasemap] = useState<"satellite" | "operational">("satellite");
@@ -229,6 +244,7 @@ export function CenterList({ centers, onAction }: { centers: Center[]; onAction:
 export function CommandMapView({ summary, gis, groups, health, user, connection, onSelect, onNavigate, onAction, onRefresh, error }: { summary: DashboardSummary; gis: GisMapSnapshot; groups: ResponseGroupSnapshot; health: FeedHealth[]; user: UserIdentity | null; connection: "live" | "cached"; onSelect: (incident: SosIncident) => void; onNavigate: (tab: CommandCenterTab) => void; onAction: OperationalAction; onRefresh: () => void; error: string | null }) {
   const [layers, setLayers] = useState<CommandMapLayers>({ weatherRadar: true, floodRisk: true, terrain: true });
   const [layerDrawerOpen, setLayerDrawerOpen] = useState(false);
+  const [navigationOpen, setNavigationOpen] = useState(false);
   const [broadcastOpen, setBroadcastOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [scope, setScope] = useState("Selected barangays");
@@ -273,6 +289,7 @@ export function CommandMapView({ summary, gis, groups, health, user, connection,
     </header>
     {error && <div className="command-map-error" role="alert">Cached operating picture · {error}</div>}
     {searchStatus && <div className="command-search-status" role="status">{searchStatus}<button type="button" onClick={() => setSearchStatus(null)} aria-label="Dismiss search result">×</button></div>}
+    <nav className={`command-map-navigation ${navigationOpen ? "is-open" : ""}`} aria-label="Command Center workspaces"><button className="command-map-navigation-trigger" type="button" onClick={() => setNavigationOpen((open) => !open)} aria-expanded={navigationOpen} aria-controls="command-map-navigation-menu" aria-label={navigationOpen ? "Close Command Center navigation" : "Open Command Center navigation"} title={navigationOpen ? "Close Command Center navigation" : "Open Command Center navigation"}><span /><span /><span /></button>{navigationOpen && <div id="command-map-navigation-menu" className="command-map-navigation-menu"><div className="command-map-navigation-heading"><span>COMMAND CENTER</span><b>All workspaces</b></div><div className="command-map-navigation-list">{commandMapNavigationItems.map((item) => <button key={item.label} type="button" aria-current={item.label === "Overview" ? "page" : undefined} onClick={() => { setNavigationOpen(false); onNavigate(item.label); }}><i aria-hidden="true">{item.icon}</i><span>{item.label}</span></button>)}</div></div>}</nav>
     <section className="responder-radar" aria-label="Responder radar"><div className="responder-radar-heading"><div><span>FIELD UNITS</span><h2>Responder radar</h2></div><button type="button" onClick={() => onNavigate("Response Groups")}>Open roster →</button></div><div className="responder-carousel">{groups.groups.filter((group) => group.status !== "offline").slice(0, 8).map((group) => <button type="button" className={`responder-radar-card ${group.status}`} key={group.id} onClick={() => setSearchStatus(`${group.name} · ${group.location_label} · last updated ${formatAge(group.last_location_at)}`)}><span className="responder-status-dot" /><strong>{group.name}</strong><small>{group.vehicle_or_asset || group.group_type}</small><div><span>{group.status.replaceAll("_", " ")}</span><b>{group.estimated_response_minutes ? `${group.estimated_response_minutes} min` : "ETA —"}</b></div></button>)}{!groups.groups.length && <div className="command-empty">No responder groups are reporting.</div>}</div></section>
     <div className="command-map-quicklinks" aria-label="Operational workspaces"><button type="button" onClick={() => onNavigate("Incident Triage")}>Triage <b>{summary.metrics.untriaged_sos}</b></button><button type="button" onClick={() => onNavigate("Fleet & Responder Safety")}>Fleet <b>{groups.groups.filter((group) => group.status === "en_route" || group.status === "deployed").length}</b></button><button type="button" onClick={() => onNavigate("DRRMO Intelligence")}>Intel</button><button type="button" onClick={() => onNavigate("Evacuation Centers")}>Centers <b>{summary.metrics.open_centers}</b></button><button type="button" onClick={() => onNavigate("Communications")}>Comms</button></div>
     <button className="broadcast-fab" type="button" onClick={() => setBroadcastOpen(true)} aria-label="Open Mass Area Notification"><span aria-hidden="true">⌁</span><em>Broadcast</em></button>
