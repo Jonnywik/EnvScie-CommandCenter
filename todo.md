@@ -301,3 +301,11 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Add responsive situational-awareness layers and alert feed, responder-radar drawer, and mass-area-notification modal.
 - [x] Preserve map interaction containment, operational data/actions, accessibility, safety boundaries, and responsive behavior.
 - [x] Validate the redesigned Command Map in unit tests, type checks, production build, hosted browser flows, and GitHub synchronization.
+
+## Incident Triage (SOS & Alerts) dashboard
+
+- [x] Verify the existing SOS, verified-alert, dispatch recommendation, audit, and Tailwind styling boundaries.
+- [x] Build a responsive split-pane triage workspace with rapid inbox sorting and selectable severity-coded incoming-alert cards.
+- [x] Add dynamic incident details, decoded payload accordion, LGU verification checklist, ranked WMCDA recommendations, and safeguarded deployment action.
+- [x] Preserve high-volume scanning, mobile responsiveness, accessibility, auditability, responder-safety boundaries, and existing SOS workflows.
+- [x] Validate selection, sorting, verification, dispatch behavior, tests, Next.js 15 production build, browser flows, and GitHub synchronization.

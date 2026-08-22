@@ -61,4 +61,18 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain("overscroll-behavior: contain");
     expect(stylesSource).toContain("touch-action: none");
   });
+
+  it("provides a selectable split-pane Incident Triage workspace with guarded recommendations", () => {
+    expect(dashboardSource).toContain('"Incident Triage"');
+    expect(dashboardSource).toContain("function IncidentTriageView");
+    expect(dashboardSource).toContain("Incoming Alerts");
+    expect(dashboardSource).toContain("Sort by Severity");
+    expect(dashboardSource).toContain("Codec decoder");
+    expect(dashboardSource).toContain("LGU verification checklist");
+    expect(dashboardSource).toContain("WMCDA DISPATCH RECOMMENDATIONS");
+    expect(dashboardSource).toContain("getDispatchRecommendations");
+    expect(dashboardSource).toContain("assignResponseGroup");
+    expect(dashboardSource).toContain("!verificationComplete");
+    expect(dashboardSource).toContain("lg:grid-cols-[minmax(0,35%)_minmax(0,65%)]");
+  });
 });
