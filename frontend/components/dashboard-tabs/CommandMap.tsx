@@ -228,7 +228,6 @@ export function CenterList({ centers, onAction }: { centers: Center[]; onAction:
 
 export function CommandMapView({ summary, gis, groups, health, user, connection, onSelect, onNavigate, onAction, onRefresh, error }: { summary: DashboardSummary; gis: GisMapSnapshot; groups: ResponseGroupSnapshot; health: FeedHealth[]; user: UserIdentity | null; connection: "live" | "cached"; onSelect: (incident: SosIncident) => void; onNavigate: (tab: CommandCenterTab) => void; onAction: OperationalAction; onRefresh: () => void; error: string | null }) {
   const [layers, setLayers] = useState<CommandMapLayers>({ weatherRadar: true, floodRisk: true, terrain: true });
-  const [panelOpen, setPanelOpen] = useState(true);
   const [layerDrawerOpen, setLayerDrawerOpen] = useState(false);
   const [broadcastOpen, setBroadcastOpen] = useState(false);
   const [message, setMessage] = useState("");
@@ -245,17 +244,10 @@ export function CommandMapView({ summary, gis, groups, health, user, connection,
   const matchingZones = useMemo(() => Array.from(new Set([...summary.sos.map((incident) => incident.barangay), ...summary.centers.map((center) => center.barangay)])).filter((zone) => normalizedQuery && zone.toLowerCase().includes(normalizedQuery)).slice(0, 3), [normalizedQuery, summary.centers, summary.sos]);
   const matchingGroups = useMemo(() => groups.groups.filter((group) => normalizedQuery && `${group.id} ${group.call_sign} ${group.name}`.toLowerCase().includes(normalizedQuery)).slice(0, 3), [groups.groups, normalizedQuery]);
   const matchingIncidents = useMemo(() => summary.sos.filter((incident) => normalizedQuery && `${incident.id} ${incident.barangay} ${incident.emergency_type}`.toLowerCase().includes(normalizedQuery)).slice(0, 3), [normalizedQuery, summary.sos]);
-  const topAlerts = useMemo(() => summary.alerts.filter((alert) => !alert.expires_at || new Date(alert.expires_at).getTime() > Date.now()).sort((left, right) => ({ critical: 0, warning: 1, advisory: 2 }[left.severity] - { critical: 0, warning: 1, advisory: 2 }[right.severity])).slice(0, 4), [summary.alerts]);
   const systemHealthy = connection === "live" && health.every((item) => !item.stale);
   const commandTime = now.toLocaleTimeString("en-PH", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false, timeZone: "Asia/Manila" });
   const toggleLayer = (key: keyof CommandMapLayers) => setLayers((current) => ({ ...current, [key]: !current[key] }));
-  const toggleLayerDrawer = () => {
-    setLayerDrawerOpen((open) => {
-      const next = !open;
-      if (next && typeof window !== "undefined" && window.matchMedia("(max-width: 760px)").matches) setPanelOpen(false);
-      return next;
-    });
-  };
+  const toggleLayerDrawer = () => setLayerDrawerOpen((open) => !open);
   const runSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!normalizedQuery) return;
@@ -281,7 +273,6 @@ export function CommandMapView({ summary, gis, groups, health, user, connection,
     </header>
     {error && <div className="command-map-error" role="alert">Cached operating picture · {error}</div>}
     {searchStatus && <div className="command-search-status" role="status">{searchStatus}<button type="button" onClick={() => setSearchStatus(null)} aria-label="Dismiss search result">×</button></div>}
-    <aside className={`situational-panel ${panelOpen ? "open" : "collapsed"}`} aria-label="Situational awareness"><div className="situational-panel-heading"><div><span>PRIORITY FEED</span><h2>Situational awareness</h2></div><button type="button" onClick={() => setPanelOpen((open) => !open)} aria-label={panelOpen ? "Collapse situational awareness" : "Expand situational awareness"}>{panelOpen ? "‹" : "›"}</button></div>{panelOpen && <><div className="active-alerts-heading"><span>VERIFIED ALERTS</span><button type="button" onClick={() => onNavigate("Verified Alerts")}>View all</button></div><div className="command-alert-feed">{topAlerts.map((alert) => <button type="button" className={`command-alert ${severityClass(alert.severity)}`} key={alert.id} onClick={() => onNavigate("Verified Alerts")}><span className="command-alert-icon">{alert.severity === "critical" ? "!" : "△"}</span><span><strong>{alert.title}</strong><small>{alert.hazard || alert.source_name} · {formatAge(alert.issued_at)}</small></span></button>)}{!topAlerts.length && <div className="command-empty">No active verified alerts.</div>}</div></>}</aside>
     <section className="responder-radar" aria-label="Responder radar"><div className="responder-radar-heading"><div><span>FIELD UNITS</span><h2>Responder radar</h2></div><button type="button" onClick={() => onNavigate("Response Groups")}>Open roster →</button></div><div className="responder-carousel">{groups.groups.filter((group) => group.status !== "offline").slice(0, 8).map((group) => <button type="button" className={`responder-radar-card ${group.status}`} key={group.id} onClick={() => setSearchStatus(`${group.name} · ${group.location_label} · last updated ${formatAge(group.last_location_at)}`)}><span className="responder-status-dot" /><strong>{group.name}</strong><small>{group.vehicle_or_asset || group.group_type}</small><div><span>{group.status.replaceAll("_", " ")}</span><b>{group.estimated_response_minutes ? `${group.estimated_response_minutes} min` : "ETA —"}</b></div></button>)}{!groups.groups.length && <div className="command-empty">No responder groups are reporting.</div>}</div></section>
     <div className="command-map-quicklinks" aria-label="Operational workspaces"><button type="button" onClick={() => onNavigate("Incident Triage")}>Triage <b>{summary.metrics.untriaged_sos}</b></button><button type="button" onClick={() => onNavigate("Fleet & Responder Safety")}>Fleet <b>{groups.groups.filter((group) => group.status === "en_route" || group.status === "deployed").length}</b></button><button type="button" onClick={() => onNavigate("DRRMO Intelligence")}>Intel</button><button type="button" onClick={() => onNavigate("Evacuation Centers")}>Centers <b>{summary.metrics.open_centers}</b></button><button type="button" onClick={() => onNavigate("Communications")}>Comms</button></div>
     <button className="broadcast-fab" type="button" onClick={() => setBroadcastOpen(true)} aria-label="Open Mass Area Notification"><span aria-hidden="true">⌁</span><em>Broadcast</em></button>

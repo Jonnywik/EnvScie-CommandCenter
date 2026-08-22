@@ -50,7 +50,8 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("CommandMapView");
     expect(workspaceSource).toContain('variant="command"');
     expect(workspaceSource).toContain("EnvScie CommandCenter");
-    expect(workspaceSource).toContain("Situational awareness");
+    expect(workspaceSource).not.toContain("PRIORITY FEED");
+    expect(workspaceSource).not.toContain("Situational awareness");
     expect(workspaceSource).toContain("Responder radar");
     expect(workspaceSource).toContain("Mass Area Notification");
     expect(workspaceSource).toContain("Live Weather Radar");
@@ -71,9 +72,8 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain("touch-action: none");
   });
 
-  it("keeps narrow Command Map panels contained and separates the broadcast action from the responder radar", () => {
-    expect(stylesSource).toContain(".situational-panel { position: fixed");
-    expect(stylesSource).toContain("overflow-x: hidden");
+  it("keeps narrow Command Map controls contained and separates the broadcast action from the responder radar", () => {
+    expect(stylesSource).toContain(".command-map-shell { min-height: 100dvh; overflow: hidden;");
     expect(stylesSource).toContain(".responder-radar { position: fixed");
     expect(stylesSource).toContain(".broadcast-fab { right: auto; bottom: 190px; left: 17px;");
     expect(stylesSource).toContain("grid-template-columns: minmax(0, 1fr) auto");

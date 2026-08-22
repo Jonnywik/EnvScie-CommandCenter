@@ -346,3 +346,9 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Move the map-layer switches into a contrast-state icon drawer anchored to the right-side zoom tool rail.
 - [x] Remove the obsolete left-panel layer-control path while retaining all map layer behavior and accessibility labels.
 - [x] Validate desktop and narrow tool-rail interactions, regression tests, TypeScript, Next.js 15 production build, hosted behavior, documentation, and GitHub synchronization.
+
+## Command Map Priority Feed removal
+
+- [x] Inspect the Priority Feed markup and responsive Command Map dependencies.
+- [x] Remove the Priority Feed container while preserving situational awareness controls, map interactions, and responsive spacing.
+- [x] Validate the decluttered map view with regression tests, TypeScript, Next.js 15 production build, hosted desktop/mobile rendering, documentation, and GitHub synchronization.
