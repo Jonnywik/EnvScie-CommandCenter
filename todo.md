@@ -289,6 +289,6 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 
 ## Complete interface-overhaul preparation
 
-- [ ] Record the current validated interface baseline, operational workspaces, and non-negotiable safety behaviors.
-- [ ] Create an interface-overhaul preparation guide that isolates the primary UI ownership boundaries and proposed validation gates.
-- [ ] Establish a named Git baseline and verify the hosted Command Center remains healthy before redesign work begins.
+- [x] Record the current validated interface baseline, operational workspaces, and non-negotiable safety behaviors.
+- [x] Create an interface-overhaul preparation guide that isolates the primary UI ownership boundaries and proposed validation gates.
+- [x] Establish a named Git baseline and verify the hosted Command Center remains healthy before redesign work begins.
