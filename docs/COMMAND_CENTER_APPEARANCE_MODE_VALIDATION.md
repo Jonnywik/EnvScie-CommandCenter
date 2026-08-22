@@ -21,3 +21,9 @@ The completed update passed the frontend Vitest suite (**16 tests**), TypeScript
 The same persistent control is now exposed in every workspace. Command Map retains its button beside the profile placeholder. Incident Triage, Fleet & Responder Safety, and DRRMO Intelligence place it beside their Command Map return control. The remaining legacy workspaces expose it beside the shared profile placeholder in the retained Command Center topbar: **Live SOS, Verified Alerts, Provincial Weather, Risk Map, Evacuation Centers, Resources, Response Groups, and Communications**.
 
 The hosted verification confirmed the control in Command Map, Incident Triage, Fleet & Responder Safety, and Live SOS. Toggling inside Incident Triage persisted into Live SOS, and the Live SOS control returned the interface to the default dark appearance. The shared state and one reusable control component cover all twelve Command Center tabs.
+
+## Color-scheme compliance review
+
+The shared legacy workspace styles were audited alongside the map-first screens. In **dark mode**, the legacy sidebar, cards, tables, inputs, drawers, status strips, and low-emphasis text now use the Command Map’s navy, teal, and muted-cyan palette instead of retaining light surfaces. In **light mode**, those same surfaces resolve to white or pale-coastal containers with dark navy text, restrained teal accents, and visible borders.
+
+Special treatment remains intentional for operational warning, hazard, and map content. Light-mode safety, warning, and status text now uses darker red, amber, teal, and sky values where a pale label would otherwise lose contrast on its colored container. Hosted checks covered Command Map, Live SOS, and Fleet & Responder Safety in both modes, with readable containers, inputs, table rows, safety panels, controls, and typography observed in each scheme.

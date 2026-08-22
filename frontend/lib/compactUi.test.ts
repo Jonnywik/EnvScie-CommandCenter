@@ -82,6 +82,10 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain(".mass-notification-modal");
     expect(stylesSource).toContain('html[data-appearance="dark"]');
     expect(stylesSource).toContain(".command-map-shell.appearance-light");
+    expect(stylesSource).toContain("Appearance compliance: shared legacy surfaces");
+    expect(stylesSource).toContain('html[data-appearance="dark"] .sidebar');
+    expect(stylesSource).toContain('html[data-appearance="dark"] .panel');
+    expect(stylesSource).toContain('html[data-appearance="light"] .panel');
   });
 
   it("contains wheel and touch gestures within the operational map", () => {
