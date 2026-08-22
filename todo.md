@@ -266,6 +266,6 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 
 ## GitHub export — EnvScie-CommandCenter
 
-- [ ] Confirm the validated Command Center source and GitHub export prerequisites.
-- [ ] Prepare the Command Center repository for a clean GitHub export.
-- [ ] Create, push, and verify the EnvScie-CommandCenter GitHub repository.
+- [x] Confirm the validated Command Center source and GitHub export prerequisites.
+- [x] Prepare the Command Center repository for a clean GitHub export.
+- [x] Create, push, and verify the EnvScie-CommandCenter GitHub repository.
