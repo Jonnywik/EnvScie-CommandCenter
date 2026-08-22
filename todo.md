@@ -317,3 +317,11 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Add selected-unit hazard proximity monitoring, mini-map telemetry, and routing-control interfaces with explicit safety safeguards.
 - [x] Preserve responsive behavior, accessibility, action auditability, responder-safety holds, and route-clearance boundaries.
 - [x] Validate selection propagation, safety-state presentation, controls, tests, Next.js 15 production build, browser flows, and GitHub synchronization.
+
+## DRRMO Intelligence (Audit & Analytics) dashboard
+
+- [x] Verify the available audit, external-feed health, realtime, data-sync, and reporting/export contracts.
+- [x] Build the responsive system-health analytics grid and high-density immutable action ledger with focused query controls.
+- [x] Add the official LGU reporting hub with template selection and safe CSV/PDF export workflows.
+- [x] Preserve ledger immutability, accessibility, responsive behavior, performance boundaries, and accurate health-status semantics.
+- [x] Validate querying, exports, tests, Next.js 15 production build, hosted browser flows, documentation, and GitHub synchronization.

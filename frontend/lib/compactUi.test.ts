@@ -91,4 +91,18 @@ describe("compact operational interface", () => {
     expect(dashboardSource).toContain("OPERATOR CONFIRMATION");
     expect(dashboardSource).toContain("does not force a field reroute");
   });
+
+  it("provides DRRMO Intelligence with bounded immutable audit review and deliberate exports", () => {
+    expect(dashboardSource).toContain('"DRRMO Intelligence"');
+    expect(dashboardSource).toContain("function IntelligenceDashboardView");
+    expect(dashboardSource).toContain('aria-label="System health and analytics grid"');
+    expect(dashboardSource).toContain("IMMUTABLE ACTION LEDGER");
+    expect(dashboardSource).toContain("AUTOMATED LGU REPORTING");
+    expect(dashboardSource).toContain("getAuditEvents(200)");
+    expect(dashboardSource).toContain("filteredEvents.slice(0, 150)");
+    expect(dashboardSource).toContain("Filters change this view only; they never alter the ledger.");
+    expect(dashboardSource).toContain("intelligence.audit_ledger_export_compiled");
+    expect(dashboardSource).toContain("not signed official forms and require local approval");
+    expect(dashboardSource).toContain("No socket-health metric reported");
+  });
 });
