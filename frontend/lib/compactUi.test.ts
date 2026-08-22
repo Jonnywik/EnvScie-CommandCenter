@@ -62,6 +62,14 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain("touch-action: none");
   });
 
+  it("keeps narrow Command Map panels contained and separates the broadcast action from the responder radar", () => {
+    expect(stylesSource).toContain(".situational-panel { position: fixed");
+    expect(stylesSource).toContain("overflow-x: hidden");
+    expect(stylesSource).toContain(".responder-radar { position: fixed");
+    expect(stylesSource).toContain(".broadcast-fab { right: auto; bottom: 190px; left: 17px;");
+    expect(stylesSource).toContain("grid-template-columns: minmax(0, 1fr) auto");
+  });
+
   it("provides a selectable split-pane Incident Triage workspace with guarded recommendations", () => {
     expect(dashboardSource).toContain('"Incident Triage"');
     expect(dashboardSource).toContain("function IncidentTriageView");

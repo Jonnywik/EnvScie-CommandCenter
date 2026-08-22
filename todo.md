@@ -325,3 +325,9 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Add the official LGU reporting hub with template selection and safe CSV/PDF export workflows.
 - [x] Preserve ledger immutability, accessibility, responsive behavior, performance boundaries, and accurate health-status semantics.
 - [x] Validate querying, exports, tests, Next.js 15 production build, hosted browser flows, documentation, and GitHub synchronization.
+
+## Responsive containment and control spacing pass
+
+- [x] Audit hosted Command Center workspaces at desktop and narrow widths for escaped elements, clipped content, and overlapping controls.
+- [x] Correct the affected layouts with contained grids, overflow-safe data regions, and responsive control spacing.
+- [x] Validate the visual fixes alongside frontend tests, TypeScript, the Next.js 15 production build, hosted workflows, and GitHub synchronization.
