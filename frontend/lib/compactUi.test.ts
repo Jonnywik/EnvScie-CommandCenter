@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 const dashboardSource = readFileSync(resolve(process.cwd(), "components/Dashboard.tsx"), "utf8");
 const workspaceSource = [
   dashboardSource,
+  readFileSync(resolve(process.cwd(), "components/dashboard-tabs/AppearanceToggle.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/CommandMap.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/IncidentTriage.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/FleetSafety.tsx"), "utf8"),
@@ -61,10 +62,14 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("command-map-navigation");
     expect(workspaceSource).toContain("Open Command Center navigation");
     expect(workspaceSource).toContain("Close Command Center navigation");
-    expect(workspaceSource).toContain("Switch to light mode");
-    expect(workspaceSource).toContain("Switch to dark mode");
+    expect(workspaceSource).toContain("Switch to ${targetMode} mode");
     expect(workspaceSource).toContain("appearance-${appearance}");
     expect(dashboardSource).toContain("cfr_appearance");
+    expect(dashboardSource).toContain("topbar-actions");
+    expect(workspaceSource).toContain("workspace-appearance-toggle");
+    expect(workspaceSource).toContain("IncidentTriageView");
+    expect(workspaceSource).toContain("FleetResponderSafetyView");
+    expect(workspaceSource).toContain("IntelligenceDashboardView");
     expect(workspaceSource).toContain("Fleet & Responder Safety");
     expect(workspaceSource).toContain("DRRMO Intelligence");
     expect(workspaceSource).toContain("Verified Alerts");

@@ -15,3 +15,9 @@ The Command Map header now places an accessible appearance toggle immediately to
 ## Validation record
 
 The completed update passed the frontend Vitest suite (**16 tests**), TypeScript validation via `tsc --noEmit`, and the Next.js **15.5.23** production build. The hosted Command Center was then checked at the Manus production URL: the light appearance switched successfully, remained selected after reload, retained the map-first shell, and switched back to the default dark appearance through the same profile-adjacent control.
+
+## All-tabs extension
+
+The same persistent control is now exposed in every workspace. Command Map retains its button beside the profile placeholder. Incident Triage, Fleet & Responder Safety, and DRRMO Intelligence place it beside their Command Map return control. The remaining legacy workspaces expose it beside the shared profile placeholder in the retained Command Center topbar: **Live SOS, Verified Alerts, Provincial Weather, Risk Map, Evacuation Centers, Resources, Response Groups, and Communications**.
+
+The hosted verification confirmed the control in Command Map, Incident Triage, Fleet & Responder Safety, and Live SOS. Toggling inside Incident Triage persisted into Live SOS, and the Live SOS control returned the interface to the default dark appearance. The shared state and one reusable control component cover all twelve Command Center tabs.

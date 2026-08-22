@@ -366,3 +366,10 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Add an accessible dark/light toggle beside the profile placeholder, preserving the current palette as dark mode and the earlier palette as light mode.
 - [x] Persist the selected appearance across workspace navigation and reloads without disrupting map controls or safety states.
 - [x] Validate both modes at desktop and narrow widths with regression tests, TypeScript, Next.js 15 production build, hosted behavior, and GitHub synchronization.
+
+## All-tabs appearance-control extension
+
+- [x] Inspect each Command Center workspace header and identify consistent placement for the appearance control.
+- [x] Add the existing accessible dark/light toggle to every tab without changing operational actions or safety boundaries.
+- [x] Verify the shared appearance selection persists across all workspace navigation paths and responsive header layouts.
+- [x] Validate cross-tab toggle visibility, regression tests, TypeScript, Next.js 15 production build, hosted behavior, and GitHub synchronization.
