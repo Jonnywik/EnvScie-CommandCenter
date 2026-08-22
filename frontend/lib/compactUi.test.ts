@@ -55,6 +55,8 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("Mass Area Notification");
     expect(workspaceSource).toContain("Live Weather Radar");
     expect(workspaceSource).toContain("Flood Risk Zones");
+    expect(workspaceSource).toContain("command-map-layer-rail");
+    expect(workspaceSource).toContain('aria-controls="command-map-layer-drawer"');
     expect(stylesSource).toContain(".command-map-shell");
     expect(stylesSource).toContain(".command-map-topbar");
     expect(stylesSource).toContain(".mass-notification-modal");
@@ -75,6 +77,9 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain(".responder-radar { position: fixed");
     expect(stylesSource).toContain(".broadcast-fab { right: auto; bottom: 190px; left: 17px;");
     expect(stylesSource).toContain("grid-template-columns: minmax(0, 1fr) auto");
+    expect(stylesSource).toContain(".gis-tool-rail { position: absolute");
+    expect(stylesSource).toContain(".command-map-layer-rail { position: relative");
+    expect(stylesSource).toContain(".command-map-layer-rail.is-open .command-map-layer-trigger");
   });
 
   it("provides a selectable split-pane Incident Triage workspace with guarded recommendations", () => {

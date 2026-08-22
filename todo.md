@@ -339,3 +339,10 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Extract the four dedicated workspaces into `frontend/components/dashboard-tabs/` without changing their operational layouts or safeguards.
 - [x] Retain shared snapshot loading, event-driven refreshes, deliberate action flows, and map-rendering stability while switching tabs.
 - [x] Validate all modular workspaces with regression tests, TypeScript, Next.js 15 production build, hosted interaction checks, documentation, and GitHub synchronization.
+
+## Command Map right-side layer drawer
+
+- [x] Audit existing Command Map layer controls, zoom rail, and responsive tool positioning.
+- [x] Move the map-layer switches into a contrast-state icon drawer anchored to the right-side zoom tool rail.
+- [x] Remove the obsolete left-panel layer-control path while retaining all map layer behavior and accessibility labels.
+- [x] Validate desktop and narrow tool-rail interactions, regression tests, TypeScript, Next.js 15 production build, hosted behavior, documentation, and GitHub synchronization.
