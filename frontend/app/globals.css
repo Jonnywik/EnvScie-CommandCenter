@@ -99,6 +99,8 @@ button { cursor: pointer; }
 .workspace-navigation-shell > main { min-width: 0; flex: 1 1 auto; }
 .unified-command-sidebar { flex: 0 0 248px; min-height: 100dvh; z-index: 50; }
 .unified-command-navigation { display: grid; gap: 4px; }
+.nav-collapse-toggle { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; margin: 0 0 12px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 9px; background: rgba(255,255,255,.7); color: var(--teal); font: 800 10px/1 'Space Grotesk', sans-serif; letter-spacing: .06em; text-transform: uppercase; cursor: pointer; transition: background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease; }.nav-collapse-toggle:hover { background: var(--mint-soft); border-color: var(--teal); color: var(--ink); }.nav-collapse-toggle:active { transform: scale(.97); }.nav-collapse-toggle:focus-visible { outline: 3px solid rgba(78,228,193,.42); outline-offset: 2px; }.nav-collapse-toggle span { font-size: 18px; line-height: 10px; }
+.sidebar.is-collapsed { width: 68px; padding: 16px 9px; align-items: center; }.unified-command-sidebar.is-collapsed { flex-basis: 68px; }.sidebar.is-collapsed .nav-collapse-toggle { justify-content: center; width: 42px; margin-bottom: 10px; padding: 8px; }.sidebar.is-collapsed .nav-collapse-toggle b, .sidebar.is-collapsed .sidebar-label, .sidebar.is-collapsed .nav-item > span:not(.nav-icon), .sidebar.is-collapsed .sidebar-footer { display: none; }.sidebar.is-collapsed .unified-command-navigation { width: 100%; }.sidebar.is-collapsed .nav-item { justify-content: center; width: 42px; padding: 11px; gap: 0; }.sidebar.is-collapsed .nav-icon { width: auto; font-size: 17px; }
 .sidebar { width: 248px; background: rgba(250, 253, 252, .94); border-right: 1px solid var(--line); padding: 24px 16px; display: flex; flex-direction: column; }
 .sidebar-label { color: var(--teal); font-size: 10px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; padding: 0 13px 12px; }
 .nav-item { border: 0; background: transparent; color: #496874; text-align: left; padding: 12px 13px; border-radius: 12px; display: flex; gap: 11px; align-items: center; width: 100%; font-size: 13px; margin-bottom: 4px; transition: background .18s ease, color .18s ease, transform .18s ease; }
@@ -716,6 +718,7 @@ h1 { font-family: 'Space Grotesk'; font-size: 30px; letter-spacing: -0.05em; mar
   .workspace { display: block; }
   .workspace-navigation-shell { display: block; min-height: 0; }
   .unified-command-sidebar { min-height: 0; }
+  .sidebar.is-collapsed, .unified-command-sidebar.is-collapsed { width: 100%; flex-basis: auto; padding: 8px; align-items: stretch; }.sidebar.is-collapsed .nav-collapse-toggle { display: none; }.sidebar.is-collapsed .unified-command-navigation { width: auto; }.sidebar.is-collapsed .nav-item { justify-content: flex-start; width: auto; padding: 9px 11px; gap: 11px; }.sidebar.is-collapsed .nav-item > span:not(.nav-icon), .sidebar.is-collapsed .sidebar-label { display: inline; }.sidebar.is-collapsed .nav-icon { width: 18px; font-size: 15px; }
   .sidebar { width: 100%; padding: 8px; border-right: 0; border-bottom: 1px solid var(--line); flex-direction: row; overflow-x: auto; gap: 3px; }
   .sidebar-label, .sidebar-footer { display: none; }
   .nav-item { width: auto; white-space: nowrap; padding: 9px 11px; }

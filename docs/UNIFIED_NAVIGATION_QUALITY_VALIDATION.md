@@ -30,3 +30,9 @@ After allowing the navigation transition to settle, all 12 tabs passed in each m
 ## Final validation outcome
 
 No responsiveness, routing, active-state, or contrast defect was confirmed by the completed checks. The frontend regression suite passed **16 tests**, TypeScript validation completed without errors, and the Next.js **15.5.23** production build succeeded after the validation pass.
+
+## Collapsible navigation validation
+
+The shared left navigation now exposes an accessible **Collapse Command Center navigation** control in the expanded desktop state and an **Expand Command Center navigation** control in the icon-only state. In hosted checks, collapsing Command Map reduced the rail to icon-only tab controls and enlarged the usable map canvas without covering the header, GIS tool rail, responder radar, or broadcast-draft entry point.
+
+The collapsed icon rail successfully opened Incident Triage, where the collapsed state persisted. Expanding the rail again restored full workspace labels without disrupting the active Incident Triage content. At narrow widths, the collapse control is intentionally suppressed and the responsive horizontal tab strip remains fully labeled and scrollable.

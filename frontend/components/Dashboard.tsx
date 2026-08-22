@@ -499,6 +499,22 @@ export default function Dashboard() {
     return () => { button.removeEventListener("click", toggleAppearance); button.remove(); };
   }, [appearance, tab, toggleAppearance]);
   useEffect(() => {
+    if (["Overview", "Incident Triage", "Fleet & Responder Safety", "DRRMO Intelligence"].includes(tab)) return;
+    const host = document.querySelector<HTMLElement>(".workspace > .sidebar");
+    if (!host) return;
+    const applyCollapsed = (collapsed: boolean) => { host.classList.toggle("is-collapsed", collapsed); button.setAttribute("aria-expanded", String(!collapsed)); button.setAttribute("aria-label", collapsed ? "Expand Command Center navigation" : "Collapse Command Center navigation"); button.title = button.getAttribute("aria-label") || "Toggle Command Center navigation"; button.innerHTML = `<span aria-hidden="true">${collapsed ? "›" : "‹"}</span><b>${collapsed ? "Expand" : "Collapse"}</b>`; };
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "nav-collapse-toggle";
+    button.setAttribute("aria-controls", "legacy-command-navigation");
+    host.id = "legacy-command-navigation";
+    applyCollapsed(window.localStorage.getItem("cfr_navigation_collapsed") === "true");
+    const toggleCollapsed = () => { const next = !host.classList.contains("is-collapsed"); window.localStorage.setItem("cfr_navigation_collapsed", String(next)); applyCollapsed(next); };
+    button.addEventListener("click", toggleCollapsed);
+    host.prepend(button);
+    return () => { button.removeEventListener("click", toggleCollapsed); button.remove(); host.classList.remove("is-collapsed"); host.removeAttribute("id"); };
+  }, [tab]);
+  useEffect(() => {
     let cancelled = false;
     const bootstrap = async () => {
       try { const result = await demoLogin("dispatcher"); if (!cancelled) setUser(result.user); } catch { /* Existing token or demo read-only mode may still be valid. */ }

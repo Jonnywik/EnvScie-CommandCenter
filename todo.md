@@ -394,3 +394,10 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Verify all twelve tabs load through the shared navigation and retain the correct active state without visible layout shift.
 - [x] Inspect dark and light contrast consistency for the shared navigation and workspace containers.
 - [x] Correct confirmed defects, rerun validation, and record the final hosted results.
+
+## Collapsible left-side navigation
+
+- [x] Inspect shared navigation state boundaries and the desktop/mobile side-container layout behavior.
+- [x] Add an accessible persistent collapse/expand control that gives the workspace a wider desktop view while retaining tab navigation.
+- [x] Preserve Command Map control containment, responsive compact navigation, active states, and dark/light styling.
+- [x] Validate collapse behavior, regression tests, TypeScript, Next.js 15 production build, hosted behavior, and GitHub synchronization.
