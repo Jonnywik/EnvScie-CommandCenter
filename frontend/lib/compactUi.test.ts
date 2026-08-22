@@ -39,6 +39,20 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain(".quick-actions-grid");
   });
 
+  it("renders the map-first Command Map dashboard with protected operational controls", () => {
+    expect(dashboardSource).toContain("CommandMapView");
+    expect(dashboardSource).toContain('variant="command"');
+    expect(dashboardSource).toContain("EnvScie CommandCenter");
+    expect(dashboardSource).toContain("Situational awareness");
+    expect(dashboardSource).toContain("Responder radar");
+    expect(dashboardSource).toContain("Mass Area Notification");
+    expect(dashboardSource).toContain("Live Weather Radar");
+    expect(dashboardSource).toContain("Flood Risk Zones");
+    expect(stylesSource).toContain(".command-map-shell");
+    expect(stylesSource).toContain(".command-map-topbar");
+    expect(stylesSource).toContain(".mass-notification-modal");
+  });
+
   it("contains wheel and touch gestures within the operational map", () => {
     expect(dashboardSource).toContain("const mapShellRef = useRef<HTMLDivElement | null>(null)");
     expect(dashboardSource).toContain('mapShell.addEventListener("wheel", containWheel, { passive: false })');

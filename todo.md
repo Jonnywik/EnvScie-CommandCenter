@@ -292,3 +292,12 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Record the current validated interface baseline, operational workspaces, and non-negotiable safety behaviors.
 - [x] Create an interface-overhaul preparation guide that isolates the primary UI ownership boundaries and proposed validation gates.
 - [x] Establish a named Git baseline and verify the hosted Command Center remains healthy before redesign work begins.
+
+## Command Map (Live Operations) dashboard
+
+- [x] Verify frontend version and existing GIS integration boundaries before the map-first layout is introduced.
+- [x] Upgrade the current Next.js 14 frontend to the user-required Next.js 15 runtime and verify compatibility.
+- [x] Build a full-screen dark Command Map canvas with the fixed navigation, global search, system health, and user identity controls.
+- [x] Add responsive situational-awareness layers and alert feed, responder-radar drawer, and mass-area-notification modal.
+- [x] Preserve map interaction containment, operational data/actions, accessibility, safety boundaries, and responsive behavior.
+- [x] Validate the redesigned Command Map in unit tests, type checks, production build, hosted browser flows, and GitHub synchronization.
