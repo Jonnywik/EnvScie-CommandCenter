@@ -1,0 +1,21 @@
+flowchart LR
+    R[Resident mobile app<br/>React Native / Expo] -->|HTTPS| A[FastAPI service]
+    R -->|compact signed SMS| G[SMS gateway]
+    G --> A
+    A --> S[(PostgreSQL + PostGIS)]
+    A --> H[Verified hazard and alert feeds]
+    A --> W[WebSocket event hub]
+    W --> D[Next.js LGU command center]
+    S --> D
+    A --> Q[Safe-route service]
+    Q --> S
+    Q --> D
+    R --> C[Offline cache + SOS outbox]
+    C --> R
+
+    classDef client fill:#d8f3f0,stroke:#0f766e,color:#0f172a;
+    classDef service fill:#dbeafe,stroke:#2563eb,color:#0f172a;
+    classDef data fill:#fef3c7,stroke:#d97706,color:#0f172a;
+    class R,D client;
+    class A,G,H,W,Q service;
+    class S,C data;

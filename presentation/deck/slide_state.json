@@ -1,0 +1,113 @@
+{
+  "project_info": {
+    "title": "Code for Resilience",
+    "created": 1786483133.776,
+    "last_updated": 1786483258.06,
+    "total_slides": 10
+  },
+  "slides": [
+    {
+      "id": "cover",
+      "state": "edited",
+      "pageNum": 1
+    },
+    {
+      "id": "operating_reality",
+      "state": "edited",
+      "pageNum": 2
+    },
+    {
+      "id": "response_loop",
+      "state": "edited",
+      "pageNum": 3
+    },
+    {
+      "id": "architecture",
+      "state": "edited",
+      "pageNum": 4
+    },
+    {
+      "id": "offline_sos",
+      "state": "edited",
+      "pageNum": 5
+    },
+    {
+      "id": "spatial_routing",
+      "state": "edited",
+      "pageNum": 6
+    },
+    {
+      "id": "lgu_dashboard",
+      "state": "edited",
+      "pageNum": 7
+    },
+    {
+      "id": "critical_minutes",
+      "state": "edited",
+      "pageNum": 8
+    },
+    {
+      "id": "implementation",
+      "state": "edited",
+      "pageNum": 9
+    },
+    {
+      "id": "readiness",
+      "state": "edited",
+      "pageNum": 10
+    }
+  ],
+  "outline": [
+    {
+      "id": "cover",
+      "title": "Code for Resilience",
+      "summary": "Title slide: Balangiga LGU disaster-response platform; architecture, offline-first communications, and command-center operations.",
+      "image_plan": "/home/ubuntu/upload/search_images/voCloeqroKQe.png - Map showing the location of Balangiga in Eastern Samar, providing geographical context for the disaster-response platform."
+    },
+    {
+      "id": "operating_reality",
+      "title": "The operating reality is fragmented during a crisis",
+      "summary": "Frame the Balangiga disaster context and the need for a resilient local response loop that works through signal and power disruptions."
+    },
+    {
+      "id": "response_loop",
+      "title": "One system connects warning, movement, and assistance",
+      "summary": "Show how residents, municipal operations, resilient transport, and visible data freshness connect into one response loop."
+    },
+    {
+      "id": "architecture",
+      "title": "A layered architecture keeps critical actions local",
+      "summary": "Present the React Native, FastAPI, PostGIS, transport, and Next.js layers as a cohesive municipal system."
+    },
+    {
+      "id": "offline_sos",
+      "title": "Offline SOS turns a weak signal into an actionable record",
+      "summary": "Explain minimum SOS capture, compact signed SMS payloads, durable outbox storage, and dispatcher visibility of delivery channel."
+    },
+    {
+      "id": "spatial_routing",
+      "title": "Spatial intelligence routes people away from active flood zones",
+      "summary": "Explain PostGIS hazard polygons, evacuation center points, flood-intersection filtering, and safe-route output."
+    },
+    {
+      "id": "lgu_dashboard",
+      "title": "The LGU dashboard turns incoming signals into a triage queue",
+      "summary": "Feature the implemented command-center dashboard, including metrics, risk layers, SOS queue, triage drawer, and verified alert feed."
+    },
+    {
+      "id": "critical_minutes",
+      "title": "The response loop is designed for the first critical minutes",
+      "summary": "Summarize the operational cycle of verify, locate, route, dispatch, and reconcile."
+    },
+    {
+      "id": "implementation",
+      "title": "The current build is a runnable foundation",
+      "summary": "Summarize implemented backend, dashboard, mobile prototype, verification results, and seeded demo baseline."
+    },
+    {
+      "id": "readiness",
+      "title": "From prototype to operational readiness",
+      "summary": "Close with the required GIS, security, messaging, observability, and field-exercise work before operational use."
+    }
+  ]
+}

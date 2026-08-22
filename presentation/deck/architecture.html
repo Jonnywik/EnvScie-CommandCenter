@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    .slide-container { width:1280px; min-height:720px; background:#F0F4F8; color:#0F172A; font-family:Arial, Helvetica, sans-serif; position:relative; overflow:hidden; }
+    .eyebrow { position:absolute; left:78px; top:57px; color:#0F766E; font-size:13px; letter-spacing:2px; text-transform:uppercase; font-weight:700; }
+    .rule { position:absolute; left:78px; top:88px; width:76px; height:3px; background:#D97706; }
+    h1 { position:absolute; left:78px; top:123px; width:670px; font-family:Georgia, 'Times New Roman', serif; font-size:49px; line-height:1.06; letter-spacing:-1.15px; }
+    .intro { position:absolute; left:80px; top:244px; width:640px; color:#475569; font-size:17px; line-height:1.42; }
+    .diagram-zone { position:absolute; left:75px; top:332px; width:915px; height:307px; background:rgba(216,243,240,.50); overflow:hidden; }
+    .diagram-zone:before { content:''; position:absolute; left:-75px; top:-92px; width:380px; height:245px; border:1px solid rgba(15,118,110,.20); border-radius:50%; transform:rotate(-20deg); }
+    .diagram-zone:after { content:''; position:absolute; right:-94px; bottom:-102px; width:410px; height:240px; border:1px solid rgba(15,118,110,.18); border-radius:50%; transform:rotate(-17deg); }
+    .diagram { position:absolute; z-index:2; left:45px; top:55px; width:825px; height:152px; object-fit:contain; }
+    .caption { position:absolute; z-index:3; left:30px; bottom:23px; color:#0F766E; font-size:12px; letter-spacing:1.1px; text-transform:uppercase; font-weight:700; }
+    .side { position:absolute; top:114px; right:78px; width:170px; }
+    .side-title { color:#64748B; font-size:11px; letter-spacing:1.8px; text-transform:uppercase; font-weight:700; margin-bottom:20px; }
+    .plane { min-height:118px; border-top:2px solid #0F766E; padding-top:14px; }
+    .plane:nth-child(3) { border-top-color:#D97706; }
+    .plane i { display:block; color:#0F766E; font-size:20px; margin-bottom:9px; }
+    .plane:nth-child(3) i { color:#D97706; }
+    .plane strong { display:block; font-family:Georgia, 'Times New Roman', serif; font-size:19px; line-height:1.1; }
+    .plane span { display:block; margin-top:8px; color:#536474; font-size:12px; line-height:1.35; }
+    .footnote { position:absolute; left:79px; bottom:51px; color:#536474; font-size:14px; }
+    .footnote b { color:#0F172A; }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="eyebrow">03 · System architecture</div><div class="rule"></div>
+    <h1>A layered architecture keeps critical actions local.</h1>
+    <p class="intro">The platform separates resident experience, resilient transport, municipal services, and spatial intelligence—so an outage in one layer does not erase the information or action needed in another.</p>
+    <section class="diagram-zone">
+      <img class="diagram" src="/home/ubuntu/code-for-resilience/presentation/architecture.png" alt="Architecture diagram connecting resident app, SMS gateway, FastAPI, PostGIS, safe routing, realtime events, and LGU dashboard" />
+      <div class="caption">System of record · route intelligence · realtime operations</div>
+    </section>
+    <aside class="side">
+      <div class="side-title">Operating planes</div>
+      <div class="plane"><i class="fa-solid fa-mobile-screen-button"></i><strong>Resident edge</strong><span>React Native / Expo, offline cache, SOS outbox, emergency toolkit.</span></div>
+      <div class="plane"><i class="fa-solid fa-tower-broadcast"></i><strong>Resilient service</strong><span>HTTPS, WebSocket, compact signed SMS, FastAPI APIs and events.</span></div>
+      <div class="plane"><i class="fa-solid fa-building-shield"></i><strong>Municipal core</strong><span>PostgreSQL + PostGIS, hazard logic, safe routing, Next.js command center.</span></div>
+    </aside>
+    <div class="footnote"><b>Architecture principle:</b> every critical action has a local store, a trusted service path, and an operational handoff.</div>
+  </div>
+</body>
+</html>

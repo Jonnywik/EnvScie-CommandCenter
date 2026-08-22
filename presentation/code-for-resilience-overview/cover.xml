@@ -1,0 +1,17 @@
+<slide id="cover">
+  <background color="brand"/>
+  <image id="cover-coast" src="https://private-us-east-1.manuscdn.com/sessionFile/bZI5T86OQI7xUJEUtn4Y5t/sandbox/slides_resource_i945ssem2o6y5z2f9ewj6-9f6b4420-e2b-prod-sg1_1786597983167_na1fn_L2hvbWUvdWJ1bnR1L3dlYmRldi1zdGF0aWMtYXNzZXRzL2Nmci1maW5hbC9lYXN0ZXJuLXNhbWFyLWNvYXN0.webp?x-oss-process=image/resize,w_1560,h_1560/format,webp&Expires=1788220800&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9wcml2YXRlLXVzLWVhc3QtMS5tYW51c2Nkbi5jb20vc2Vzc2lvbkZpbGUvYlpJNVQ4Nk9RSTd4VUpFVXRuNFk1dC9zYW5kYm94L3NsaWRlc19yZXNvdXJjZV9pOTQ1c3NlbTJvNnk1ejJmOWV3ajYtOWY2YjQ0MjAtZTJiLXByb2Qtc2cxXzE3ODY1OTc5ODMxNjdfbmExZm5fTDJodmJXVXZkV0oxYm5SMUwzZGxZbVJsZGkxemRHRjBhV010WVhOelpYUnpMMk5tY2kxbWFXNWhiQzlsWVhOMFpYSnVMWE5oYldGeUxXTnZZWE4wLndlYnA~eC1vc3MtcHJvY2Vzcz1pbWFnZS9yZXNpemUsd18xNTYwLGhfMTU2MC9mb3JtYXQsd2VicCIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTc4ODIyMDgwMH19fV19&Key-Pair-Id=K2QY5QTL8JSY6C&Signature=MEUCIGmiIstAygqIE601XQXKfzOb~KHTp-kIuO7RyB96e9vLAiEA6pp4SSHGRjoRUAGeHWAgvzbe3vZlINt55BmIoEMmoyg_" x="720" y="0" width="560" height="720" fit="cover"/>
+  <shape id="cover-route-divider" type="line" x="698" y="0" width="0" height="720" stroke="signal" stroke-width="3"/>
+  <shape id="cover-mark-sun" type="ellipse" x="82" y="94" width="28" height="28" fill="urgent"/>
+  <shape id="cover-mark-wave-1" type="curve" x="78" y="148" width="128" height="-55" stroke="signal" stroke-width="8"/>
+  <shape id="cover-mark-wave-2" type="curve" x="78" y="163" width="128" height="-55" stroke="signal" stroke-width="8"/>
+  <shape id="cover-mark-wave-3" type="curve" x="78" y="178" width="128" height="-55" stroke="signal" stroke-width="8"/>
+  <text id="cover-kicker" x="72" y="252" width="530" height="24" font="caption" size="14" color="signal" wrap="false">BALANGIGA • EASTERN SAMAR • LGU OPERATIONS</text>
+  <text id="cover-title" x="72" y="288" width="570" height="120" font="display" size="54" color="paper" line-height="1.02" autofit="shrink"><p>Code for</p><p><strong color="signal">Resilience</strong></p></text>
+  <text id="cover-subtitle" x="72" y="438" width="550" height="82" font="body" size="24" color="paper" line-height="1.25"><p>A connected disaster-management command center for a coastal municipality.</p></text>
+  <shape id="cover-accent-line" type="line" x="72" y="570" width="170" height="0" stroke="urgent" stroke-width="4"/>
+  <text id="cover-presenter" x="72" y="592" width="470" height="30" font="caption" size="16" color="mist">Background • Solution • Features • Benefits</text>
+  <shape id="cover-route-line" type="line" x="930" y="672" width="250" height="0" stroke="signal" stroke-width="2"/>
+  <shape id="cover-route-dot" type="ellipse" x="1172" y="664" width="16" height="16" fill="urgent"/>
+  <text id="cover-footer" x="72" y="675" width="360" height="18" font="caption" size="12" color="muted" wrap="false">CODE FOR RESILIENCE / 2026</text>
+</slide>

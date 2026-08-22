@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    .slide-container { width:1280px; min-height:720px; background:#F0F4F8; color:#0F172A; font-family:Arial, Helvetica, sans-serif; position:relative; overflow:hidden; }
+    .kicker { position:absolute; left:78px; top:60px; font-size:13px; color:#0F766E; text-transform:uppercase; letter-spacing:2px; font-weight:700; }
+    .bar { position:absolute; left:78px; top:89px; width:76px; height:3px; background:#D97706; }
+    h1 { position:absolute; left:78px; top:126px; width:760px; font-family:Georgia, 'Times New Roman', serif; font-size:50px; line-height:1.05; letter-spacing:-1.3px; }
+    .intro { position:absolute; left:80px; top:246px; width:620px; font-size:17px; line-height:1.45; color:#475569; }
+    .top-note { position:absolute; right:80px; top:66px; width:225px; color:#0F766E; font-size:12px; line-height:1.45; text-transform:uppercase; letter-spacing:1.25px; font-weight:700; }
+    .top-note span { display:block; margin-top:10px; color:#64748B; font-size:11px; letter-spacing:.55px; font-weight:400; text-transform:none; }
+    .device { position:absolute; left:80px; top:361px; width:256px; height:285px; background:#0F172A; border:9px solid #0F172A; }
+    .device-screen { position:absolute; left:11px; top:16px; width:226px; height:234px; background:#D8F3F0; }
+    .device-head { position:absolute; top:4px; left:96px; width:55px; height:4px; background:#94A3B8; }
+    .device-foot { position:absolute; bottom:3px; left:108px; width:38px; height:4px; background:#94A3B8; }
+    .sos-mark { position:absolute; left:25px; top:25px; color:#B91C1C; font-size:33px; }
+    .screen-label { position:absolute; left:25px; top:76px; color:#0F172A; font-size:11px; letter-spacing:1.4px; text-transform:uppercase; font-weight:700; }
+    .screen-title { position:absolute; left:25px; top:98px; width:172px; font-family:Georgia, 'Times New Roman', serif; font-size:24px; line-height:1.03; }
+    .payload { position:absolute; left:25px; top:164px; width:176px; height:43px; border-top:2px solid #0F766E; border-bottom:1px solid rgba(15,118,110,.45); padding-top:9px; color:#0F766E; font-family:monospace; font-size:11px; letter-spacing:.7px; }
+    .screen-status { position:absolute; left:25px; bottom:15px; color:#536474; font-size:10px; letter-spacing:.7px; }
+    .route-curve { position:absolute; left:300px; top:462px; width:160px; height:90px; border-top:2px solid #D97706; border-radius:50%; transform:rotate(-12deg); }
+    .route-arrow { position:absolute; left:445px; top:445px; color:#D97706; font-size:17px; }
+    .flow { position:absolute; left:455px; top:363px; right:80px; display:flex; align-items:flex-start; }
+    .phase { width:174px; min-height:230px; border-top:2px solid #0F766E; padding-top:17px; position:relative; }
+    .phase.warning { border-top-color:#D97706; }
+    .phase:last-child { width:180px; }
+    .flow-link { width:27px; height:2px; background:rgba(15,118,110,.48); margin-top:44px; position:relative; }
+    .flow-link:after { content:''; position:absolute; right:-1px; top:-3px; border-left:7px solid #0F766E; border-top:4px solid transparent; border-bottom:4px solid transparent; }
+    .warning + .flow-link { background:rgba(217,119,6,.55); }
+    .warning + .flow-link:after { border-left-color:#D97706; }
+    .phase-icon { width:36px; height:36px; background:#D8F3F0; color:#0F766E; display:flex; align-items:center; justify-content:center; font-size:17px; }
+    .warning .phase-icon { background:#FCECC8; color:#B45309; }
+    .phase .n { position:absolute; right:8px; top:20px; color:#94A3B8; font-family:Georgia, 'Times New Roman', serif; font-size:22px; }
+    .phase h2 { margin-top:17px; width:150px; font-family:Georgia, 'Times New Roman', serif; font-size:20px; line-height:1.1; }
+    .phase p { margin-top:10px; width:154px; color:#566879; font-size:13px; line-height:1.35; }
+    .integrity { position:absolute; left:455px; bottom:58px; right:80px; border-top:1px solid rgba(15,118,110,.35); padding-top:14px; font-size:14px; color:#475569; }
+    .integrity strong { color:#0F766E; }
+    .rings { position:absolute; right:-55px; top:205px; width:340px; height:220px; border:1px solid rgba(15,118,110,.18); border-radius:50%; transform:rotate(24deg); }
+    .rings:after { content:''; position:absolute; left:28px; top:26px; width:340px; height:220px; border:1px solid rgba(15,118,110,.12); border-radius:50%; }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="kicker">04 · Resilient communications</div><div class="bar"></div>
+    <h1>Offline SOS turns a weak signal into an actionable record.</h1>
+    <p class="intro">The emergency request is reduced to the smallest useful packet, stored locally, and delivered through the best available channel. The LGU sees how it arrived before making a dispatch decision.</p>
+    <div class="top-note">Offline is a mode, not an error.<span>When the network returns, the same incident can reconcile against the live service.</span></div>
+    <div class="rings"></div>
+    <section class="device">
+      <div class="device-head"></div><div class="device-screen">
+        <i class="fa-solid fa-triangle-exclamation sos-mark"></i>
+        <div class="screen-label">Emergency packet</div>
+        <div class="screen-title">SOS<br>ready to send</div>
+        <div class="payload">CFR|T|11.1264|125.3892|…</div>
+        <div class="screen-status">OUTBOX · PENDING CHANNEL</div>
+      </div><div class="device-foot"></div>
+    </section>
+    <div class="route-curve"></div><i class="fa-solid fa-arrow-right route-arrow"></i>
+    <section class="flow">
+      <article class="phase"><div class="phase-icon"><i class="fa-solid fa-location-crosshairs"></i></div><span class="n">01</span><h2>Capture the minimum</h2><p>Identity, emergency type, coordinates, time, and a short message create the usable incident record.</p></article>
+      <div class="flow-link"></div>
+      <article class="phase warning"><div class="phase-icon"><i class="fa-solid fa-message"></i></div><span class="n">02</span><h2>Encode and protect</h2><p>Coordinate quantization, compact encoding, CRC validation, and a shared secret support a one-SMS handoff.</p></article>
+      <div class="flow-link"></div>
+      <article class="phase"><div class="phase-icon"><i class="fa-solid fa-box-archive"></i></div><span class="n">03</span><h2>Persist the outbox</h2><p>The device retains the request through disruption and submits by internet or SMS when a channel is available.</p></article>
+      <div class="flow-link"></div>
+      <article class="phase"><div class="phase-icon"><i class="fa-solid fa-headset"></i></div><span class="n">04</span><h2>Expose the channel</h2><p>The LGU queue preserves whether the record arrived by internet, SMS, or mesh for informed triage.</p></article>
+    </section>
+    <div class="integrity"><strong>Operational safeguard:</strong> SMS is a resilient delivery fallback; the system records integrity checks and does not assume delivery certainty.</div>
+  </div>
+</body>
+</html>

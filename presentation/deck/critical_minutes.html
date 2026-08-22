@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    .slide-container { width:1280px; min-height:720px; background:#F0F4F8; color:#0F172A; font-family:Arial, Helvetica, sans-serif; position:relative; overflow:hidden; }
+    .section-label { position:absolute; left:78px; top:60px; color:#0F766E; font-size:13px; font-weight:700; letter-spacing:2px; text-transform:uppercase; }
+    .accent-line { position:absolute; left:78px; top:89px; height:3px; width:76px; background:#D97706; }
+    h1 { position:absolute; left:78px; top:130px; width:470px; font-family:Georgia, 'Times New Roman', serif; font-size:52px; line-height:1.04; letter-spacing:-1.2px; }
+    .intro { position:absolute; left:81px; top:310px; width:405px; color:#475569; font-size:18px; line-height:1.48; font-weight:300; }
+    .principle { position:absolute; left:80px; top:480px; width:390px; border-top:1px solid rgba(15,118,110,.4); padding-top:17px; color:#0F172A; font-size:15px; line-height:1.4; }
+    .principle strong { color:#0F766E; }
+    .loop-field { position:absolute; right:65px; top:55px; width:675px; height:610px; }
+    .ring-a { position:absolute; left:94px; top:73px; width:490px; height:410px; border:1px solid rgba(15,118,110,.34); border-radius:50%; transform:rotate(-19deg); }
+    .ring-b { position:absolute; left:126px; top:110px; width:430px; height:340px; border:1px solid rgba(15,118,110,.18); border-radius:50%; transform:rotate(-19deg); }
+    .center { position:absolute; left:241px; top:232px; width:190px; height:132px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; background:rgba(216,243,240,.82); }
+    .center .small { color:#0F766E; font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; }
+    .center strong { width:145px; margin-top:9px; font-family:Georgia, 'Times New Roman', serif; font-size:22px; line-height:1.05; }
+    .station { position:absolute; width:172px; min-height:118px; }
+    .station .num { display:block; font-family:Georgia, 'Times New Roman', serif; color:#0F766E; font-size:37px; line-height:1; }
+    .station h2 { margin-top:7px; font-family:Georgia, 'Times New Roman', serif; font-size:23px; line-height:1.1; }
+    .station p { margin-top:8px; width:165px; color:#556778; font-size:12.5px; line-height:1.36; }
+    .station.one { left:87px; top:104px; }.station.two { left:392px; top:73px; }.station.three { left:494px; top:310px; }.station.four { left:310px; top:485px; }.station.five { left:50px; top:408px; }
+    .station.three .num, .station.four .num { color:#D97706; }
+    .arrow { position:absolute; width:43px; height:1px; background:#0F766E; transform-origin:left center; opacity:.72; }
+    .arrow:after { content:''; position:absolute; right:-2px; top:-4px; border-left:8px solid #0F766E; border-top:4px solid transparent; border-bottom:4px solid transparent; }
+    .a1 { left:276px; top:133px; transform:rotate(-7deg); }.a2 { left:517px; top:238px; transform:rotate(61deg); }.a3 { left:470px; top:441px; transform:rotate(136deg); }.a4 { left:218px; top:510px; transform:rotate(178deg); }.a5 { left:89px; top:307px; transform:rotate(-65deg); }
+    .footer-note { position:absolute; right:7px; bottom:7px; color:#6B7D8D; font-size:11px; letter-spacing:1px; text-transform:uppercase; }
+  </style>
+</head>
+<body><div class="slide-container">
+    <div class="section-label">07 · Operational cycle</div><div class="accent-line"></div>
+    <h1>The response loop is designed for the first critical minutes.</h1>
+    <p class="intro" style="transform: translate(-1px, 45.7333px);">The command center turns a raw report into a safer next action by linking verification, location, routing, dispatch, and continuous operational updates.</p>
+    <div class="principle"><strong>Operating rule:</strong> let the newest verified hazard information constrain every routing and dispatch decision.</div>
+    <section class="loop-field">
+      <div class="ring-a"></div><div class="ring-b"></div>
+      <div class="arrow a1"></div><div class="arrow a2"></div><div class="arrow a3"></div><div class="arrow a4"></div><div class="arrow a5"></div>
+      <article class="station one"><span class="num">01</span><h2>Verify</h2><p>Confirm the alert source and current hazard layer before acting on it.</p></article>
+      <article class="station two"><span class="num">02</span><h2>Locate</h2><p>Read coordinates, delivery channel, and location confidence from the SOS report.</p></article>
+      <article class="station three"><span class="num">03</span><h2>Route</h2><p>Choose a safer path and center while excluding active hazard intersections.</p></article>
+      <article class="station four"><span class="num">04</span><h2>Dispatch</h2><p>Assign the appropriate response and make the incident status visible to the team.</p></article>
+      <article class="station five"><span class="num">05</span><h2>Reconcile</h2><p>Fold new reports, shelter capacity, and field updates back into the shared view.</p></article>
+      <div class="center"><span class="small">Shared operational view</span><strong>Safer next action</strong></div>
+      <div class="footer-note">Verify · Locate · Route · Dispatch · Reconcile</div>
+    </section>
+  </div>
+</body>
+</html>

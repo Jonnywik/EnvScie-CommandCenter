@@ -1,0 +1,18 @@
+<slide id="solution">
+  <background color="paper"/>
+  <shape id="solution-top-rule" type="line" x="72" y="62" width="1136" height="0" stroke="hairline" stroke-width="1"/>
+  <text id="solution-kicker" x="72" y="82" width="540" height="20" font="caption" size="14" color="signal" wrap="false">03 / THE WEBSITE SOLUTION</text>
+  <text id="solution-title" x="72" y="112" width="760" height="56" font="heading" size="36" color="brand" autofit="shrink">One operational picture for the LGU</text>
+  <text id="solution-definition" x="72" y="174" width="1050" height="32" font="body" size="20" color="muted"><p>Code for Resilience connects alerts, SOS triage, GIS, evacuation, response groups, communications, notifications, and audit records in one browser-based command center.</p></text>
+  <shape id="solution-image-frame" type="rect" x="72" y="224" width="1136" height="208" corner-radius="8" fill="paper" stroke="hairline" stroke-width="1"/>
+  <image id="solution-architecture" src="/home/ubuntu/webdev-static-assets/cfr-final/architecture.png" x="86" y="246" width="1108" height="164" fit="contain"/>
+  <shape id="solution-value-band" type="rect" x="72" y="474" width="1136" height="142" corner-radius="8" fill="brand"/>
+  <shape id="solution-value-line-1" type="line" x="390" y="500" width="0" height="88" stroke="muted" stroke-width="1"/>
+  <shape id="solution-value-line-2" type="line" x="768" y="500" width="0" height="88" stroke="muted" stroke-width="1"/>
+  <text id="solution-value-1" x="98" y="500" width="270" height="88" font="body" size="19" color="paper" line-height="1.22"><p><strong color="signal">Shared picture</strong></p><p>Every team works from the same verified state.</p></text>
+  <text id="solution-value-2" x="420" y="500" width="310" height="88" font="body" size="19" color="paper" line-height="1.22"><p><strong color="signal">Safer movement</strong></p><p>GIS layers and route guardrails support field decisions.</p></text>
+  <text id="solution-value-3" x="798" y="500" width="360" height="88" font="body" size="19" color="paper" line-height="1.22"><p><strong color="urgent">Closed-loop record</strong></p><p>Assignments, receipts, reviews, and handovers remain auditable.</p></text>
+  <shape id="solution-route-line" type="line" x="930" y="670" width="250" height="0" stroke="signal" stroke-width="2"/>
+  <shape id="solution-route-dot" type="ellipse" x="1172" y="662" width="16" height="16" fill="urgent"/>
+  <text id="solution-footer" x="72" y="678" width="680" height="18" font="caption" size="12" color="muted">Platform architecture / FastAPI + PostgreSQL/PostGIS + Next.js LGU command center</text>
+</slide>

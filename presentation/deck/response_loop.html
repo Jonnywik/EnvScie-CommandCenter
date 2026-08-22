@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    .slide-container { width:1280px; min-height:720px; background:#F0F4F8; color:#0F172A; font-family:Arial, Helvetica, sans-serif; position:relative; overflow:hidden; }
+    .section { position:absolute; left:78px; top:58px; font-size:13px; color:#0F766E; text-transform:uppercase; letter-spacing:2px; font-weight:700; }
+    .accent { position:absolute; left:78px; top:87px; width:70px; height:3px; background:#D97706; }
+    h1 { position:absolute; left:78px; top:128px; width:720px; font-family:Georgia, 'Times New Roman', serif; font-size:49px; line-height:1.07; letter-spacing:-1.2px; }
+    .sub { position:absolute; left:80px; top:244px; width:650px; font-size:17px; line-height:1.42; color:#475569; }
+    .flow { position:absolute; left:80px; top:352px; width:710px; display:flex; align-items:flex-start; }
+    .stage { width:158px; min-height:200px; position:relative; padding-top:12px; border-top:2px solid #0F766E; }
+    .stage:nth-child(3) { border-top-color:#D97706; }
+    .connector { width:25px; height:2px; background:rgba(15,118,110,.55); margin-top:48px; position:relative; }
+    .connector:after { content:''; position:absolute; right:-2px; top:-3px; border-left:7px solid #0F766E; border-top:4px solid transparent; border-bottom:4px solid transparent; }
+    .stage:nth-child(3) + .connector:after { border-left-color:#D97706; }
+    .icon { width:37px; height:37px; border-radius:50%; background:#D8F3F0; color:#0F766E; display:flex; align-items:center; justify-content:center; font-size:17px; }
+    .stage:nth-child(3) .icon { background:#FCECC8; color:#B45309; }
+    .stage strong { display:block; margin-top:16px; font-family:Georgia, 'Times New Roman', serif; font-size:20px; line-height:1.15; }
+    .stage p { margin-top:10px; width:145px; color:#566879; font-size:13px; line-height:1.38; }
+    .image-wrap { position:absolute; top:0; right:0; width:370px; height:720px; overflow:hidden; background:#0F766E; }
+    .coast { width:370px; height:720px; object-fit:cover; opacity:.88; filter:saturate(.78) contrast(1.04); }
+    .overlay { position:absolute; inset:0; background:linear-gradient(180deg, rgba(7,44,62,.03) 0%, rgba(8,67,79,.5) 100%); }
+    .map-ring { position:absolute; top:265px; left:-72px; width:360px; height:220px; border:1px solid rgba(255,255,255,.72); border-radius:50%; transform:rotate(-24deg); }
+    .image-caption { position:absolute; left:32px; bottom:54px; color:white; width:274px; }
+    .image-caption .small { display:block; font-size:11px; letter-spacing:1.7px; text-transform:uppercase; opacity:.84; }
+    .image-caption strong { display:block; margin-top:12px; font-family:Georgia, 'Times New Roman', serif; font-size:26px; line-height:1.08; }
+    .freshness { position:absolute; left:80px; bottom:50px; width:648px; border-top:1px solid rgba(15,118,110,.4); padding-top:15px; color:#0F766E; font-size:14px; }
+    .freshness b { color:#0F172A; }
+  </style>
+</head>
+<body><div class="slide-container">
+    <div class="section">02 · System response</div><div class="accent"></div>
+    <h1 style="transform: translate(0px, -17.7915px);">One system connects warning, movement, and assistance.</h1>
+    <p class="sub" style="transform: translate(0px, 35.5831px);">Code for Resilience connects the resident’s decision path to an operational view for the LGU—without treating online connectivity as a permanent condition.</p>
+    <section class="flow">
+      <article class="stage"><div class="icon"><i class="fa-solid fa-bell"></i></div><strong>Residents</strong><p>Receive verified alerts, view risk layers, locate centers, and request help.</p></article>
+      <div class="connector"></div>
+      <article class="stage"><div class="icon"><i class="fa-solid fa-tower-broadcast"></i></div><strong>Resilient transport</strong><p>Use internet normally, then compact SMS when connectivity is degraded.</p></article>
+      <div class="connector"></div>
+      <article class="stage"><div class="icon"><i class="fa-solid fa-headset"></i></div><strong>Municipal operations</strong><p>Triage SOS incidents, dispatch resources, and monitor center capacity.</p></article>
+      <div class="connector"></div>
+      <article class="stage"><div class="icon"><i class="fa-solid fa-circle-check"></i></div><strong>Re-verify</strong><p>Keep cached records useful while making freshness explicit to every user.</p></article>
+    </section>
+    <div class="freshness"><b>Decision principle:</b> cached information remains useful, but it is never mistaken for a live verified update.</div>
+    <aside class="image-wrap"><img class="coast" src="/home/ubuntu/code-for-resilience/presentation/assets/eastern-samar-coast.webp" alt="Eastern Samar coastline"><div class="overlay"></div><div class="map-ring"></div><div class="image-caption"><span class="small">Coastal municipal context</span><strong>From alert to action—locally.</strong></div></aside>
+  </div>
+</body>
+</html>

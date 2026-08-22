@@ -1,0 +1,18 @@
+<slide id="closing">
+  <background color="brand"/>
+  <shape id="closing-route-divider" type="line" x="824" y="0" width="0" height="720" stroke="signal" stroke-width="3"/>
+  <shape id="closing-mark-sun" type="ellipse" x="1000" y="180" width="54" height="54" fill="urgent"/>
+  <shape id="closing-mark-ray-1" type="line" x="1027" y="140" width="0" height="32" stroke="urgent" stroke-width="10"/>
+  <shape id="closing-mark-ray-2" type="line" x="1027" y="242" width="0" height="32" stroke="urgent" stroke-width="10"/>
+  <shape id="closing-mark-wave-1" type="curve" x="900" y="510" width="260" height="-170" stroke="signal" stroke-width="14"/>
+  <shape id="closing-mark-wave-2" type="curve" x="930" y="530" width="260" height="-170" stroke="signal" stroke-width="14"/>
+  <shape id="closing-mark-wave-3" type="curve" x="960" y="550" width="260" height="-170" stroke="signal" stroke-width="14"/>
+  <text id="closing-kicker" x="72" y="116" width="540" height="20" font="caption" size="14" color="signal" wrap="false">08 / THE NEXT STEP</text>
+  <text id="closing-title" x="72" y="214" width="650" height="136" font="display" size="52" color="paper" line-height="1.04" autofit="shrink"><p>Built for Balangiga.</p><p><strong color="signal">Designed to scale.</strong></p></text>
+  <text id="closing-subtitle" x="72" y="372" width="650" height="48" font="body" size="23" color="mist"><p>A locally grounded digital layer for preparedness, response, and recovery.</p></text>
+  <shape id="closing-next-panel" type="rect" x="72" y="456" width="650" height="108" corner-radius="8" fill="mist"/>
+  <text id="closing-next-text" x="98" y="478" width="594" height="68" font="body" size="20" color="brand" line-height="1.25"><p><strong>Next step:</strong> connect the operating model to validated local data, response protocols, and field deployment.</p></text>
+  <shape id="closing-route-line" type="line" x="930" y="672" width="250" height="0" stroke="signal" stroke-width="2"/>
+  <shape id="closing-route-dot" type="ellipse" x="1172" y="664" width="16" height="16" fill="urgent"/>
+  <text id="closing-footer" x="72" y="678" width="520" height="18" font="caption" size="12" color="#B8C7C8">CODE FOR RESILIENCE / BALANGIGA LGU</text>
+</slide>

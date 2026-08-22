@@ -1,0 +1,15 @@
+<design>
+  <size width="1280" height="720"></size>
+  <color name="brand" value="#06384B"/>
+  <color name="signal" value="#78CBB5"/>
+  <color name="urgent" value="#D18D70"/>
+  <color name="paper" value="#FCFBF9"/>
+  <color name="mist" value="#F2E8D5"/>
+  <color name="ink" value="#06384B"/>
+  <color name="muted" value="#6A8289"/>
+  <color name="hairline" value="#D1D8D9"/>
+  <font name="display" family="Barlow" size="56"/>
+  <font name="heading" family="Barlow" size="36"/>
+  <font name="body" family="Inter" size="20"/>
+  <font name="caption" family="Inter" size="14"/>
+</design>

@@ -1,0 +1,45 @@
+<slide id="website_surface">
+  <background color="paper"/>
+  <shape id="surface-top-rule" type="line" x="72" y="62" width="1136" height="0" stroke="hairline" stroke-width="1"/>
+  <text id="surface-kicker" x="72" y="82" width="540" height="20" font="caption" size="14" color="signal" wrap="false">06 / THE COMMAND CENTER SURFACE</text>
+  <text id="surface-title" x="72" y="112" width="820" height="56" font="heading" size="36" color="brand" autofit="shrink">What the LGU can see at a glance</text>
+  <text id="surface-intro" x="72" y="172" width="1040" height="28" font="body" size="20" color="muted">A shared operational screen turns scattered updates into one visible queue of decisions.</text>
+  <shape id="surface-shell" type="rect" x="72" y="220" width="1136" height="368" corner-radius="8" fill="paper" stroke="brand" stroke-width="2" shadow="true"/>
+  <shape id="surface-header" type="rect" x="72" y="220" width="1136" height="38" corner-radius="8" fill="brand"/>
+  <shape id="surface-header-mark" type="ellipse" x="92" y="232" width="14" height="14" fill="signal"/>
+  <text id="surface-header-name" x="118" y="229" width="280" height="20" font="caption" size="14" color="paper" wrap="false">CODE FOR RESILIENCE / LGU COMMAND CENTER</text>
+  <text id="surface-header-state" x="1008" y="229" width="170" height="20" font="caption" size="14" color="signal" align="right" wrap="false">LIVE OPERATIONS</text>
+  <shape id="surface-rail" type="rect" x="72" y="258" width="168" height="330" fill="mist"/>
+  <text id="surface-rail-label" x="92" y="276" width="120" height="18" font="caption" size="12" color="muted" wrap="false">COMMAND CENTER</text>
+  <shape id="surface-rail-active" type="rect" x="88" y="308" width="136" height="28" corner-radius="4" fill="signal"/>
+  <text id="surface-rail-active-text" x="104" y="314" width="108" height="18" font="caption" size="14" color="brand" wrap="false">Overview</text>
+  <text id="surface-rail-items" x="104" y="352" width="120" height="150" font="caption" size="14" color="brand" line-height="1.55"><p>Live SOS</p><p>Verified Alerts</p><p>Risk Map</p><p>Evacuation</p><p>Resources</p><p>Response Groups</p><p>Communications</p></text>
+  <shape id="surface-main" type="rect" x="240" y="258" width="968" height="330" fill="paper"/>
+  <shape id="surface-metric-1" type="rect" x="268" y="274" width="208" height="50" corner-radius="6" fill="mist"/>
+  <text id="surface-metric-1-text" x="282" y="284" width="180" height="34" font="caption" size="14" color="brand"><p><strong>3</strong>  UNTRIAGED SOS</p></text>
+  <shape id="surface-metric-2" type="rect" x="492" y="274" width="208" height="50" corner-radius="6" fill="#F5E2D8"/>
+  <text id="surface-metric-2-text" x="506" y="284" width="180" height="34" font="caption" size="14" color="brand"><p><strong>1</strong>  CRITICAL ALERT</p></text>
+  <shape id="surface-metric-3" type="rect" x="716" y="274" width="208" height="50" corner-radius="6" fill="#DDF4EE"/>
+  <text id="surface-metric-3-text" x="730" y="284" width="180" height="34" font="caption" size="14" color="brand"><p><strong>4</strong>  OPEN CENTERS</p></text>
+  <shape id="surface-metric-4" type="rect" x="940" y="274" width="208" height="50" corner-radius="6" fill="#E5EEF4"/>
+  <text id="surface-metric-4-text" x="954" y="284" width="180" height="34" font="caption" size="14" color="brand"><p><strong>187</strong>  RESIDENTS AT RISK</p></text>
+  <shape id="surface-map" type="rect" x="268" y="344" width="540" height="210" corner-radius="6" fill="#DDF4EE" stroke="signal" stroke-width="1"/>
+  <shape id="surface-map-hazard-1" type="ellipse" x="330" y="400" width="180" height="72" fill="#D18D7044" stroke="urgent" stroke-width="2"/>
+  <shape id="surface-map-hazard-2" type="ellipse" x="590" y="458" width="160" height="60" fill="#D18D7044" stroke="urgent" stroke-width="2"/>
+  <shape id="surface-map-route" type="line" x="300" y="516" width="430" height="-124" stroke="signal" stroke-width="4"/>
+  <shape id="surface-map-sos-1" type="ellipse" x="476" y="410" width="18" height="18" fill="urgent"/>
+  <shape id="surface-map-sos-2" type="ellipse" x="626" y="470" width="18" height="18" fill="urgent"/>
+  <shape id="surface-map-center-1" type="ellipse" x="694" y="398" width="18" height="18" fill="brand"/>
+  <text id="surface-map-label" x="286" y="356" width="220" height="20" font="caption" size="14" color="brand">LIVE SITUATION MAP</text>
+  <shape id="surface-alert-feed" type="rect" x="830" y="344" width="318" height="98" corner-radius="6" fill="mist"/>
+  <text id="surface-alert-label" x="848" y="356" width="280" height="18" font="caption" size="14" color="brand">VERIFIED ALERT FEED</text>
+  <text id="surface-alert-copy" x="848" y="384" width="280" height="42" font="caption" size="14" color="ink" line-height="1.3"><p><strong color="urgent">Heavy rainfall warning</strong></p><p>Coastal and low-lying areas / verified source</p></text>
+  <shape id="surface-sos-queue" type="rect" x="830" y="456" width="318" height="98" corner-radius="6" fill="paper" stroke="hairline" stroke-width="1"/>
+  <text id="surface-sos-label" x="848" y="468" width="280" height="18" font="caption" size="14" color="brand">PRIORITY SOS QUEUE</text>
+  <shape id="surface-sos-rule" type="line" x="848" y="500" width="260" height="0" stroke="urgent" stroke-width="3"/>
+  <text id="surface-sos-copy" x="848" y="508" width="280" height="34" font="caption" size="14" color="ink"><p><strong>TRAPPED · Barangay</strong>  /  3 min ago</p></text>
+  <text id="surface-caption" x="72" y="614" width="1060" height="24" font="caption" size="14" color="muted">Validated operational tabs: Overview · Live SOS · Verified Alerts · Risk Map · Evacuation Centers · Resources · Response Groups · Communications</text>
+  <shape id="surface-route-line" type="line" x="930" y="670" width="250" height="0" stroke="signal" stroke-width="2"/>
+  <shape id="surface-route-dot" type="ellipse" x="1172" y="662" width="16" height="16" fill="urgent"/>
+  <text id="surface-footer" x="72" y="678" width="680" height="18" font="caption" size="12" color="muted">Schematic representation of the hosted Command Center surface</text>
+</slide>

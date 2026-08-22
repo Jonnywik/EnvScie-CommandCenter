@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    .slide-container { width:1280px; min-height:720px; background:#F0F4F8; color:#0F172A; font-family:Arial, Helvetica, sans-serif; position:relative; overflow:hidden; }
+    .eyebrow { position:absolute; left:78px; top:61px; color:#0F766E; font-size:13px; font-weight:700; letter-spacing:2px; text-transform:uppercase; }
+    .bar { position:absolute; left:78px; top:90px; width:78px; height:3px; background:#D97706; }
+    h1 { position:absolute; left:78px; top:141px; width:625px; font-family:Georgia, 'Times New Roman', serif; font-size:59px; line-height:1.0; letter-spacing:-1.7px; }
+    .statement { position:absolute; left:81px; top:335px; width:560px; color:#475569; font-size:21px; line-height:1.43; font-weight:300; }
+    .statement strong { color:#0F766E; font-weight:700; }
+    .anchors { position:absolute; left:80px; top:477px; display:flex; gap:34px; }
+    .anchor { width:148px; border-top:2px solid #0F766E; padding-top:12px; }
+    .anchor:nth-child(2) { border-top-color:#D97706; }
+    .anchor i { color:#0F766E; font-size:18px; }
+    .anchor:nth-child(2) i { color:#D97706; }
+    .anchor span { display:block; margin-top:9px; color:#506273; font-size:12px; line-height:1.32; }
+    .map-panel { position:absolute; top:0; right:0; width:470px; height:720px; background:#D8F3F0; overflow:hidden; }
+    .map-panel:before { content:''; position:absolute; left:-156px; top:32px; width:530px; height:345px; border:1px solid rgba(15,118,110,.34); border-radius:50%; transform:rotate(-19deg); }
+    .map-panel:after { content:''; position:absolute; right:-190px; bottom:-94px; width:560px; height:345px; border:1px solid rgba(15,118,110,.22); border-radius:50%; transform:rotate(-19deg); }
+    .map { position:absolute; z-index:2; left:107px; top:151px; width:260px; height:320px; object-fit:contain; filter:saturate(.72) contrast(1.04); mix-blend-mode:multiply; }
+    .map-label { position:absolute; z-index:3; left:48px; bottom:68px; width:310px; color:#0F172A; }
+    .map-label .small { display:block; color:#0F766E; font-size:11px; font-weight:700; letter-spacing:1.8px; text-transform:uppercase; }
+    .map-label strong { display:block; margin-top:12px; font-family:Georgia, 'Times New Roman', serif; font-size:31px; line-height:1.06; }
+    .coordinate { position:absolute; z-index:4; top:62px; right:44px; color:#0F766E; font-size:11px; font-weight:700; letter-spacing:1.2px; }
+    .footer { position:absolute; left:80px; bottom:56px; color:#6A7B89; font-size:11px; letter-spacing:1.4px; text-transform:uppercase; }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="eyebrow">08 · Operational readiness</div><div class="bar"></div>
+    <h1>From prototype<br>to operational<br>readiness.</h1>
+    <p class="statement">A resilient system is ready when the <strong>safest next action remains available</strong>—even when the network does not.</p>
+    <section class="anchors">
+      <div class="anchor"><i class="fa-solid fa-map-location-dot"></i><span>Validated local GIS, center, and hotline records</span></div>
+      <div class="anchor"><i class="fa-solid fa-shield-halved"></i><span>Secure, auditable, role-aware municipal operations</span></div>
+      <div class="anchor"><i class="fa-solid fa-people-group"></i><span>Field-tested workflows with barangays and responders</span></div>
+    </section>
+    <section class="map-panel">
+      <div class="coordinate">BALANGIGA · EASTERN SAMAR</div>
+      <img class="map" src="/home/ubuntu/code-for-resilience/presentation/assets/balangiga-map.png" alt="Map locating Balangiga in Eastern Samar" />
+      <div class="map-label"><span class="small">Code for Resilience</span><strong>Local capacity,<br>made actionable.</strong></div>
+    </section>
+    <div class="footer">Prepared as a foundation for LGU validation, field exercises, and phased operational rollout</div>
+  </div>
+</body>
+</html>

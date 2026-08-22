@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "Code for Resilience",
+    "slug": "code-for-resilience",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#102a43"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Location is used to send your SOS position and find a safer evacuation route."
+      }
+    },
+    "android": {
+      "permissions": ["ACCESS_COARSE_LOCATION", "ACCESS_FINE_LOCATION"],
+      "package": "org.codeforresilience.balangiga"
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow Code for Resilience to use your location for SOS and safe evacuation routes."
+        }
+      ]
+    ]
+  }
+}

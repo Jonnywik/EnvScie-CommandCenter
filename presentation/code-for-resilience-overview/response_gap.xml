@@ -1,0 +1,32 @@
+<slide id="response_gap">
+  <background color="mist"/>
+  <shape id="gap-top-rule" type="line" x="72" y="62" width="1136" height="0" stroke="hairline"/>
+  <text id="gap-kicker" x="72" y="82" width="540" height="20" font="caption" size="14" color="urgent" wrap="false">02 / THE RESPONSE GAP</text>
+  <text id="gap-title" x="72" y="112" width="760" height="60" font="heading" size="36" color="brand" autofit="shrink">The response gap is operational, not only technical</text>
+  <text id="gap-intro" x="72" y="186.8" width="1040" height="26" font="body" size="19" color="muted">The challenge is deciding what is verified, who needs help, and which action is safe enough to confirm now.</text>
+  <shape id="gap-card-1" type="rect" x="72" y="220" width="530" height="132" fill="paper" stroke="urgent" stroke-width="2" corner-radius="8"/>
+  <text id="gap-card-1-text" x="98" y="244" width="474" height="88" font="body" size="19" color="ink" line-height="1.2">
+    <p><strong color="urgent">01  Delayed signals</strong></p>
+    <p>Alerts arrive late, across separate channels, with uneven verification.</p>
+  </text>
+  <shape id="gap-card-2" type="rect" x="626" y="220" width="530" height="132" fill="paper" stroke="brand" stroke-width="2" corner-radius="8"/>
+  <text id="gap-card-2-text" x="652" y="244" width="474" height="88" font="body" size="19" color="ink" line-height="1.2">
+    <p><strong color="brand">02  Unclear shelter status</strong></p>
+    <p>Residents and responders need current evacuation capacity, amenities, and access.</p>
+  </text>
+  <shape id="gap-card-3" type="rect" x="72" y="376" width="530" height="132" fill="paper" stroke="signal" stroke-width="2" corner-radius="8"/>
+  <text id="gap-card-3-text" x="98" y="400" width="474" height="88" font="body" size="19" color="ink" line-height="1.2">
+    <p><strong color="brand">03  SOS attention overload</strong></p>
+    <p>Incoming requests compete for triage time without a shared priority view.</p>
+  </text>
+  <shape id="gap-card-4" type="rect" x="626" y="376" width="530" height="132" fill="paper" stroke="muted" stroke-width="2" corner-radius="8"/>
+  <text id="gap-card-4-text" x="652" y="400" width="474" height="88" font="body" size="19" color="ink" line-height="1.2">
+    <p><strong color="muted">04  Fragile coordination</strong></p>
+    <p>Power or signal interruptions can break the chain between decision and dispatch.</p>
+  </text>
+  <shape id="gap-synthesis" type="rect" x="72" y="558" width="1084" height="76" fill="brand" corner-radius="8"/>
+  <text id="gap-synthesis-text" x="98" y="578" width="1036" height="38" font="body" size="21" color="paper"><strong color="signal">Design response:</strong> make the next safe action visible, assignable, confirmable, and auditable.</text>
+  <shape id="gap-route-line" type="line" x="930" y="670" width="250" height="0" stroke="brand" stroke-width="2"/>
+  <shape id="gap-route-dot" type="ellipse" x="1172" y="662" width="16" height="16" fill="urgent"/>
+  <text id="gap-footer" x="72" y="678" width="680" height="18" font="caption" size="12" color="muted">Code for Resilience project brief / operational requirements</text>
+</slide>

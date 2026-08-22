@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    .slide-container { width:1280px; min-height:720px; background:#F0F4F8; color:#0F172A; font-family:Arial, Helvetica, sans-serif; position:relative; overflow:hidden; }
+    .eyebrow { position:absolute; left:78px; top:58px; color:#0F766E; font-size:13px; letter-spacing:2px; text-transform:uppercase; font-weight:700; }
+    .rule { position:absolute; left:78px; top:88px; width:78px; height:3px; background:#D97706; }
+    h1 { position:absolute; left:78px; top:128px; width:640px; font-family:Georgia, 'Times New Roman', serif; font-size:50px; line-height:1.05; letter-spacing:-1.25px; }
+    .intro { position:absolute; left:80px; top:245px; width:580px; color:#475569; font-size:17px; line-height:1.44; }
+    .status { position:absolute; left:80px; top:332px; display:flex; align-items:center; gap:10px; color:#0F766E; font-size:13px; letter-spacing:.6px; font-weight:700; text-transform:uppercase; }
+    .status i { color:#D97706; }
+    .lanes { position:absolute; left:78px; top:401px; width:840px; display:grid; grid-template-columns:1fr 1fr; column-gap:41px; row-gap:23px; }
+    .lane { min-height:108px; border-top:2px solid #0F766E; padding-top:14px; position:relative; }
+    .lane:nth-child(3) { border-top-color:#D97706; }
+    .lane-icon { width:30px; height:30px; background:#D8F3F0; color:#0F766E; display:flex; align-items:center; justify-content:center; font-size:14px; }
+    .lane:nth-child(3) .lane-icon { background:#FCECC8; color:#B45309; }
+    .lane h2 { position:absolute; left:44px; top:17px; font-family:Georgia, 'Times New Roman', serif; font-size:21px; }
+    .lane p { margin-top:14px; max-width:355px; color:#566879; font-size:13px; line-height:1.38; }
+    .verified { position:absolute; left:78px; bottom:50px; width:840px; border-top:1px solid rgba(15,118,110,.32); padding-top:14px; color:#0F172A; font-size:14px; }
+    .verified strong { color:#0F766E; }
+    .snapshot { position:absolute; right:78px; top:128px; width:235px; height:510px; background:#D8F3F0; overflow:hidden; }
+    .snapshot:before { content:''; position:absolute; left:-88px; top:50px; width:315px; height:210px; border:1px solid rgba(15,118,110,.26); border-radius:50%; transform:rotate(-17deg); }
+    .snapshot:after { content:''; position:absolute; right:-112px; bottom:-91px; width:375px; height:220px; border:1px solid rgba(15,118,110,.22); border-radius:50%; transform:rotate(-16deg); }
+    .snapshot-head { position:absolute; z-index:2; left:25px; top:27px; color:#0F766E; font-size:11px; letter-spacing:1.6px; text-transform:uppercase; font-weight:700; }
+    .snapshot-title { position:absolute; z-index:2; left:25px; top:57px; width:165px; font-family:Georgia, 'Times New Roman', serif; font-size:26px; line-height:1.02; }
+    .metric { position:absolute; z-index:2; left:25px; width:185px; border-top:1px solid rgba(15,118,110,.45); padding-top:10px; }
+    .metric.one { top:170px; }.metric.two { top:245px; }.metric.three { top:320px; }.metric.four { top:395px; }
+    .metric b { display:block; color:#D97706; font-family:Georgia, 'Times New Roman', serif; font-size:30px; line-height:1; }
+    .metric span { display:block; margin-top:5px; color:#536474; font-size:11px; text-transform:uppercase; letter-spacing:.75px; }
+    .demo-tag { position:absolute; z-index:2; left:25px; bottom:26px; color:#0F766E; font-size:11px; line-height:1.35; font-weight:700; }
+  </style>
+</head>
+<body><div class="slide-container">
+    <div class="eyebrow">08 · Delivery status</div><div class="rule"></div>
+    <h1>The current build is a runnable foundation.</h1>
+    <p class="intro">The implementation turns the proposed architecture into a testable development baseline: backend services, a local-command dashboard, and an offline-first resident prototype all share the same emergency workflow.</p>
+    <div class="status"><i class="fa-solid fa-circle-check"></i> Implemented in demo mode · ready for LGU data and field validation</div>
+    <section class="lanes">
+      <article class="lane"><div class="lane-icon"><i class="fa-solid fa-server"></i></div><h2>FastAPI backend</h2><p>Dashboard, verified alert, evacuation, route, SOS intake, triage, and realtime starter endpoints are available through the demo service.</p></article>
+      <article class="lane"><div class="lane-icon"><i class="fa-solid fa-desktop"></i></div><h2>Next.js command center</h2><p>The responsive LGU view provides operating metrics, map layers, an SOS queue, and interactive incident status changes.</p></article>
+      <article class="lane"><div class="lane-icon"><i class="fa-solid fa-mobile-screen-button"></i></div><h2>Expo resident prototype</h2><p>Cached feeds, connectivity monitoring, durable SOS outbox, internet submission, and SMS fallback are scaffolded for residents.</p></article>
+      <article class="lane"><div class="lane-icon"><i class="fa-solid fa-flask"></i></div><h2>Validation baseline</h2><p>Six backend tests pass; the dashboard production build passes; and the Expo TypeScript check passes.</p></article>
+    </section>
+    <div class="verified" style="transform: translate(-3.81e-05px, 26.8px);"><strong>What this proves:</strong> the most important workflow—alert context to safe movement to SOS triage—can already be demonstrated end to end without waiting for production GIS imports.</div>
+    <aside class="snapshot">
+      <div class="snapshot-head">Seeded demonstration</div><div class="snapshot-title">A visible operational baseline</div>
+      <div class="metric one"><b>3</b><span>Untriaged SOS</span></div>
+      <div class="metric two"><b>1</b><span>Critical alert</span></div>
+      <div class="metric three"><b>4</b><span>Open centers</span></div>
+      <div class="metric four"><b>187</b><span>Residents at risk</span></div>
+      <div class="demo-tag">Demo data only<br>for workflow review</div>
+    </aside>
+  </div>
+</body>
+</html>

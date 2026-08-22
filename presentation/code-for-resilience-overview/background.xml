@@ -1,0 +1,20 @@
+<slide id="background">
+  <background color="paper"/>
+  <shape id="background-top-rule" type="line" x="72" y="62" width="1136" height="0" stroke="hairline" stroke-width="1"/>
+  <text id="background-kicker" x="72" y="82" width="540" height="20" font="caption" size="14" color="signal" wrap="false">01 / THE OPERATING CONTEXT</text>
+  <text id="background-title" x="72" y="112" width="680" height="60" font="heading" size="36" color="brand" autofit="shrink">Balangiga needs a clear operational picture</text>
+  <shape id="background-left-accent" type="line" x="72" y="198" width="72" height="0" stroke="urgent" stroke-width="4"/>
+  <text id="background-place-label" x="72" y="218" width="480" height="24" font="caption" size="14" color="muted" wrap="false">THE PLACE</text>
+  <text id="background-place-copy" x="72" y="250" width="600" height="78" font="body" size="21" color="ink" line-height="1.3"><p>Balangiga sits on the southern coast of Samar facing Leyte Gulf, with the Balangiga River meeting the coast. The municipality is organized across 13 barangays.</p></text>
+  <shape id="background-signal-accent" type="line" x="72" y="352" width="72" height="0" stroke="signal" stroke-width="4"/>
+  <text id="background-signal-label" x="72" y="372" width="480" height="24" font="caption" size="14" color="muted" wrap="false">THE SIGNAL</text>
+  <text id="background-signal-copy" x="72" y="404" width="600" height="84" font="body" size="21" color="ink" line-height="1.3"><p>PAGASA reports an average of <strong color="brand">20 tropical cyclones</strong> entering the Philippine Area of Responsibility each year; about 8 or 9 cross the Philippines. [1]</p></text>
+  <image id="background-map" src="/home/ubuntu/webdev-static-assets/cfr-final/balangiga-map.png" x="820" y="156" width="240" height="420" fit="contain" stroke="brand" stroke-width="2"/>
+  <image id="background-coast" src="/home/ubuntu/webdev-static-assets/cfr-final/eastern-samar-coast.webp" x="1080" y="156" width="140" height="140" fit="cover" corner-radius="8" shadow="true"/>
+  <text id="background-map-caption" x="820" y="594" width="400" height="24" font="caption" size="14" color="muted">Balangiga / Eastern Samar / Leyte Gulf [2]</text>
+  <shape id="background-implication-band" type="rect" x="72" y="548" width="680" height="96" corner-radius="8" fill="mist"/>
+  <text id="background-implication" x="96" y="568" width="630" height="56" font="body" size="20" color="brand" line-height="1.25"><p><strong>Operational implication:</strong> alerts, evacuation readiness, and field response must connect before conditions change.</p></text>
+  <shape id="background-route-line" type="line" x="930" y="670" width="250" height="0" stroke="signal" stroke-width="2"/>
+  <shape id="background-route-dot" type="ellipse" x="1172" y="662" width="16" height="16" fill="urgent"/>
+  <text id="background-source" x="72" y="678" width="680" height="18" font="caption" size="12" color="muted">Sources: [1] PAGASA Tropical Cyclone Information  ·  [2] Province of Eastern Samar: Balangiga</text>
+</slide>

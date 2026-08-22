@@ -1,0 +1,111 @@
+{
+  "project_info": {
+    "title": "Code for Resilience",
+    "created": 1786597852.355,
+    "last_updated": 1786598140.094,
+    "total_slides": 9
+  },
+  "slides": [
+    {
+      "id": "cover",
+      "state": "edited",
+      "pageNum": 1
+    },
+    {
+      "id": "background",
+      "state": "edited",
+      "pageNum": 2
+    },
+    {
+      "id": "response_gap",
+      "state": "edited",
+      "pageNum": 3
+    },
+    {
+      "id": "solution",
+      "state": "edited",
+      "pageNum": 4
+    },
+    {
+      "id": "feature_pillars",
+      "state": "edited",
+      "pageNum": 5
+    },
+    {
+      "id": "workflow",
+      "state": "edited",
+      "pageNum": 6
+    },
+    {
+      "id": "website_surface",
+      "state": "edited",
+      "pageNum": 7
+    },
+    {
+      "id": "benefits",
+      "state": "edited",
+      "pageNum": 8
+    },
+    {
+      "id": "closing",
+      "state": "edited",
+      "pageNum": 9
+    }
+  ],
+  "outline": [
+    {
+      "id": "cover",
+      "title": "Code for Resilience",
+      "summary": "Cover slide with the deck title, subtitle, and Balangiga/Eastern Samar context only.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "background",
+      "title": "Balangiga needs a clear operational picture",
+      "summary": "Explain Balangiga’s coastal setting, tropical-cyclone context, and the need to connect alerts, evacuation readiness, and field response.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "response_gap",
+      "title": "The response gap is operational",
+      "summary": "Frame the four recurring disaster-response gaps that the platform is designed to address.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "solution",
+      "title": "One operational picture for the LGU",
+      "summary": "Introduce the Code for Resilience website as the browser-based command center connecting alerts, SOS, GIS, evacuation, response groups, communications, notifications, and audit.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "feature_pillars",
+      "title": "Four feature pillars support the response cycle",
+      "summary": "Show the platform’s four feature groups: see, prioritize, move, and coordinate.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "workflow",
+      "title": "From signal to action",
+      "summary": "Show the five-step controlled workflow from detection through verification, decision, dispatch, and confirmation.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "website_surface",
+      "title": "What the LGU can see at a glance",
+      "summary": "Use the actual Command Center interface to explain the Overview surface and the eight operational tabs.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "benefits",
+      "title": "Potential benefits for Balangiga operations",
+      "summary": "Present the operational benefits the system is designed to enable, with a clear distinction between intended benefits and measured impact.",
+      "image_plan": "Use a suitable image if needed"
+    },
+    {
+      "id": "closing",
+      "title": "Built for Balangiga. Designed to scale.",
+      "summary": "Closing slide with a concise positioning statement and next step for local deployment.",
+      "image_plan": "Use a suitable image if needed"
+    }
+  ]
+}

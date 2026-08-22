@@ -1,0 +1,32 @@
+<slide id="benefits">
+  <background color="paper"/>
+  <shape id="benefits-top-rule" type="line" x="72" y="62" width="1136" height="0" stroke="hairline" stroke-width="1"/>
+  <text id="benefits-kicker" x="72" y="82" width="540" height="20" font="caption" size="14" color="signal" wrap="false">07 / THE POTENTIAL BENEFITS</text>
+  <text id="benefits-title" x="72" y="112" width="820" height="56" font="heading" size="36" color="brand" autofit="shrink">Potential benefits for Balangiga operations</text>
+  <text id="benefits-intro" x="72" y="172" width="1050" height="28" font="body" size="20" color="muted">The value comes from making decisions faster, safer, more coordinated, and easier to account for.</text>
+  <shape id="benefits-header" type="rect" x="72" y="224" width="1088" height="46" corner-radius="6" fill="brand"/>
+  <text id="benefits-header-1" x="96" y="237" width="210" height="20" font="caption" size="14" color="signal" wrap="false">OPERATIONAL BENEFIT</text>
+  <text id="benefits-header-2" x="354" y="237" width="390" height="20" font="caption" size="14" color="signal" wrap="false">WHAT THE WEBSITE ENABLES</text>
+  <text id="benefits-header-3" x="804" y="237" width="320" height="20" font="caption" size="14" color="signal" wrap="false">PRACTICAL VALUE</text>
+  <shape id="benefits-row-1" type="rect" x="72" y="270" width="1088" height="70" fill="mist"/>
+  <text id="benefits-row-1-theme" x="96" y="291" width="210" height="30" font="body" size="19" color="brand"><p><strong>Faster decisions</strong></p></text>
+  <text id="benefits-row-1-mechanism" x="354" y="282" width="390" height="48" font="body" size="17" color="ink"><p>One shared picture reconciles alerts, SOS, hazards, shelters, and resources.</p></text>
+  <text id="benefits-row-1-value" x="804" y="282" width="320" height="48" font="body" size="17" color="ink"><p>Less time spent stitching separate lists and messages together.</p></text>
+  <shape id="benefits-row-2" type="rect" x="72" y="340" width="1088" height="70" fill="paper" stroke="hairline" stroke-width="1"/>
+  <text id="benefits-row-2-theme" x="96" y="361" width="210" height="30" font="body" size="19" color="brand"><p><strong>Safer movement</strong></p></text>
+  <text id="benefits-row-2-mechanism" x="354" y="352" width="390" height="48" font="body" size="17" color="ink"><p>GIS layers, center status, and route guardrails bring hazards into the dispatch decision.</p></text>
+  <text id="benefits-row-2-value" x="804" y="352" width="320" height="48" font="body" size="17" color="ink"><p>Operators can see constraints before asking a unit to move.</p></text>
+  <shape id="benefits-row-3" type="rect" x="72" y="410" width="1088" height="70" fill="mist"/>
+  <text id="benefits-row-3-theme" x="96" y="431" width="210" height="30" font="body" size="19" color="brand"><p><strong>Reliable coordination</strong></p></text>
+  <text id="benefits-row-3-mechanism" x="354" y="422" width="390" height="48" font="body" size="17" color="ink"><p>SMS and in-app delivery receipts expose acknowledgement and retry state.</p></text>
+  <text id="benefits-row-3-value" x="804" y="422" width="320" height="48" font="body" size="17" color="ink"><p>“Sent” is not treated as “received” without a visible receipt.</p></text>
+  <shape id="benefits-row-4" type="rect" x="72" y="480" width="1088" height="70" fill="paper" stroke="hairline" stroke-width="1"/>
+  <text id="benefits-row-4-theme" x="96" y="501" width="210" height="30" font="body" size="19" color="brand"><p><strong>Stronger accountability</strong></p></text>
+  <text id="benefits-row-4-mechanism" x="354" y="492" width="390" height="48" font="body" size="17" color="ink"><p>Dispatches, reviews, handovers, and operational changes are recorded as events.</p></text>
+  <text id="benefits-row-4-value" x="804" y="492" width="320" height="48" font="body" size="17" color="ink"><p>Teams can reconstruct what happened and why after the event.</p></text>
+  <shape id="benefits-caveat" type="rect" x="72" y="574" width="1088" height="50" corner-radius="6" fill="#F5E2D8"/>
+  <text id="benefits-caveat-text" x="96" y="587" width="1040" height="24" font="caption" size="14" color="brand"><p>These are intended operational benefits. Measured impact will depend on local data quality, procedures, connectivity, and sustained adoption.</p></text>
+  <shape id="benefits-route-line" type="line" x="930" y="670" width="250" height="0" stroke="signal" stroke-width="2"/>
+  <shape id="benefits-route-dot" type="ellipse" x="1172" y="662" width="16" height="16" fill="urgent"/>
+  <text id="benefits-footer" x="72" y="678" width="680" height="18" font="caption" size="12" color="muted">Benefit logic / feature mechanism → intended operational value</text>
+</slide>

@@ -1,0 +1,28 @@
+<slide id="feature_pillars">
+  <background color="paper"/>
+  <shape id="pillars-top-rule" type="line" x="72" y="62" width="1136" height="0" stroke="hairline" stroke-width="1"/>
+  <text id="pillars-kicker" x="72" y="82" width="540" height="20" font="caption" size="14" color="signal" wrap="false">04 / CORE FEATURES</text>
+  <text id="pillars-title" x="72" y="112" width="820" height="56" font="heading" size="36" color="brand" autofit="shrink">Four feature pillars support the response cycle</text>
+  <text id="pillars-intro" x="72" y="172" width="1050" height="28" font="body" size="20" color="muted">The website is organized around the actions that matter when conditions change.</text>
+  <shape id="pillar-1-card" type="rect" x="72" y="214" width="248" height="300" corner-radius="8" fill="mist" stroke="brand" stroke-width="1"/>
+  <shape id="pillar-1-mark" type="ellipse" x="96" y="240" width="42" height="42" fill="signal"/>
+  <text id="pillar-1-number" x="96" y="248" width="42" height="24" font="heading" size="19" color="brand" align="center">01</text>
+  <text id="pillar-1-text" x="96" y="308" width="200" height="170" font="body" size="18" color="ink" line-height="1.25"><p><strong size="25">See</strong></p><p>Verified alerts, operational metrics, GIS layers, hazards, resources, SOS locations, and evacuation centers.</p></text>
+  <shape id="pillar-2-card" type="rect" x="352" y="214" width="248" height="300" corner-radius="8" fill="paper" stroke="urgent" stroke-width="2"/>
+  <shape id="pillar-2-mark" type="ellipse" x="376" y="240" width="42" height="42" fill="urgent"/>
+  <text id="pillar-2-number" x="376" y="248" width="42" height="24" font="heading" size="19" color="brand" align="center">02</text>
+  <text id="pillar-2-text" x="376" y="308" width="200" height="170" font="body" size="18" color="ink" line-height="1.25"><p><strong size="25">Prioritize</strong></p><p>Triage queues, severity filters, location confidence, and dispatch guardrails keep life safety first.</p></text>
+  <shape id="pillar-3-card" type="rect" x="632" y="214" width="248" height="300" corner-radius="8" fill="mist" stroke="signal" stroke-width="2"/>
+  <shape id="pillar-3-mark" type="ellipse" x="656" y="240" width="42" height="42" fill="signal"/>
+  <text id="pillar-3-number" x="656" y="248" width="42" height="24" font="heading" size="19" color="brand" align="center">03</text>
+  <text id="pillar-3-text" x="656" y="308" width="200" height="170" font="body" size="18" color="ink" line-height="1.25"><p><strong size="25">Move</strong></p><p>Response-group roster, specialties, readiness, route safety, and assignment controls match the right unit.</p></text>
+  <shape id="pillar-4-card" type="rect" x="912" y="214" width="248" height="300" corner-radius="8" fill="paper" stroke="muted" stroke-width="2"/>
+  <shape id="pillar-4-mark" type="ellipse" x="936" y="240" width="42" height="42" fill="muted"/>
+  <text id="pillar-4-number" x="936" y="248" width="42" height="24" font="heading" size="19" color="paper" align="center">04</text>
+  <text id="pillar-4-text" x="936" y="308" width="200" height="170" font="body" size="18" color="ink" line-height="1.25"><p><strong size="25">Coordinate</strong></p><p>Communication logs, audio dispatch, receipts, acknowledgement, retry, and audit events close the loop.</p></text>
+  <shape id="pillars-synthesis" type="rect" x="72" y="558" width="1088" height="74" corner-radius="8" fill="brand"/>
+  <text id="pillars-synthesis-text" x="98" y="578" width="1034" height="34" font="body" size="21" color="paper"><p>See the situation → prioritize life safety → move resources → coordinate the handover.</p></text>
+  <shape id="pillars-route-line" type="line" x="930" y="670" width="250" height="0" stroke="signal" stroke-width="2"/>
+  <shape id="pillars-route-dot" type="ellipse" x="1172" y="662" width="16" height="16" fill="urgent"/>
+  <text id="pillars-footer" x="72" y="678" width="680" height="18" font="caption" size="12" color="muted">Operational feature model / Code for Resilience implementation</text>
+</slide>

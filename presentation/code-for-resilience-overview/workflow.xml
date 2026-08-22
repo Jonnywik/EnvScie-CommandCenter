@@ -1,0 +1,29 @@
+<slide id="workflow">
+  <background color="paper"/>
+  <shape id="workflow-top-rule" type="line" x="72" y="62" width="1136" height="0" stroke="hairline" stroke-width="1"/>
+  <text id="workflow-kicker" x="72" y="82" width="540" height="20" font="caption" size="14" color="signal" wrap="false">05 / THE OPERATING FLOW</text>
+  <text id="workflow-title" x="72" y="112" width="820" height="56" font="heading" size="36" color="brand" autofit="shrink">From signal to action in five controlled steps</text>
+  <text id="workflow-intro" x="72" y="172" width="1040" height="28" font="body" size="20" color="muted">Every transition is visible to the next operator—and recorded for the handover after it.</text>
+  <shape id="workflow-spine" type="line" x="126" y="320" width="1010" height="0" stroke="hairline" stroke-width="6"/>
+  <shape id="workflow-spine-active" type="line" x="126" y="320" width="808" height="0" stroke="signal" stroke-width="6"/>
+  <shape id="workflow-step-1" type="ellipse" x="104" y="298" width="44" height="44" fill="urgent"/>
+  <text id="workflow-step-1-num" x="104" y="309" width="44" height="22" font="heading" size="18" color="paper" align="center">1</text>
+  <text id="workflow-step-1-text" x="72" y="370" width="180" height="120" font="body" size="18" color="ink" line-height="1.2" align="center"><p><strong>Detect</strong></p><p>Alerts, field reports, SOS, and resource updates enter the picture.</p></text>
+  <shape id="workflow-step-2" type="ellipse" x="316" y="298" width="44" height="44" fill="signal"/>
+  <text id="workflow-step-2-num" x="316" y="309" width="44" height="22" font="heading" size="18" color="brand" align="center">2</text>
+  <text id="workflow-step-2-text" x="284" y="370" width="180" height="120" font="body" size="18" color="ink" line-height="1.2" align="center"><p><strong>Verify</strong></p><p>Confirm source, severity, location confidence, and relevance.</p></text>
+  <shape id="workflow-step-3" type="ellipse" x="528" y="298" width="44" height="44" fill="signal"/>
+  <text id="workflow-step-3-num" x="528" y="309" width="44" height="22" font="heading" size="18" color="brand" align="center">3</text>
+  <text id="workflow-step-3-text" x="496" y="370" width="180" height="120" font="body" size="18" color="ink" line-height="1.2" align="center"><p><strong>Decide</strong></p><p>Compare hazards, shelter capacity, readiness, distance, and route safety.</p></text>
+  <shape id="workflow-step-4" type="ellipse" x="740" y="298" width="44" height="44" fill="signal"/>
+  <text id="workflow-step-4-num" x="740" y="309" width="44" height="22" font="heading" size="18" color="brand" align="center">4</text>
+  <text id="workflow-step-4-text" x="708" y="370" width="180" height="120" font="body" size="18" color="ink" line-height="1.2" align="center"><p><strong>Dispatch</strong></p><p>Assign a unit, send the instruction, and record the action.</p></text>
+  <shape id="workflow-step-5" type="ellipse" x="952" y="298" width="44" height="44" fill="brand"/>
+  <text id="workflow-step-5-num" x="952" y="309" width="44" height="22" font="heading" size="18" color="paper" align="center">5</text>
+  <text id="workflow-step-5-text" x="920" y="370" width="180" height="120" font="body" size="18" color="ink" line-height="1.2" align="center"><p><strong>Confirm</strong></p><p>Track delivery, acknowledgement, arrival, handover, and next action.</p></text>
+  <shape id="workflow-control-band" type="rect" x="72" y="548" width="1088" height="76" corner-radius="8" fill="brand"/>
+  <text id="workflow-control-text" x="98" y="570" width="1036" height="38" font="body" size="21" color="paper"><p><strong color="signal">Control principle:</strong> no critical action disappears between decision, dispatch, and confirmation.</p></text>
+  <shape id="workflow-route-line" type="line" x="930" y="670" width="250" height="0" stroke="signal" stroke-width="2"/>
+  <shape id="workflow-route-dot" type="ellipse" x="1172" y="662" width="16" height="16" fill="urgent"/>
+  <text id="workflow-footer" x="72" y="678" width="680" height="18" font="caption" size="12" color="muted">Detection → verification → decision → dispatch → confirmation</text>
+</slide>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    .slide-container { width: 1280px; min-height: 720px; background: #F0F4F8; color: #0F172A; font-family: Arial, Helvetica, sans-serif; overflow: hidden; position: relative; }
+    .topline { position: absolute; top: 62px; left: 78px; width: 86px; height: 4px; background: #D97706; }
+    .brand { position: absolute; top: 60px; right: 86px; display: flex; align-items: center; gap: 11px; font-size: 14px; letter-spacing: 1.3px; color: #0F766E; font-weight: 700; text-transform: uppercase; }
+    .brand-mark { width: 33px; height: 33px; border-radius: 50%; background: #0F766E; color: #F0F4F8; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+    .left-panel { position: absolute; top: 128px; left: 78px; width: 625px; }
+    .eyebrow { color: #0F766E; text-transform: uppercase; letter-spacing: 2.5px; font-weight: 700; font-size: 13px; margin-bottom: 24px; }
+    h1 { font-family: Georgia, 'Times New Roman', serif; font-size: 75px; line-height: 0.96; letter-spacing: -2px; max-width: 600px; }
+    .subtitle { margin-top: 34px; max-width: 500px; font-size: 24px; line-height: 1.35; font-weight: 300; color: #334155; }
+    .context { margin-top: 42px; display: flex; gap: 15px; align-items: center; color: #64748B; font-size: 15px; letter-spacing: .3px; }
+    .context i { color: #D97706; font-size: 18px; }
+    .route { position: absolute; top: 528px; left: 76px; width: 565px; height: 94px; border-top: 2px solid rgba(15,118,110,.45); border-radius: 50%; transform: rotate(-5deg); }
+    .route-dot { position: absolute; top: 570px; left: 520px; width: 15px; height: 15px; border: 3px solid #F0F4F8; border-radius: 50%; background: #D97706; }
+    .map-panel { position: absolute; top: 88px; right: 70px; width: 415px; height: 556px; background: #D8F3F0; overflow: hidden; }
+    .map-panel:before { content: ''; position: absolute; z-index: 1; width: 500px; height: 330px; border: 1px solid rgba(15,118,110,.32); border-radius: 51%; top: -85px; left: -115px; transform: rotate(-19deg); }
+    .map-panel:after { content: ''; position: absolute; z-index: 1; width: 500px; height: 320px; border: 1px solid rgba(15,118,110,.22); border-radius: 51%; bottom: -112px; right: -145px; transform: rotate(-18deg); }
+    .map-image { position: absolute; z-index: 2; top: 72px; left: 76px; width: 260px; height: 330px; object-fit: contain; filter: saturate(.72) contrast(1.03); mix-blend-mode: multiply; }
+    .map-caption { position: absolute; z-index: 3; left: 34px; bottom: 37px; padding-left: 16px; border-left: 3px solid #D97706; color: #0F172A; }
+    .map-caption strong { display:block; font-family: Georgia, 'Times New Roman', serif; font-size: 23px; line-height: 1.05; }
+    .map-caption span { display:block; margin-top: 8px; font-size: 12px; color: #47616C; letter-spacing: .3px; }
+    .coordinate { position: absolute; z-index: 4; right: 25px; top: 28px; color: #0F766E; font-size: 11px; letter-spacing: 1px; font-weight: 700; }
+    .footer { position: absolute; bottom: 54px; left: 79px; font-size: 12px; color: #64748B; letter-spacing: 1px; text-transform: uppercase; }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="topline"></div>
+    <div class="brand"><div class="brand-mark">CR</div> Balangiga LGU · DRRM</div>
+    <section class="left-panel">
+      <div class="eyebrow">Disaster-response platform</div>
+      <h1>Code for<br>Resilience</h1>
+      <p class="subtitle">Architecture, offline-first communications, and command-center operations for Balangiga.</p>
+      <div class="context"><i class="fa-solid fa-location-dot"></i><span>Eastern Samar · Coastal municipal resilience</span></div>
+    </section>
+    <div class="route"></div><div class="route-dot"></div>
+    <section class="map-panel">
+      <div class="coordinate">LOC · EASTERN VISAYAS</div>
+      <img class="map-image" src="/home/ubuntu/code-for-resilience/presentation/assets/balangiga-map.png" alt="Map locating Balangiga in Eastern Samar" />
+      <div class="map-caption"><strong>Local action,<br>even offline.</strong><span>Designed for the moments when ordinary systems fail.</span></div>
+    </section>
+    <div class="footer">Architecture & LGU dashboard feature overview</div>
+  </div>
+</body>
+</html>

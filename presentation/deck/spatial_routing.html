@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    .slide-container { width:1280px; min-height:720px; background:#F0F4F8; color:#0F172A; font-family:Arial, Helvetica, sans-serif; position:relative; overflow:hidden; }
+    .section { position:absolute; left:78px; top:58px; color:#0F766E; font-size:13px; text-transform:uppercase; letter-spacing:2px; font-weight:700; }
+    .accent { position:absolute; left:78px; top:87px; width:72px; height:3px; background:#D97706; }
+    h1 { position:absolute; left:78px; top:128px; width:575px; font-family:Georgia, 'Times New Roman', serif; font-size:48px; line-height:1.06; letter-spacing:-1.25px; }
+    .lead { position:absolute; left:80px; top:253px; width:505px; color:#4B5E70; font-size:17px; line-height:1.45; }
+    .constraint { position:absolute; left:80px; top:348px; width:500px; color:#0F172A; font-size:15px; line-height:1.42; border-top:1px solid rgba(15,118,110,.4); padding-top:16px; }
+    .constraint strong { color:#0F766E; }
+    .map-area { position:absolute; right:72px; top:64px; width:575px; height:440px; background:#DDECF0; overflow:hidden; }
+    .gridline { position:absolute; background:rgba(15,118,110,.11); }
+    .g1 { left:72px; top:0; width:1px; height:440px; } .g2 { left:218px; top:0; width:1px; height:440px; } .g3 { left:392px; top:0; width:1px; height:440px; }
+    .g4 { left:0; top:93px; width:575px; height:1px; } .g5 { left:0; top:246px; width:575px; height:1px; } .g6 { left:0; top:365px; width:575px; height:1px; }
+    .water { position:absolute; right:-78px; top:-58px; width:335px; height:590px; background:rgba(116,202,225,.24); border-radius:51%; transform:rotate(13deg); }
+    .hazard-a { position:absolute; left:116px; top:98px; width:176px; height:116px; background:rgba(217,119,6,.25); border:2px solid rgba(180,83,9,.68); clip-path:polygon(14% 0,100% 19%,87% 100%,7% 80%,0 31%); transform:rotate(-9deg); }
+    .hazard-b { position:absolute; left:309px; top:231px; width:154px; height:105px; background:rgba(217,119,6,.22); border:2px solid rgba(180,83,9,.63); clip-path:polygon(5% 21%,73% 0,100% 44%,81% 100%,12% 85%); transform:rotate(8deg); }
+    .hazard-label { position:absolute; z-index:3; color:#92400E; font-size:11px; font-weight:700; letter-spacing:.7px; text-transform:uppercase; }
+    .hazard-label.one { left:143px; top:143px; } .hazard-label.two { left:340px; top:275px; }
+    .road { position:absolute; z-index:2; height:5px; background:#90A8AD; transform-origin:left center; }
+    .r1 { left:20px; top:320px; width:510px; transform:rotate(-26deg); } .r2 { left:68px; top:47px; width:495px; transform:rotate(43deg); } .r3 { left:55px; top:174px; width:482px; transform:rotate(9deg); } .r4 { left:211px; top:42px; width:327px; transform:rotate(71deg); }
+    .blocked { position:absolute; z-index:5; width:23px; height:23px; border-radius:50%; background:#F0F4F8; border:3px solid #B45309; color:#B45309; display:flex; align-items:center; justify-content:center; font-size:11px; }
+    .b1 { left:215px; top:172px; } .b2 { left:373px; top:275px; }
+    .safe-route { position:absolute; z-index:6; left:47px; top:337px; width:473px; height:180px; border-top:7px solid #0F766E; border-radius:60% 0 0 0; transform:rotate(-24deg); }
+    .safe-route:after { content:''; position:absolute; right:-6px; top:-7px; width:0; height:0; border-left:15px solid #0F766E; border-top:10px solid transparent; border-bottom:10px solid transparent; }
+    .marker { position:absolute; z-index:8; width:25px; height:25px; border-radius:50%; border:4px solid #F0F4F8; }
+    .origin { left:37px; top:320px; background:#D97706; } .center { right:37px; top:79px; background:#0F766E; }
+    .marker-label { position:absolute; z-index:8; color:#0F172A; font-size:11px; font-weight:700; background:#F0F4F8; padding:5px 7px; }
+    .ol { left:16px; top:352px; } .cl { right:15px; top:111px; }
+    .map-key { position:absolute; z-index:9; left:20px; bottom:18px; color:#526473; font-size:11px; display:flex; gap:13px; align-items:center; }
+    .key-dot { width:9px; height:9px; border-radius:50%; display:inline-block; margin-right:5px; } .key-line { width:18px; height:4px; display:inline-block; margin-right:5px; vertical-align:middle; }
+    .steps { position:absolute; left:78px; right:72px; bottom:55px; display:grid; grid-template-columns:repeat(4, 1fr); gap:31px; }
+    .step { border-top:2px solid #0F766E; padding-top:14px; min-height:102px; }
+    .step:nth-child(3) { border-top-color:#D97706; }
+    .step-num { color:#0F766E; font-family:Georgia, 'Times New Roman', serif; font-size:22px; }
+    .step:nth-child(3) .step-num { color:#D97706; }
+    .step h2 { margin-top:5px; font-family:Georgia, 'Times New Roman', serif; font-size:18px; }
+    .step p { margin-top:7px; color:#5C6B78; font-size:12px; line-height:1.35; max-width:240px; }
+  </style>
+</head>
+<body><div class="slide-container">
+    <div class="section">05 · Spatial decisioning</div><div class="accent"></div>
+    <h1>Spatial intelligence routes people away from active flood zones.</h1>
+    <p class="lead" style="transform: translate(0px, 44.4788px);">The routing service applies a simple but vital safety constraint: a road segment that intersects an active flood polygon does not remain eligible for the route.</p>
+    <p class="constraint" style="transform: translate(0px, 27.5167px);"><strong>Explainable by design:</strong> the command view can show the active hazard, the excluded crossings, and the selected path to an open evacuation center.</p>
+<section class="map-area" aria-label="Abstract map showing a safe route around active flood risk zones">
+      <div class="gridline g1"></div><div class="gridline g2"></div><div class="gridline g3"></div><div class="gridline g4"></div><div class="gridline g5"></div><div class="gridline g6"></div>
+      <div class="water"></div>
+      <div class="road r1"></div><div class="road r2"></div><div class="road r3"></div><div class="road r4"></div>
+      <div class="hazard-a"></div><div class="hazard-b"></div>
+      <span class="hazard-label one">Active flood polygon</span><span class="hazard-label two">Active flood polygon</span>
+      <div class="blocked b1"><i class="fa-solid fa-xmark"></i></div><div class="blocked b2"><i class="fa-solid fa-xmark"></i></div>
+      <div class="safe-route"></div>
+      <div class="marker origin"></div><div class="marker center"></div>
+      <div class="marker-label ol">SOS origin</div><div class="marker-label cl">Open center</div>
+      <div class="map-key"><span><i class="key-dot" style="background:#D97706"></i>Incident</span><span><i class="key-dot" style="background:#0F766E"></i>Center</span><span><i class="key-line" style="background:#0F766E"></i>Safe route</span></div>
+    </section>
+<section class="steps">
+      <article class="step"><div class="step-num">01</div><h2>Model the risk</h2><p>Store flood and landslide areas as versioned PostGIS polygons.</p></article>
+      <article class="step"><div class="step-num">02</div><h2>Locate the options</h2><p>Store open evacuation centers as spatial points with capacity status.</p></article>
+      <article class="step"><div class="step-num">03</div><h2>Remove unsafe edges</h2><p>Filter road segments intersecting active flood polygons before routing.</p></article>
+      <article class="step"><div class="step-num">04</div><h2>Return the safe path</h2><p>Run Dijkstra on the remaining local road graph and report route context.</p></article>
+    </section>
+  </div>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    .slide-container { width: 1280px; min-height: 720px; background: #F0F4F8; color: #0F172A; font-family: Arial, Helvetica, sans-serif; position: relative; overflow: hidden; }
+    .chapter { position:absolute; left: 78px; top: 62px; color:#0F766E; font-size:13px; letter-spacing:2px; text-transform:uppercase; font-weight:700; }
+    .chapter-line { position:absolute; left:78px; top:91px; width:86px; height:3px; background:#D97706; }
+    h1 { position:absolute; left:78px; top:132px; width:790px; font-family:Georgia, 'Times New Roman', serif; font-size:53px; line-height:1.05; letter-spacing:-1.3px; }
+    .lead { position:absolute; left:82px; top:260px; width:670px; font-size:20px; line-height:1.45; color:#475569; font-weight:300; }
+    .vertical { position:absolute; right:75px; top:70px; height:560px; border-left:1px solid rgba(15,118,110,.35); }
+    .vertical-label { position:absolute; right:54px; top:80px; color:#0F766E; writing-mode:vertical-rl; font-size:12px; letter-spacing:2px; text-transform:uppercase; font-weight:700; }
+    .contour-one { position:absolute; right:122px; top:188px; width:330px; height:230px; border:1px solid rgba(15,118,110,.28); border-radius:50%; transform:rotate(-24deg); }
+    .contour-two { position:absolute; right:173px; top:224px; width:330px; height:230px; border:1px solid rgba(15,118,110,.16); border-radius:50%; transform:rotate(-24deg); }
+    .grid { position:absolute; left:78px; right:132px; top:410px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:35px; }
+    .item { min-height:184px; border-top:3px solid #0F766E; padding-top:20px; }
+    .item:nth-child(2) { border-top-color:#D97706; }
+    .number { font-family:Georgia, 'Times New Roman', serif; color:#0F766E; font-size:38px; line-height:1; }
+    .item:nth-child(2) .number { color:#D97706; }
+    .item h2 { margin-top:13px; font-family:Georgia, 'Times New Roman', serif; font-size:23px; line-height:1.15; }
+    .item p { margin-top:11px; color:#536474; font-size:15px; line-height:1.35; max-width:280px; }
+    .outcome { position:absolute; left:78px; bottom:47px; font-size:15px; color:#0F172A; }
+    .outcome strong { color:#0F766E; }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="chapter">01 · Context</div><div class="chapter-line"></div>
+    <h1>The operating reality is fragmented during a crisis.</h1>
+    <p class="lead">When storms intensify, the same conditions that raise risk also disrupt information, movement, and communications. The response system must remain useful as the network becomes less reliable.</p>
+    <div class="vertical"></div><div class="vertical-label">Coastal response conditions</div>
+    <div class="contour-one"></div><div class="contour-two"></div>
+    <section class="grid">
+      <article class="item"><div class="number">01</div><h2>Risk changes locally</h2><p>Typhoon rainfall, storm surge, and flash flooding create different conditions across barangays and travel routes.</p></article>
+      <article class="item"><div class="number">02</div><h2>Connectivity can fail first</h2><p>Power loss and interrupted signal delay residents’ access to updates and make online-only SOS channels unreliable.</p></article>
+      <article class="item"><div class="number">03</div><h2>Responders need one picture</h2><p>Hazards, shelter status, verified alerts, and assistance requests must be reconciled before dispatch decisions are made.</p></article>
+    </section>
+    <div class="outcome"><strong>Design consequence:</strong> build a local response loop—not merely another alert feed.</div>
+  </div>
+</body>
+</html>
