@@ -38,4 +38,13 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain(".overview-queues-grid");
     expect(stylesSource).toContain(".quick-actions-grid");
   });
+
+  it("contains wheel and touch gestures within the operational map", () => {
+    expect(dashboardSource).toContain("const mapShellRef = useRef<HTMLDivElement | null>(null)");
+    expect(dashboardSource).toContain('mapShell.addEventListener("wheel", containWheel, { passive: false })');
+    expect(dashboardSource).toContain('mapShell.addEventListener("touchmove", containTouchMove, { passive: false })');
+    expect(dashboardSource).toContain("ref={mapShellRef}");
+    expect(stylesSource).toContain("overscroll-behavior: contain");
+    expect(stylesSource).toContain("touch-action: none");
+  });
 });

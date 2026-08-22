@@ -280,3 +280,9 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Reformat the Overview workspace around immediate operational status, priority queues, readiness signals, and quick actions.
 - [x] Preserve live decision-support data while making the Overview faster to scan on desktop and mobile layouts.
 - [x] Validate the redesigned Overview in tests, production build, and hosted browser review.
+
+## Map-contained gesture handling
+
+- [x] Prevent wheel and gesture input over the operational map from scrolling the surrounding page.
+- [x] Retain accessible map zoom, pan, and reset controls while preserving normal page scrolling outside the map.
+- [x] Validate map interaction containment, tests, production build, and hosted browser behavior.

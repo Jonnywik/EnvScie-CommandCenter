@@ -151,7 +151,7 @@ h1 { font-family: 'Space Grotesk'; font-size: 30px; letter-spacing: -0.05em; mar
 .gis-header-controls { display: flex; align-items: center; justify-content: flex-end; gap: 7px; flex-wrap: wrap; }
 .gis-header-controls .map-tools { flex-wrap: wrap; justify-content: flex-end; }
 .gis-basemap-controls { padding-right: 7px; border-right: 1px solid var(--line); }
-.gis-map-shell { position: relative; overflow: hidden; background: #153d4d; cursor: grab; touch-action: none; outline: none; }
+.gis-map-shell { position: relative; overflow: hidden; background: #153d4d; cursor: grab; touch-action: none; overscroll-behavior: contain; overscroll-behavior-block: contain; outline: none; }
 .gis-map-shell:active { cursor: grabbing; }
 .gis-map-shell:focus-visible { box-shadow: inset 0 0 0 3px rgba(78, 228, 193, .78); }
 .gis-map-canvas { display: block; width: 100%; height: auto; min-height: 300px; background: #153d4d; user-select: none; }

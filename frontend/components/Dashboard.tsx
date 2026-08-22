@@ -168,6 +168,7 @@ function GISMapPanel({ snapshot, route, onAction }: { snapshot: GisMapSnapshot; 
   const [typhoon, setTyphoon] = useState<TyphoonSnapshot | null>(null);
   const [weatherError, setWeatherError] = useState<string | null>(null);
   const [viewTransform, setViewTransform] = useState<MapViewportTransform>({ x: 0, y: 0, scale: 1 });
+  const mapShellRef = useRef<HTMLDivElement | null>(null);
   const dragRef = useRef<{ pointerId: number; startX: number; startY: number; origin: MapViewportTransform } | null>(null);
   const touchRef = useRef<{ distance: number; midpointX: number; midpointY: number; origin: MapViewportTransform } | null>(null);
   const operationalBbox = snapshot.bbox;
@@ -214,12 +215,14 @@ function GISMapPanel({ snapshot, route, onAction }: { snapshot: GisMapSnapshot; 
   };
   const onPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     if ((event.target as Element).closest("button, a, [role='button']")) return;
+    if (event.pointerType === "touch") event.preventDefault();
     event.currentTarget.setPointerCapture(event.pointerId);
     dragRef.current = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, origin: viewTransform };
   };
   const onPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
     const drag = dragRef.current;
     if (!drag || drag.pointerId !== event.pointerId) return;
+    if (event.pointerType === "touch") event.preventDefault();
     const bounds = event.currentTarget.getBoundingClientRect();
     const x = drag.origin.x + ((event.clientX - drag.startX) / bounds.width) * width;
     const y = drag.origin.y + ((event.clientY - drag.startY) / bounds.height) * height;
@@ -245,6 +248,20 @@ function GISMapPanel({ snapshot, route, onAction }: { snapshot: GisMapSnapshot; 
     setViewTransform(clampViewportTransform({ scale, x: pinch.midpointX - (pinch.midpointX - pinch.origin.x) * scaleRatio, y: pinch.midpointY - (pinch.midpointY - pinch.origin.y) * scaleRatio }, width, height));
   };
   const onTouchEnd = () => { touchRef.current = null; };
+  useEffect(() => {
+    const mapShell = mapShellRef.current;
+    if (!mapShell) return;
+    const containWheel = (event: globalThis.WheelEvent) => event.preventDefault();
+    const containTouchMove = (event: globalThis.TouchEvent) => {
+      if (event.touches.length > 0) event.preventDefault();
+    };
+    mapShell.addEventListener("wheel", containWheel, { passive: false });
+    mapShell.addEventListener("touchmove", containTouchMove, { passive: false });
+    return () => {
+      mapShell.removeEventListener("wheel", containWheel);
+      mapShell.removeEventListener("touchmove", containTouchMove);
+    };
+  }, []);
   useEffect(() => {
     let active = true;
     const refreshWeather = async () => {
@@ -281,7 +298,7 @@ function GISMapPanel({ snapshot, route, onAction }: { snapshot: GisMapSnapshot; 
   };
   return <section className="panel map-panel gis-map-panel">
     <PanelHeader title="Operational GIS map" subtitle={regionalContext ? "Eastern Samar regional context with Balangiga operational layers" : "Live resource positions, hazard polygons, SOS locations, centers, and optimized movement"} action={<div className="gis-header-controls"><div className="map-tools gis-basemap-controls" role="group" aria-label="Map basemap and extent"><button className={`map-tool ${basemap === "satellite" ? "active" : ""}`} aria-pressed={basemap === "satellite"} onClick={() => setBasemap("satellite")}>Satellite</button><button className={`map-tool ${basemap === "operational" ? "active" : ""}`} aria-pressed={basemap === "operational"} onClick={() => setBasemap("operational")}>Operational</button><button className={`map-tool ${regionalContext ? "active" : ""}`} aria-pressed={regionalContext} onClick={() => setRegionalContext((current) => !current)}>{regionalContext ? "Balangiga focus" : "Regional context"}</button></div><div className="map-tools" role="group" aria-label="Operational map layers">{(["hazards", "resources", "sos", "centers", "route", "radar", "typhoon"] as const).map((layer) => <button key={layer} className={`map-tool ${layers[layer] ? "active" : ""}`} aria-pressed={layers[layer]} onClick={() => setLayers((current) => ({ ...current, [layer]: !current[layer] }))}>{layer === "hazards" ? "Hazards" : layer === "resources" ? "Resources" : layer === "radar" ? "Radar" : layer === "typhoon" ? "Typhoon" : layer.toUpperCase()}</button>)}</div></div>} />
-    <div className="gis-map-shell" tabIndex={0} aria-label="Interactive map viewport. Drag to pan; use the mouse wheel or controls to zoom." onWheel={onWheel} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={endPointer} onPointerCancel={endPointer} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
+    <div ref={mapShellRef} className="gis-map-shell" tabIndex={0} aria-label="Interactive map viewport. Drag to pan; use the mouse wheel or controls to zoom." onWheel={onWheel} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={endPointer} onPointerCancel={endPointer} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
       <svg className={`gis-map-canvas ${basemap === "satellite" ? "satellite" : "operational"}`} viewBox={`0 0 ${width} ${height}`} role="img" aria-label={regionalContext ? "Satellite and operational regional map showing Balangiga, Eastern Samar, Leyte Gulf, and surrounding provincial context" : "Satellite and operational map of Balangiga response resources and evacuation constraints"}>
         <defs><clipPath id="gis-map-clip"><rect width={width} height={height} /></clipPath><pattern id="gis-grid" width="38" height="38" patternUnits="userSpaceOnUse"><path d="M 38 0 L 0 0 0 38" fill="none" stroke="#ffffff" strokeOpacity=".6" strokeWidth="1" /></pattern><linearGradient id="gis-satellite-shade" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor="#082436" stopOpacity=".08" /><stop offset="1" stopColor="#082436" stopOpacity=".28" /></linearGradient></defs>
         <g clipPath="url(#gis-map-clip)" transform={`translate(${viewTransform.x} ${viewTransform.y}) scale(${viewTransform.scale})`}>
