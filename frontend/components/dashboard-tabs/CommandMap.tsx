@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState, type FormEvent, type PointerEvent
 import { clampViewportTransform, EASTERN_VISAYAS_REGIONAL_BBOX, esriWorldImageryExportUrl, rainViewerTilesForBbox, type MapViewportTransform } from "../../lib/mapContext";
 import { type AlertItem, type Center, type DashboardSummary, type FeedHealth, type GisMapSnapshot, type GisResource, type OptimizedRoute, type RadarSnapshot, type ResponseGroupSnapshot, type SosIncident, type TyphoonSnapshot, type UserIdentity, getWeatherRadar, getWeatherTyphoon, updateGisResourcePosition } from "../../lib/api";
 import { AppearanceToggle, type AppearanceMode } from "./AppearanceToggle";
+import { CommandCenterNavigation } from "./CommandCenterNavigation";
 import type { CommandCenterTab, OperationalAction } from "./contracts";
 
 function formatAge(timestamp: string) {
@@ -26,21 +27,6 @@ function PanelHeader({ title, subtitle, action }: { title: string; subtitle: str
 }
 
 type CommandMapLayers = { weatherRadar: boolean; floodRisk: boolean; terrain: boolean };
-
-const commandMapNavigationItems: Array<{ icon: string; label: CommandCenterTab }> = [
-  { icon: "▦", label: "Overview" },
-  { icon: "↯", label: "Incident Triage" },
-  { icon: "▰", label: "Fleet & Responder Safety" },
-  { icon: "◫", label: "DRRMO Intelligence" },
-  { icon: "!", label: "Live SOS" },
-  { icon: "◈", label: "Verified Alerts" },
-  { icon: "☁", label: "Provincial Weather" },
-  { icon: "⌖", label: "Risk Map" },
-  { icon: "⌂", label: "Evacuation Centers" },
-  { icon: "▣", label: "Resources" },
-  { icon: "◎", label: "Response Groups" },
-  { icon: "◌", label: "Communications" },
-];
 
 export function GISMapPanel({ snapshot, route, onAction, variant = "panel", commandLayers, layerTool, appearance = "dark" }: { snapshot: GisMapSnapshot; route?: OptimizedRoute | null; onAction: OperationalAction; variant?: "panel" | "command"; commandLayers?: CommandMapLayers; layerTool?: React.ReactNode; appearance?: "dark" | "light" }) {
   const [layers, setLayers] = useState({ hazards: true, resources: true, sos: true, centers: true, route: true, radar: true, typhoon: true });
@@ -246,7 +232,6 @@ export function CenterList({ centers, onAction }: { centers: Center[]; onAction:
 export function CommandMapView({ summary, gis, groups, health, user, connection, appearance, onAppearanceChange, onSelect, onNavigate, onAction, onRefresh, error }: { summary: DashboardSummary; gis: GisMapSnapshot; groups: ResponseGroupSnapshot; health: FeedHealth[]; user: UserIdentity | null; connection: "live" | "cached"; appearance: AppearanceMode; onAppearanceChange: () => void; onSelect: (incident: SosIncident) => void; onNavigate: (tab: CommandCenterTab) => void; onAction: OperationalAction; onRefresh: () => void; error: string | null }) {
   const [layers, setLayers] = useState<CommandMapLayers>({ weatherRadar: true, floodRisk: true, terrain: true });
   const [layerDrawerOpen, setLayerDrawerOpen] = useState(false);
-  const [navigationOpen, setNavigationOpen] = useState(false);
   const [broadcastOpen, setBroadcastOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [scope, setScope] = useState("Selected barangays");
@@ -282,7 +267,7 @@ export function CommandMapView({ summary, gis, groups, health, user, connection,
     setMessage("");
     setBroadcastOpen(false);
   };
-  return <main className={`command-map-shell appearance-${appearance}`} aria-label="Command Map Live Operations">
+  return <div className="workspace-navigation-shell command-map-workspace"><CommandCenterNavigation activeTab="Overview" onNavigate={onNavigate} className="command-map-sidebar" /><main className={`command-map-shell appearance-${appearance}`} aria-label="Command Map Live Operations">
     <GISMapPanel snapshot={gis} onAction={onAction} variant="command" appearance={appearance} commandLayers={layers} layerTool={<section className={`command-map-layer-rail ${layerDrawerOpen ? "is-open" : ""}`} aria-label="Map layer controls"><button className="command-map-layer-trigger" type="button" onClick={toggleLayerDrawer} aria-expanded={layerDrawerOpen} aria-controls="command-map-layer-drawer" aria-label={layerDrawerOpen ? "Close map layers" : "Open map layers"} title={layerDrawerOpen ? "Close map layers" : "Open map layers"}><span aria-hidden="true">▤</span></button>{layerDrawerOpen && <div id="command-map-layer-drawer" className="command-map-layer-drawer"><div className="command-map-layer-heading"><span>MAP LAYERS</span><b>Operational overlays</b></div><div className="layer-switches">{([{ key: "weatherRadar", label: "Live Weather Radar", accent: "violet" }, { key: "floodRisk", label: "Flood Risk Zones", accent: "coral" }, { key: "terrain", label: "Topography / Terrain", accent: "teal" }] as const).map((layer) => <label className="layer-switch" key={layer.key}><span><i className={layer.accent} />{layer.label}</span><button type="button" role="switch" aria-checked={layers[layer.key]} onClick={() => toggleLayer(layer.key)}><b /></button></label>)}</div><p>Layers provide operational context and do not confirm field safety or route clearance.</p></div>}</section>} />
     <header className="command-map-topbar">
       <div className="command-map-brand"><img src="/cfr-reference-emblem.png" alt="EnvScie CommandCenter emblem" /><div><strong>EnvScie CommandCenter</strong><span>COMMAND MAP · LIVE OPERATIONS</span></div><time dateTime={now.toISOString()}>{commandTime} PST</time></div>
@@ -291,10 +276,9 @@ export function CommandMapView({ summary, gis, groups, health, user, connection,
     </header>
     {error && <div className="command-map-error" role="alert">Cached operating picture · {error}</div>}
     {searchStatus && <div className="command-search-status" role="status">{searchStatus}<button type="button" onClick={() => setSearchStatus(null)} aria-label="Dismiss search result">×</button></div>}
-    <nav className={`command-map-navigation ${navigationOpen ? "is-open" : ""}`} aria-label="Command Center workspaces"><button className="command-map-navigation-trigger" type="button" onClick={() => setNavigationOpen((open) => !open)} aria-expanded={navigationOpen} aria-controls="command-map-navigation-menu" aria-label={navigationOpen ? "Close Command Center navigation" : "Open Command Center navigation"} title={navigationOpen ? "Close Command Center navigation" : "Open Command Center navigation"}><span /><span /><span /></button>{navigationOpen && <div id="command-map-navigation-menu" className="command-map-navigation-menu"><div className="command-map-navigation-heading"><span>COMMAND CENTER</span><b>All workspaces</b></div><div className="command-map-navigation-list">{commandMapNavigationItems.map((item) => <button key={item.label} type="button" aria-current={item.label === "Overview" ? "page" : undefined} onClick={() => { setNavigationOpen(false); onNavigate(item.label); }}><i aria-hidden="true">{item.icon}</i><span>{item.label}</span></button>)}</div></div>}</nav>
     <section className="responder-radar" aria-label="Responder radar"><div className="responder-radar-heading"><div><span>FIELD UNITS</span><h2>Responder radar</h2></div><button type="button" onClick={() => onNavigate("Response Groups")}>Open roster →</button></div><div className="responder-carousel">{groups.groups.filter((group) => group.status !== "offline").slice(0, 8).map((group) => <button type="button" className={`responder-radar-card ${group.status}`} key={group.id} onClick={() => setSearchStatus(`${group.name} · ${group.location_label} · last updated ${formatAge(group.last_location_at)}`)}><span className="responder-status-dot" /><strong>{group.name}</strong><small>{group.vehicle_or_asset || group.group_type}</small><div><span>{group.status.replaceAll("_", " ")}</span><b>{group.estimated_response_minutes ? `${group.estimated_response_minutes} min` : "ETA —"}</b></div></button>)}{!groups.groups.length && <div className="command-empty">No responder groups are reporting.</div>}</div></section>
     <div className="command-map-quicklinks" aria-label="Operational workspaces"><button type="button" onClick={() => onNavigate("Incident Triage")}>Triage <b>{summary.metrics.untriaged_sos}</b></button><button type="button" onClick={() => onNavigate("Fleet & Responder Safety")}>Fleet <b>{groups.groups.filter((group) => group.status === "en_route" || group.status === "deployed").length}</b></button><button type="button" onClick={() => onNavigate("DRRMO Intelligence")}>Intel</button><button type="button" onClick={() => onNavigate("Evacuation Centers")}>Centers <b>{summary.metrics.open_centers}</b></button><button type="button" onClick={() => onNavigate("Communications")}>Comms</button></div>
     <button className="broadcast-fab" type="button" onClick={() => setBroadcastOpen(true)} aria-label="Open Mass Area Notification"><span aria-hidden="true">⌁</span><em>Broadcast</em></button>
     {broadcastOpen && <div className="mass-notification-backdrop" role="presentation" onClick={() => setBroadcastOpen(false)}><section className="mass-notification-modal" role="dialog" aria-modal="true" aria-label="Mass Area Notification" onClick={(event) => event.stopPropagation()}><div className="mass-notification-heading"><div><span>BROADCAST DRAFT</span><h2>Mass Area Notification</h2></div><button type="button" onClick={() => setBroadcastOpen(false)} aria-label="Close mass area notification">×</button></div><form onSubmit={(event) => void submitBroadcast(event)}><label>Audience scope<select value={scope} onChange={(event) => setScope(event.target.value)}><option>Selected barangays</option><option>Municipal-wide</option><option>Evacuation centers</option><option>Response groups</option></select></label><label>Message<textarea value={message} onChange={(event) => setMessage(event.target.value)} placeholder="Write the approved notification draft…" /></label><p>Draft only. Radius selection, approval, and delivery confirmation remain required before any public transmission.</p><div className="mass-notification-actions"><button type="button" onClick={() => setBroadcastOpen(false)}>Cancel</button><button className="primary-button" type="submit" disabled={!message.trim()}>Save broadcast draft</button></div></form></section></div>}
-  </main>;
+  </main></div>;
 }

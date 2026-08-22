@@ -27,3 +27,9 @@ The hosted verification confirmed the control in Command Map, Incident Triage, F
 The shared legacy workspace styles were audited alongside the map-first screens. In **dark mode**, the legacy sidebar, cards, tables, inputs, drawers, status strips, and low-emphasis text now use the Command Map’s navy, teal, and muted-cyan palette instead of retaining light surfaces. In **light mode**, those same surfaces resolve to white or pale-coastal containers with dark navy text, restrained teal accents, and visible borders.
 
 Special treatment remains intentional for operational warning, hazard, and map content. Light-mode safety, warning, and status text now uses darker red, amber, teal, and sky values where a pale label would otherwise lose contrast on its colored container. Hosted checks covered Command Map, Live SOS, and Fleet & Responder Safety in both modes, with readable containers, inputs, table rows, safety panels, controls, and typography observed in each scheme.
+
+## Unified workspace navigation
+
+The former Command Map three-line collapsible menu has been replaced by the same persistent left-side **Command Center** tab container used throughout the system. The shared container lists all twelve workspaces, marks the active workspace with `aria-current="page"`, and routes through the existing controller without changing any operational action path.
+
+The same container now wraps Command Map, Incident Triage, Fleet & Responder Safety, and DRRMO Intelligence; the remaining workspaces retain the matching legacy sidebar. At narrow widths, the common navigation condenses into the established horizontally scrollable strip. The Command Map strip reserves clearance for the header and right-side GIS tools, preserving pan, zoom, layer, responder-radar, and notification controls.

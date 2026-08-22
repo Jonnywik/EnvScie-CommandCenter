@@ -6,6 +6,7 @@ const dashboardSource = readFileSync(resolve(process.cwd(), "components/Dashboar
 const workspaceSource = [
   dashboardSource,
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/AppearanceToggle.tsx"), "utf8"),
+  readFileSync(resolve(process.cwd(), "components/dashboard-tabs/CommandCenterNavigation.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/CommandMap.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/IncidentTriage.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/FleetSafety.tsx"), "utf8"),
@@ -59,9 +60,10 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("Flood Risk Zones");
     expect(workspaceSource).toContain("command-map-layer-rail");
     expect(workspaceSource).toContain('aria-controls="command-map-layer-drawer"');
-    expect(workspaceSource).toContain("command-map-navigation");
-    expect(workspaceSource).toContain("Open Command Center navigation");
-    expect(workspaceSource).toContain("Close Command Center navigation");
+    expect(workspaceSource).toContain("CommandCenterNavigation");
+    expect(workspaceSource).toContain("unified-command-sidebar");
+    expect(workspaceSource).toContain("Command Center workspaces");
+    expect(workspaceSource).not.toContain("Open Command Center navigation");
     expect(workspaceSource).toContain("Switch to ${targetMode} mode");
     expect(workspaceSource).toContain("appearance-${appearance}");
     expect(dashboardSource).toContain("cfr_appearance");
@@ -82,6 +84,8 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain(".mass-notification-modal");
     expect(stylesSource).toContain('html[data-appearance="dark"]');
     expect(stylesSource).toContain(".command-map-shell.appearance-light");
+    expect(stylesSource).toContain(".workspace-navigation-shell");
+    expect(stylesSource).toContain(".command-map-sidebar");
     expect(stylesSource).toContain("Appearance compliance: shared legacy surfaces");
     expect(stylesSource).toContain('html[data-appearance="dark"] .sidebar');
     expect(stylesSource).toContain('html[data-appearance="dark"] .panel');

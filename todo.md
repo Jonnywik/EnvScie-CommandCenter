@@ -380,3 +380,10 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Correct containers and font colors that retain an incompatible appearance-mode treatment.
 - [x] Add regression coverage for the color-scheme rules and preserve operational behavior in every tab.
 - [x] Validate both schemes with tests, TypeScript, Next.js 15 production build, hosted visual checks, and GitHub synchronization.
+
+## Unified left-side tab navigation
+
+- [x] Audit the Command Map hamburger menu, legacy workspace sidebar, and dedicated-workspace header layouts.
+- [x] Replace the Overview hamburger content with a consistent left-side tab container and expose that same container on every tab.
+- [x] Preserve responsive containment, map controls, appearance-mode controls, workspace navigation, and operational safety behavior.
+- [x] Validate unified navigation in desktop and narrow layouts with regression tests, TypeScript, Next.js 15 production build, hosted behavior, and GitHub synchronization.

@@ -95,6 +95,10 @@ button { cursor: pointer; }
 .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--mint); display: grid; place-items: center; font-weight: 700; color: var(--navy); border: 3px solid rgba(255,255,255,.22); }
 
 .workspace { display: flex; flex: 1; min-height: calc(100vh - 78px); }
+.workspace-navigation-shell { display: flex; min-width: 0; min-height: 100dvh; }
+.workspace-navigation-shell > main { min-width: 0; flex: 1 1 auto; }
+.unified-command-sidebar { flex: 0 0 248px; min-height: 100dvh; z-index: 50; }
+.unified-command-navigation { display: grid; gap: 4px; }
 .sidebar { width: 248px; background: rgba(250, 253, 252, .94); border-right: 1px solid var(--line); padding: 24px 16px; display: flex; flex-direction: column; }
 .sidebar-label { color: var(--teal); font-size: 10px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; padding: 0 13px 12px; }
 .nav-item { border: 0; background: transparent; color: #496874; text-align: left; padding: 12px 13px; border-radius: 12px; display: flex; gap: 11px; align-items: center; width: 100%; font-size: 13px; margin-bottom: 4px; transition: background .18s ease, color .18s ease, transform .18s ease; }
@@ -710,6 +714,8 @@ h1 { font-family: 'Space Grotesk'; font-size: 30px; letter-spacing: -0.05em; mar
   .topbar { padding: 0 16px; }
   .topbar-center, .sync-label { display: none; }
   .workspace { display: block; }
+  .workspace-navigation-shell { display: block; min-height: 0; }
+  .unified-command-sidebar { min-height: 0; }
   .sidebar { width: 100%; padding: 8px; border-right: 0; border-bottom: 1px solid var(--line); flex-direction: row; overflow-x: auto; gap: 3px; }
   .sidebar-label, .sidebar-footer { display: none; }
   .nav-item { width: auto; white-space: nowrap; padding: 9px 11px; }
@@ -776,6 +782,9 @@ h1 { font-family: 'Space Grotesk'; font-size: 30px; letter-spacing: -0.05em; mar
 
 /* Command Map (Live Operations): map-first interface overhaul. */
 .command-map-shell { position: relative; width: 100vw; height: 100dvh; overflow: hidden; background: #061117; color: #effcff; isolation: isolate; }
+.command-map-workspace { height: 100dvh; overflow: hidden; background: #061117; }
+.command-map-workspace .command-map-shell { width: 100%; }
+.command-map-sidebar { position: relative; overflow-y: auto; }
 .command-map-hero { position: absolute; inset: 0; z-index: 0; margin: 0; border: 0; border-radius: 0; background: #061117; overflow: hidden; box-shadow: none; }
 .command-map-hero .gis-map-shell { width: 100%; height: 100%; min-height: 100%; border-radius: 0; border: 0; }
 .command-map-hero .gis-map-canvas { width: 100%; height: 100%; min-height: 100%; background: #061117; }
@@ -873,4 +882,13 @@ html[data-appearance="light"] .text-teal-100, html[data-appearance="light"] .tex
   .command-map-navigation { z-index: 36; }
   .command-map-navigation-menu { max-height: calc(100dvh - 305px); }
   .command-map-shell:has(.command-map-navigation.is-open) .broadcast-fab { opacity: 0; pointer-events: none; }
+}
+
+@media (max-width: 980px) {
+  .command-map-workspace { display: block; height: 100dvh; }
+  .command-map-sidebar { position: fixed; z-index: 45; top: 94px; right: 64px; left: 9px; width: auto; max-height: 48px; min-height: 0; padding: 5px; border: 1px solid rgba(129, 222, 224, .3); border-radius: 11px; background: rgba(5, 19, 27, .88); box-shadow: 0 10px 26px rgba(0, 0, 0, .2); backdrop-filter: blur(16px); }
+  .command-map-sidebar .unified-command-navigation { display: flex; gap: 3px; overflow-x: auto; }
+  .command-map-sidebar .nav-item { flex: 0 0 auto; margin: 0; }
+  .command-map-sidebar .nav-icon { display: none; }
+  html[data-appearance="light"] .command-map-sidebar { border-color: #b9d8d5; background: rgba(255, 255, 255, .9); }
 }
