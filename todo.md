@@ -407,4 +407,4 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Audit collapsed navigation semantics, accessible names, state attributes, focus visibility, and keyboard order.
 - [x] Run automated keyboard traversal and screen-reader-oriented DOM checks against the hosted collapsed state.
 - [x] Correct confirmed accessibility issues and rerun the audit.
-- [x] Document final audit outcomes and synchronize the validation record.
+- [ ] Synchronize the completed validation record after GitHub authentication is refreshed; the local accessibility commit is ready.
