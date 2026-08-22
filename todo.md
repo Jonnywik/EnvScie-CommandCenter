@@ -331,3 +331,11 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Audit hosted Command Center workspaces at desktop and narrow widths for escaped elements, clipped content, and overlapping controls.
 - [x] Correct the affected layouts with contained grids, overflow-safe data regions, and responsive control spacing.
 - [x] Validate the visual fixes alongside frontend tests, TypeScript, the Next.js 15 production build, hosted workflows, and GitHub synchronization.
+
+## Modular four-tab dashboard refactor
+
+- [x] Audit the monolithic dashboard component, current data hooks, realtime subscriptions, and operational-action boundaries.
+- [x] Create typed component contracts and a lightweight tab controller for Command Map, Incident Triage, Fleet Safety, and Intelligence.
+- [x] Extract the four dedicated workspaces into `frontend/components/dashboard-tabs/` without changing their operational layouts or safeguards.
+- [x] Retain shared snapshot loading, event-driven refreshes, deliberate action flows, and map-rendering stability while switching tabs.
+- [x] Validate all modular workspaces with regression tests, TypeScript, Next.js 15 production build, hosted interaction checks, documentation, and GitHub synchronization.
