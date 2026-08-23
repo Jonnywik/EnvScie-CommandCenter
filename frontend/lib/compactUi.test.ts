@@ -66,6 +66,12 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("Licensed Lightning");
     expect(workspaceSource).toContain("Provider access pending");
     expect(workspaceSource).toContain("getNoahMapContext");
+    expect(workspaceSource).toContain("noahFlood: commandLayers.noahFlood");
+    expect(workspaceSource).toContain("noahLandslide: commandLayers.noahLandslide");
+    expect(workspaceSource).toContain("noahStormSurge: commandLayers.noahStormSurge");
+    expect(workspaceSource).toContain("const noahOverlayUrl = new URL(layer.overlay_url, window.location.origin).toString()");
+    expect(workspaceSource).toContain("const noahOverlay = new maps.GroundOverlay");
+    expect(workspaceSource).toContain("noahOverlay.setMap(map)");
     expect(workspaceSource).toContain("getOfficialFacilityRegistry");
     expect(workspaceSource).toContain("PROJECT NOAH · REFERENCE");
     expect(workspaceSource).toContain("Flood · 100-year rain return");

@@ -51,7 +51,7 @@ export function GISMapPanel({ snapshot, route, onAction, variant = "panel", comm
   const commandMapMode = variant === "command";
   const darkMapTreatment = commandMapMode && appearance === "dark";
   const [officialFacilitiesVisible, setOfficialFacilitiesVisible] = useState(false);
-  const displayedLayers = commandLayers ? { ...layers, hazards: commandLayers.floodRisk, radar: commandLayers.weatherRadar, officialFacilities: officialFacilitiesVisible } : { ...layers, officialFacilities: officialFacilitiesVisible };
+  const displayedLayers = commandLayers ? { ...layers, hazards: commandLayers.floodRisk, radar: commandLayers.weatherRadar, noahFlood: commandLayers.noahFlood, noahLandslide: commandLayers.noahLandslide, noahStormSurge: commandLayers.noahStormSurge, officialFacilities: officialFacilitiesVisible } : { ...layers, officialFacilities: officialFacilitiesVisible };
   const displayedBasemap = commandMapMode ? (mapBasemap === "satellite" ? "satellite" : "operational") : basemap;
   const googleBasemap: GoogleBasemap = mapBasemap || (basemap === "satellite" ? "satellite" : "roadmap");
   const [regionalContext, setRegionalContext] = useState(false);

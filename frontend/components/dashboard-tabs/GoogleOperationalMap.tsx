@@ -115,7 +115,10 @@ export function GoogleOperationalMap({ snapshot, route, layers, radar, typhoon, 
     const addNoahOverlay = (id: NoahMapContext["layers"][number]["id"], enabled: boolean) => {
       const layer = noahContext?.layers.find((item) => item.id === id);
       if (!enabled || !layer || !noahBounds) return;
-      overlaysRef.current.push(new maps.GroundOverlay(layer.overlay_url, noahBounds, { opacity: .76, clickable: false }));
+      const noahOverlayUrl = new URL(layer.overlay_url, window.location.origin).toString();
+      const noahOverlay = new maps.GroundOverlay(noahOverlayUrl, noahBounds, { opacity: .76, clickable: false });
+      noahOverlay.setMap(map);
+      overlaysRef.current.push(noahOverlay);
     };
     addNoahOverlay("noah-flood-100yr", layers.noahFlood);
     addNoahOverlay("noah-landslide", layers.noahLandslide);
