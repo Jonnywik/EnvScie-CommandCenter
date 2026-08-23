@@ -8,7 +8,7 @@
 
 The strongest next integration is an **approved PAGASA observation-and-warning layer stack**: radar quantitative precipitation estimates, PANaHON station observations, Himawari imagery, and the agency’s issued tropical-cyclone, storm-surge, rainfall, and severe-wind products. PAGASA identifies its radar QPE product as a rainfall-measurement capability and describes Himawari 8/9 as its principal real-time imagery for forecasting and tropical-cyclone analysis, with images generated every ten minutes. [1] [2] This combination is more locally authoritative than generic weather-map aggregators.
 
-A controlled end-to-end test was also completed against the Manus-hosted Command Map. The application served **1,800 read-only map/weather requests with 100% valid HTTP 200 responses**, while the live browser switched to terrain, independently disabled radar and flood-risk overlays, and used reset. The native Google Map, layer drawer, marker set, and zoom/reset rail remained available. This is a successful bounded test, not proof of production capacity during a real public emergency or a test of upstream provider failure modes.
+A controlled end-to-end test was also completed against the Manus-hosted Command Map. The first bounded run served **1,800 read-only map/weather requests with 100% valid HTTP 200 responses**, while the live browser switched to terrain, independently disabled radar and flood-risk overlays, and used reset. The native Google Map, layer drawer, marker set, and zoom/reset rail remained available. A subsequent sustained repeat was stopped at warm-up by the hosting gateway with HTTP **429 Too Many Requests**; the map API recovered to HTTP 200 after the request wave stopped. This establishes a rate-limit boundary, not a capacity pass for a real public emergency or a test of upstream provider failure modes.
 
 > **Operational boundary:** Every recommended layer is decision support. It does not establish flood depth, road clearance, damage, safe passage, signal availability, evacuation authority, or responder safety without current official information and field confirmation.
 
@@ -47,11 +47,12 @@ Each wave used 24 concurrent requests per endpoint across five rounds: **360 req
 | Aggregate throughput | 306.16 requests/sec | Aggregate measurement across the controlled waves. |
 | Per-wave throughput | 277.13–327.80 requests/sec | Observed range under this environment and endpoint mix. |
 | Worst endpoint p95 | 1,209.54 ms | The maximum p95 among all endpoint/wave samples. |
-| Failures captured | 0 | No request failure or invalid response shape was recorded. |
+| Failures captured in bounded run | 0 | No request failure or invalid response shape was recorded in the five completed waves. |
+| Sustained-repeat observation | Gateway returned HTTP 429 at warm-up | The additional overlap run was halted without retrying. The hosted GIS endpoint returned HTTP 200 after the wave ceased. |
 
 ### Browser user-flow verification
 
-While the traffic wave was active, the hosted interface was exercised as a coordinator would use it. The map drawer was already open; the test selected **Terrain**, toggled **Live Weather Radar** off, and then toggled **Flood Risk Zones** off. The **Reset map view** control was also invoked. Browser inspection afterward confirmed that Google Maps remained initialized, Terrain remained selected, each overlay switch reflected its independent changed state, the drawer stayed open, all three zoom/reset controls remained present, four inspected operational markers remained available, and the legacy SVG fallback count stayed at zero.
+During the bounded test window, the hosted interface was exercised as a coordinator would use it. The map drawer was already open; the test selected **Terrain**, toggled **Live Weather Radar** off, and then toggled **Flood Risk Zones** off. The **Reset map view** control was also invoked. Browser inspection afterward confirmed that Google Maps remained initialized, Terrain remained selected, each overlay switch reflected its independent changed state, the drawer stayed open, all three zoom/reset controls remained present, four inspected operational markers remained available, and the legacy SVG fallback count stayed at zero. A later attempt to extend this into an unthrottled sustained-overlap run encountered the gateway 429 boundary before its first test cycle; it is therefore not reported as a successful sustained UI-under-load pass. After the request wave stopped, the hosted GIS endpoint returned HTTP 200 and the browser successfully retained an open drawer, selected Satellite imagery, 11 native map canvases, three inspected operational markers, and zero legacy SVG fallback elements.
 
 | User-facing check | Result |
 | --- | --- |
@@ -65,7 +66,9 @@ While the traffic wave was active, the hosted interface was exercised as a coord
 
 ## Findings and next validation gates
 
-The tested API path was responsive and error-free for this controlled read-only workload. However, the load harness covered the Command Center’s cached/served API response path, not the full rendering and tile-delivery capacity of Google Maps, RainViewer, a future PAGASA feed, or a public-facing surge in independent browsers. Before calling the system incident-ready at scale, the next validation should include browser-level concurrency, cache-miss and provider-timeout scenarios, mobile network throttling, rate-limit behavior, and an explicit degraded-mode operational exercise.
+The tested API path was responsive and error-free for the bounded read-only workload, but the immediate sustained retry encountered a hosting-gateway 429. The implementation should therefore add a rate-limit-aware client policy before any repeated refresh pattern is expanded: reuse a shared snapshot, deduplicate in-flight requests, honor `Retry-After` when present, apply jittered exponential back-off, and visibly distinguish **rate-limited** from **stale** and **provider unavailable** states. The current map already uses bounded weather refresh; any new overlay must use the same shared-cache and back-off discipline.
+
+The harness covered the Command Center’s cached/served API response path, not the full rendering and tile-delivery capacity of Google Maps, RainViewer, a future PAGASA feed, or a public-facing surge in independent browsers. Before calling the system incident-ready at scale, the next validation should include browser-level concurrency at an approved rate, cache-miss and provider-timeout scenarios, mobile network throttling, rate-limit behavior, and an explicit degraded-mode operational exercise.
 
 No automatic escalation, dispatch, warning transmission, evacuation order, or road-clearance conclusion was introduced by this test or by the recommended overlays.
 
