@@ -408,3 +408,10 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Run automated keyboard traversal and screen-reader-oriented DOM checks against the hosted collapsed state.
 - [x] Correct confirmed accessibility issues and rerun the audit.
 - [ ] Synchronize the completed validation record after GitHub authentication is refreshed; the local accessibility commit is ready.
+
+## Cross-browser navigation visual regression
+
+- [x] Define available browser-engine and responsive viewport coverage for expanded and collapsed navigation states.
+- [x] Capture and compare visual renderings across the available browser engines at desktop, tablet, and mobile widths.
+- [x] Correct confirmed browser-specific navigation layout differences and rerun affected comparisons; no discrepancy was confirmed.
+- [x] Document visual regression results and local validation artifacts.

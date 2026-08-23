@@ -44,3 +44,11 @@ An automated semantics and keyboard audit identified one improvement opportunity
 The hosted collapsed-state audit passed after the correction. The navigation landmark exposes **“Command Center workspaces”**; the expand control exposes `aria-expanded="false"`, references the workspace list with `aria-controls`, and remains keyboard-focusable. All 12 tabs expose explicit labels, exactly one reports `aria-current="page"`, and native keyboard traversal moved focus from the expand control to Overview and then Incident Triage. Pressing Enter on Incident Triage successfully loaded its workspace while preserving the collapsed rail.
 
 The completed accessibility update is committed locally. Its private GitHub synchronization is pending because the configured GitHub token was rejected by GitHub during push; the connector remains enabled and will need a credential refresh before the commit can be sent.
+
+## Cross-browser visual regression: Chromium baseline
+
+The desktop Chromium captures establish the visual baseline. In the expanded state, the 248px labeled rail, map workspace, right-side GIS controls, responder radar, and status stack remain separated without clipping. In the collapsed state, the rail contracts to 68px, preserves visible icon controls, and expands the map canvas while leaving all right-side and bottom floating controls contained.
+
+Firefox and WebKit matched the Chromium desktop geometry in both navigation states: 248px expanded and 68px collapsed, with no viewport overflow. Their collapsed captures showed the same icon rail, full-width map expansion, responder radar containment, and separated GIS controls. No browser-specific desktop layout discrepancy was observed.
+
+At the responsive breakpoints, Chromium mobile and WebKit tablet captures preserved the labeled horizontal navigation strip, map tool-rail clearance, broadcast-draft entry, and responder-radar containment. Their rendering showed no viewport clipping or horizontal document overflow. The visual comparison agrees with the automated geometry audit across Chromium, Firefox, and WebKit.
