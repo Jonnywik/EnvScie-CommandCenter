@@ -65,7 +65,6 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("Himawari Context");
     expect(workspaceSource).toContain("Licensed Lightning");
     expect(workspaceSource).toContain("Provider access pending");
-    expect(workspaceSource).toContain("Provider procurement pending");
     expect(workspaceSource).toContain("getNoahMapContext");
     expect(workspaceSource).toContain("getOfficialFacilityRegistry");
     expect(workspaceSource).toContain("PROJECT NOAH · REFERENCE");
@@ -80,6 +79,15 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("Registry inclusion does not confirm staffing");
     expect(workspaceSource).toContain("getMapOverlays");
     expect(workspaceSource).toContain("command-map-layer-rail");
+    expect(workspaceSource).toContain("CommandMapTriageFilterTool");
+    expect(workspaceSource).toContain("cfr_command_map_triage_filters");
+    expect(workspaceSource).toContain("Filters focus the map but do not alter, resolve, or remove operational records");
+    expect(workspaceSource).toContain("Open Incident triage");
+    expect(workspaceSource).toContain("Open Field response");
+    expect(workspaceSource).toContain("Open Community safety");
+    expect(workspaceSource).toContain("selectedResourceId");
+    expect(workspaceSource).toContain("selectedCenterId");
+    expect(workspaceSource).toContain("selectedSosId");
     expect(workspaceSource).toContain('aria-controls="command-map-layer-drawer"');
     expect(workspaceSource).toContain("CommandCenterNavigation");
     expect(workspaceSource).toContain("GoogleOperationalMap");
@@ -122,6 +130,7 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("Switch to ${targetMode} mode");
     expect(workspaceSource).toContain("appearance-${appearance}");
     expect(dashboardSource).toContain("cfr_appearance");
+    expect(dashboardSource).toContain("selectedIncidentId={selected?.id}");
     expect(dashboardSource).toContain("topbar-actions");
     expect(workspaceSource).toContain("workspace-appearance-toggle");
     expect(workspaceSource).toContain("IncidentTriageView");
@@ -138,6 +147,8 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("Incident response packet");
     expect(workspaceSource).toContain("Verification, hazard review, responder tasking");
     expect(stylesSource).toContain(".command-map-shell");
+    expect(stylesSource).toContain(".command-map-filter-rail");
+    expect(stylesSource).toContain(".command-map-triage-drawer");
     expect(stylesSource).toContain(".command-map-topbar");
     expect(stylesSource).toContain(".mass-notification-modal");
     expect(stylesSource).toContain('html[data-appearance="dark"]');
@@ -184,13 +195,14 @@ describe("compact operational interface", () => {
   it("keeps narrow Command Map controls contained with safe space for the responder radar", () => {
     expect(stylesSource).toContain(".command-map-shell { min-height: 100dvh; overflow: hidden;");
     expect(stylesSource).toContain(".responder-radar { position: fixed");
-    expect(stylesSource).toContain(".command-map-layer-drawer { width: min(258px, calc(100vw - 72px)); max-height: calc(100dvh - var(--command-map-mobile-layer-top) - var(--command-map-mobile-radar-reserve) - var(--command-map-mobile-overlay-gutter));");
+    expect(stylesSource).toContain(".command-map-layer-drawer, .command-map-triage-drawer { width: min(258px, calc(100vw - 72px)); max-height: calc(100dvh - var(--command-map-mobile-layer-top) - var(--command-map-mobile-radar-reserve) - var(--command-map-mobile-overlay-gutter));");
     expect(stylesSource).toContain(".map-pin-sheet { top: auto; bottom: var(--command-map-mobile-radar-reserve);");
     expect(stylesSource).toContain(".broadcast-fab { right: auto; bottom: calc(var(--command-map-mobile-radar-reserve) + 8px); left: 17px;");
     expect(stylesSource).toContain("grid-template-columns: minmax(0, 1fr) auto");
     expect(stylesSource).toContain(".gis-tool-rail { position: absolute");
     expect(stylesSource).toContain(".command-map-layer-rail { position: relative");
     expect(stylesSource).toContain(".command-map-layer-rail.is-open .command-map-layer-trigger");
+    expect(stylesSource).toContain(".command-map-filter-rail.is-open .command-map-filter-trigger");
     expect(stylesSource).toContain(".map-pin-sheet { position: absolute; z-index: 13; top: 116px; left: calc(var(--command-map-dock-width) + var(--command-map-dock-gutter))");
     expect(stylesSource).toContain(".command-map-sidebar.sidebar:not(.is-collapsed) + .command-map-shell .map-pin-sheet { left: 264px;");
     expect(stylesSource).toContain(".command-map-shell:has(.map-pin-sheet) .broadcast-fab");

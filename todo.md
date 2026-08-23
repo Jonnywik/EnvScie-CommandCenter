@@ -531,3 +531,10 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Define operator and maintainer checks for source availability, layer visibility, data validation, and decision-support boundaries.
 - [x] Prioritize remaining Command Map improvements with dependencies, safeguards, acceptance criteria, and delivery sequence.
 - [x] Document and deliver the consolidated configuration and implementation plan.
+
+## Command Map unified triage workflow
+- [x] Audit existing map state, search, selection, and workstream-navigation contracts.
+- [x] Add accessible, persisted operational filters and selected-record emphasis without hiding unfiltered operational awareness.
+- [x] Connect map evidence sheets to the relevant incident, field-response, or community-safety workspace without performing automatic actions.
+- [x] Validate filtering, persistence, workspace handoff, accessibility, responsiveness, frontend/backend tests, and production behavior.
+- [x] Document and synchronize the unified Command Map triage workflow.

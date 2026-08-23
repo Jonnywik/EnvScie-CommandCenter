@@ -52,7 +52,7 @@ function triageStatus(record: TriageRecord) {
   return record.status.replaceAll("_", " ").toUpperCase();
 }
 
-export function IncidentTriageView({ incidents, alerts, appearance, onAppearanceChange, onAction, onRefresh, onReturn, onNavigate }: { incidents: SosIncident[]; alerts: AlertItem[]; appearance: AppearanceMode; onAppearanceChange: () => void; onAction: OperationalAction; onRefresh: () => Promise<void>; onReturn: () => void; onNavigate: (tab: CommandCenterTab) => void }) {
+export function IncidentTriageView({ incidents, alerts, appearance, onAppearanceChange, onAction, onRefresh, onReturn, onNavigate, selectedIncidentId }: { incidents: SosIncident[]; alerts: AlertItem[]; appearance: AppearanceMode; onAppearanceChange: () => void; onAction: OperationalAction; onRefresh: () => Promise<void>; onReturn: () => void; onNavigate: (tab: CommandCenterTab) => void; selectedIncidentId?: string | null }) {
   const [sort, setSort] = useState<"severity" | "time" | "unread">("severity");
   const [selectedKey, setSelectedKey] = useState("");
   const [checks, setChecks] = useState<Record<string, boolean>>({});
@@ -85,6 +85,10 @@ export function IncidentTriageView({ incidents, alerts, appearance, onAppearance
   useEffect(() => {
     if (!selectedKey || !records.some((record) => record.key === selectedKey)) setSelectedKey(records[0]?.key || "");
   }, [records, selectedKey]);
+  useEffect(() => {
+    const mapSelectedKey = selectedIncidentId ? `sos:${selectedIncidentId}` : "";
+    if (mapSelectedKey && records.some((record) => record.key === mapSelectedKey)) setSelectedKey(mapSelectedKey);
+  }, [records, selectedIncidentId]);
   useEffect(() => {
     setChecks({}); setRecommendation(null); setRecommendationError(null); setActionStatus(null);
     if (!selected?.sos) return;
