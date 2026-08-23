@@ -415,3 +415,11 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Capture and compare visual renderings across the available browser engines at desktop, tablet, and mobile widths.
 - [x] Correct confirmed browser-specific navigation layout differences and rerun affected comparisons; no discrepancy was confirmed.
 - [x] Document visual regression results and local validation artifacts.
+
+## Interactive Google Maps Command Map
+
+- [x] Inspect existing GIS data contracts, Command Map rendering, and the provided Google Maps frontend component.
+- [x] Replace the simulated map with an interactive Google Maps surface and retain hazard, evacuation, responder, weather, and layer-control overlays.
+- [x] Preserve Command Center map containment, navigation, responsive behavior, and operational safety boundaries.
+- [x] Validate map pan/zoom, overlays, tests, TypeScript, Next.js 15 production build, and hosted behavior.
+- [ ] Synchronize the completed Google Maps update after GitHub authentication is refreshed; the local commit is ready.

@@ -5,6 +5,7 @@ import { clampViewportTransform, EASTERN_VISAYAS_REGIONAL_BBOX, esriWorldImagery
 import { type AlertItem, type Center, type DashboardSummary, type FeedHealth, type GisMapSnapshot, type GisResource, type OptimizedRoute, type RadarSnapshot, type ResponseGroupSnapshot, type SosIncident, type TyphoonSnapshot, type UserIdentity, getWeatherRadar, getWeatherTyphoon, updateGisResourcePosition } from "../../lib/api";
 import { AppearanceToggle, type AppearanceMode } from "./AppearanceToggle";
 import { CommandCenterNavigation } from "./CommandCenterNavigation";
+import { GoogleOperationalMap } from "./GoogleOperationalMap";
 import type { CommandCenterTab, OperationalAction } from "./contracts";
 
 function formatAge(timestamp: string) {
@@ -41,6 +42,8 @@ export function GISMapPanel({ snapshot, route, onAction, variant = "panel", comm
   const [radar, setRadar] = useState<RadarSnapshot | null>(null);
   const [typhoon, setTyphoon] = useState<TyphoonSnapshot | null>(null);
   const [weatherError, setWeatherError] = useState<string | null>(null);
+  const [googleMap, setGoogleMap] = useState<any | null>(null);
+  const [googleMapError, setGoogleMapError] = useState<string | null>(null);
   const [viewTransform, setViewTransform] = useState<MapViewportTransform>({ x: 0, y: 0, scale: 1 });
   const mapShellRef = useRef<HTMLDivElement | null>(null);
   const dragRef = useRef<{ pointerId: number; startX: number; startY: number; origin: MapViewportTransform } | null>(null);
@@ -73,13 +76,14 @@ export function GISMapPanel({ snapshot, route, onAction, variant = "panel", comm
   const visibleTyphoonPoint = typhoonPoint ? { x: Math.min(width - 22, Math.max(22, typhoonPoint.x)), y: Math.min(height - 22, Math.max(22, typhoonPoint.y)) } : null;
   const typhoonCoordinates = typhoon?.latitude != null && typhoon.longitude != null ? `${typhoon.latitude.toFixed(1)}°, ${typhoon.longitude.toFixed(1)}°` : "position unlisted";
   const zoomAround = (nextScale: number, anchorX = width / 2, anchorY = height / 2) => {
+    if (googleMap) { googleMap.setZoom(Math.max(7, Math.min(14, (googleMap.getZoom?.() || 13) + (nextScale > 1 ? 1 : -1)))); return; }
     setViewTransform((current) => {
       const scale = Math.min(8, Math.max(.5, nextScale));
       const ratio = scale / current.scale;
       return clampViewportTransform({ scale, x: anchorX - (anchorX - current.x) * ratio, y: anchorY - (anchorY - current.y) * ratio }, width, height);
     });
   };
-  const resetViewport = () => setViewTransform({ x: 0, y: 0, scale: 1 });
+  const resetViewport = () => { if (googleMap) { googleMap.setCenter({ lat: snapshot.center.latitude, lng: snapshot.center.longitude }); googleMap.setZoom(13); return; } setViewTransform({ x: 0, y: 0, scale: 1 }); };
   const onWheel = (event: WheelEvent<HTMLDivElement>) => {
     event.preventDefault();
     const bounds = event.currentTarget.getBoundingClientRect();
@@ -124,7 +128,7 @@ export function GISMapPanel({ snapshot, route, onAction, variant = "panel", comm
   const onTouchEnd = () => { touchRef.current = null; };
   useEffect(() => {
     const mapShell = mapShellRef.current;
-    if (!mapShell) return;
+    if (!mapShell || googleMap) return;
     const containWheel = (event: globalThis.WheelEvent) => event.preventDefault();
     const containTouchMove = (event: globalThis.TouchEvent) => {
       if (event.touches.length > 0) event.preventDefault();
@@ -135,7 +139,7 @@ export function GISMapPanel({ snapshot, route, onAction, variant = "panel", comm
       mapShell.removeEventListener("wheel", containWheel);
       mapShell.removeEventListener("touchmove", containTouchMove);
     };
-  }, []);
+  }, [googleMap]);
   useEffect(() => {
     let active = true;
     const refreshWeather = async () => {
@@ -172,7 +176,8 @@ export function GISMapPanel({ snapshot, route, onAction, variant = "panel", comm
   };
   return <section className={`panel map-panel gis-map-panel ${commandMapMode ? "command-map-hero" : ""}`}>
     {!commandMapMode && <PanelHeader title="Operational GIS map" subtitle={regionalContext ? "Eastern Samar regional context with Balangiga operational layers" : "Live resource positions, hazard polygons, SOS locations, centers, and optimized movement"} action={<div className="gis-header-controls"><div className="map-tools gis-basemap-controls" role="group" aria-label="Map basemap and extent"><button className={`map-tool ${basemap === "satellite" ? "active" : ""}`} aria-pressed={basemap === "satellite"} onClick={() => setBasemap("satellite")}>Satellite</button><button className={`map-tool ${basemap === "operational" ? "active" : ""}`} aria-pressed={basemap === "operational"} onClick={() => setBasemap("operational")}>Operational</button><button className={`map-tool ${regionalContext ? "active" : ""}`} aria-pressed={regionalContext} onClick={() => setRegionalContext((current) => !current)}>{regionalContext ? "Balangiga focus" : "Regional context"}</button></div><div className="map-tools" role="group" aria-label="Operational map layers">{(["hazards", "resources", "sos", "centers", "route", "radar", "typhoon"] as const).map((layer) => <button key={layer} className={`map-tool ${layers[layer] ? "active" : ""}`} aria-pressed={layers[layer]} onClick={() => setLayers((current) => ({ ...current, [layer]: !current[layer] }))}>{layer === "hazards" ? "Hazards" : layer === "resources" ? "Resources" : layer === "radar" ? "Radar" : layer === "typhoon" ? "Typhoon" : layer.toUpperCase()}</button>)}</div></div>} />}
-    <div ref={mapShellRef} className="gis-map-shell" tabIndex={0} aria-label="Interactive map viewport. Drag to pan; use the mouse wheel or controls to zoom." onWheel={onWheel} onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={endPointer} onPointerCancel={endPointer} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
+    <div ref={mapShellRef} className="gis-map-shell" tabIndex={0} aria-label="Interactive Google Maps viewport. Drag to pan; use the mouse wheel or controls to zoom." onWheel={googleMap ? undefined : onWheel} onPointerDown={googleMap ? undefined : onPointerDown} onPointerMove={googleMap ? undefined : onPointerMove} onPointerUp={googleMap ? undefined : endPointer} onPointerCancel={googleMap ? undefined : endPointer} onTouchStart={googleMap ? undefined : onTouchStart} onTouchMove={googleMap ? undefined : onTouchMove} onTouchEnd={googleMap ? undefined : onTouchEnd}>
+      <GoogleOperationalMap snapshot={snapshot} route={route} layers={displayedLayers} radar={radar} typhoon={typhoon} appearance={appearance} terrain={Boolean(commandLayers?.terrain)} onSelectResource={setSelectedResource} onReady={(map) => { setGoogleMap(map); setGoogleMapError(null); }} onError={setGoogleMapError} />
       <svg className={`gis-map-canvas ${displayedBasemap === "satellite" ? "satellite" : "operational"} ${commandMapMode ? "command-map-canvas" : ""}`} viewBox={`0 0 ${width} ${height}`} role="img" aria-label={regionalContext ? "Satellite and operational regional map showing Balangiga, Eastern Samar, Leyte Gulf, and surrounding provincial context" : "Satellite and operational map of Balangiga response resources and evacuation constraints"}>
         <defs><clipPath id="gis-map-clip"><rect width={width} height={height} /></clipPath><pattern id="gis-grid" width="38" height="38" patternUnits="userSpaceOnUse"><path d="M 38 0 L 0 0 0 38" fill="none" stroke="#ffffff" strokeOpacity=".6" strokeWidth="1" /></pattern><linearGradient id="gis-satellite-shade" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor="#082436" stopOpacity=".08" /><stop offset="1" stopColor="#082436" stopOpacity=".28" /></linearGradient></defs>
         <g clipPath="url(#gis-map-clip)" transform={`translate(${viewTransform.x} ${viewTransform.y}) scale(${viewTransform.scale})`}>
@@ -189,7 +194,7 @@ export function GISMapPanel({ snapshot, route, onAction, variant = "panel", comm
         </g>
       </svg>
       <div className="gis-tool-rail" aria-label="Map tools"><div className="gis-zoom-controls" role="group" aria-label="Map zoom controls"><button aria-label="Zoom in" onClick={() => zoomAround(viewTransform.scale * 1.3)}>+</button><button aria-label="Zoom out" onClick={() => zoomAround(viewTransform.scale / 1.3)}>−</button><button aria-label="Reset map view" onClick={resetViewport}>Reset</button></div>{layerTool}</div>
-      <div className="gis-map-badge"><span className={`health-dot ${weatherError || radar?.stale || typhoon?.stale ? "stale" : ""}`} />{weatherError || (radar?.frames.length ? `Radar ${radar.stale ? "cached" : "updated"} ${formatAge(radar.fetched_at)}` : "Radar unavailable")} · {typhoon?.active ? `${typhoon.name || "Cyclone"} bulletin ${typhoon.stale ? "cached" : "updated"}` : "No active PAGASA cyclone marker"}</div>
+      <div className="gis-map-badge"><span className={`health-dot ${weatherError || googleMapError || radar?.stale || typhoon?.stale ? "stale" : ""}`} />{googleMapError || weatherError || (radar?.frames.length ? `Radar ${radar.stale ? "cached" : "updated"} ${formatAge(radar.fetched_at)}` : "Radar unavailable")} · {typhoon?.active ? `${typhoon.name || "Cyclone"} bulletin ${typhoon.stale ? "cached" : "updated"}` : "No active PAGASA cyclone marker"}</div>
       <div className="map-legend gis-legend"><span className="legend-item"><span className="legend-dot" style={{ background: "#ef4444" }} /> Active hazard</span><span className="legend-item"><span className="legend-dot" style={{ background: "#f59e0b" }} /> Watch / closure</span><span className="legend-item"><span className="legend-dot" style={{ background: "#2563eb" }} /> Tracked resource</span><span className="legend-item"><span className="legend-dot" style={{ background: "#7c3aed" }} /> Radar / cyclone</span></div>
       <div className="gis-attribution">{displayedBasemap === "satellite" && <><a href="https://www.esri.com/en-us/arcgis/products/arcgis-living-atlas" target="_blank" rel="noreferrer">© Esri imagery</a><span> · </span></>}<a href="https://www.rainviewer.com/" target="_blank" rel="noreferrer">Weather data by RainViewer</a><span> · </span><a href={typhoon?.source_url || "https://www.pagasa.dost.gov.ph/tropical-cyclone/severe-weather-bulletin"} target="_blank" rel="noreferrer">PAGASA bulletin{typhoon?.issued_at ? ` · ${typhoon.issued_at}` : ""}</a></div>
     </div>
@@ -230,7 +235,7 @@ export function CenterList({ centers, onAction }: { centers: Center[]; onAction:
 }
 
 export function CommandMapView({ summary, gis, groups, health, user, connection, appearance, onAppearanceChange, onSelect, onNavigate, onAction, onRefresh, error }: { summary: DashboardSummary; gis: GisMapSnapshot; groups: ResponseGroupSnapshot; health: FeedHealth[]; user: UserIdentity | null; connection: "live" | "cached"; appearance: AppearanceMode; onAppearanceChange: () => void; onSelect: (incident: SosIncident) => void; onNavigate: (tab: CommandCenterTab) => void; onAction: OperationalAction; onRefresh: () => void; error: string | null }) {
-  const [layers, setLayers] = useState<CommandMapLayers>({ weatherRadar: true, floodRisk: true, terrain: true });
+  const [layers, setLayers] = useState<CommandMapLayers>({ weatherRadar: true, floodRisk: true, terrain: false });
   const [layerDrawerOpen, setLayerDrawerOpen] = useState(false);
   const [broadcastOpen, setBroadcastOpen] = useState(false);
   const [message, setMessage] = useState("");

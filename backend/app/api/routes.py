@@ -3,11 +3,14 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import os
 import time
 from datetime import datetime, timezone
 from uuid import UUID, uuid4
 
+import httpx
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, WebSocket, WebSocketDisconnect
+from fastapi.responses import Response
 from pydantic import BaseModel, Field
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -83,6 +86,30 @@ from app.services.responder_safety import build_responder_safety_assessment
 
 router = APIRouter(prefix="/v1")
 settings = get_settings()
+
+
+@router.get("/maps/google-script", include_in_schema=False)
+async def google_maps_script() -> Response:
+    """Serve the managed Google Maps loader through the Command Center API.
+
+    The managed Maps proxy validates its registered application origin. This relay keeps the
+    public Maps credential out of the Command Center browser bundle while returning only the
+    provider script required by the interactive map canvas.
+    """
+    proxy_base = os.getenv("VITE_FRONTEND_FORGE_API_URL", "").rstrip("/")
+    public_key = os.getenv("VITE_FRONTEND_FORGE_API_KEY", "")
+    registered_origin = os.getenv("MAPS_PROXY_REGISTERED_ORIGIN", "https://3000-i945ssem2o6y5z2f9ewj6-9f6b4420.sg1.manus.computer")
+    if not proxy_base or not public_key:
+        raise HTTPException(status_code=503, detail="Google Maps proxy configuration is unavailable.")
+    async with httpx.AsyncClient(timeout=15) as client:
+        upstream = await client.get(
+            f"{proxy_base}/v1/maps/proxy/maps/api/js",
+            params={"key": public_key, "v": "weekly"},
+            headers={"Origin": registered_origin},
+        )
+    if upstream.status_code != 200:
+        raise HTTPException(status_code=upstream.status_code, detail="Google Maps proxy could not provide the loader.")
+    return Response(content=upstream.content, media_type="application/javascript", headers={"Cache-Control": "private, max-age=300"})
 
 
 class OperationsActionRequest(BaseModel):
