@@ -6,6 +6,7 @@ const dashboardSource = readFileSync(resolve(process.cwd(), "components/Dashboar
 const workspaceSource = [
   dashboardSource,
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/AppearanceToggle.tsx"), "utf8"),
+  readFileSync(resolve(process.cwd(), "components/dashboard-tabs/contracts.ts"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/CommandCenterNavigation.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/CommandMap.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/IncidentTriage.tsx"), "utf8"),
@@ -86,7 +87,17 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("cfr_navigation_collapsed");
     expect(workspaceSource).toContain("Collapse Command Center navigation");
     expect(workspaceSource).toContain("Expand Command Center navigation");
-    expect(workspaceSource).toContain("aria-label={item.label}");
+    expect(workspaceSource).toContain("commandWorkspaces");
+    expect(workspaceSource).toContain("workspace.defaultTab");
+    expect(workspaceSource).toContain("aria-label={workspace.id}");
+    expect(workspaceSource).toContain("FunctionalViewSelector");
+    expect(workspaceSource).toContain("aria-current={activeTab === view ? \"page\" : undefined}");
+    expect(workspaceSource).toContain("1–5");
+    expect(workspaceSource).toContain('"Command Map"');
+    expect(workspaceSource).toContain('"Incidents"');
+    expect(workspaceSource).toContain('"Field Response"');
+    expect(workspaceSource).toContain('"Community Safety"');
+    expect(workspaceSource).toContain('"Intelligence"');
     expect(workspaceSource).not.toContain("Open Command Center navigation");
     expect(workspaceSource).toContain("Switch to ${targetMode} mode");
     expect(workspaceSource).toContain("appearance-${appearance}");
@@ -103,6 +114,9 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("Evacuation Centers");
     expect(workspaceSource).toContain("Response Groups");
     expect(workspaceSource).toContain("Communications");
+    expect(workspaceSource).toContain("incident-response-packet");
+    expect(workspaceSource).toContain("Incident response packet");
+    expect(workspaceSource).toContain("Verification, hazard review, responder tasking");
     expect(stylesSource).toContain(".command-map-shell");
     expect(stylesSource).toContain(".command-map-topbar");
     expect(stylesSource).toContain(".mass-notification-modal");
@@ -112,6 +126,7 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain(".command-map-sidebar");
     expect(stylesSource).toContain(".sidebar.is-collapsed");
     expect(stylesSource).toContain(".nav-collapse-toggle");
+    expect(stylesSource).toContain(".functional-view-selector");
     expect(stylesSource).toContain(".google-operational-map");
     expect(stylesSource).toContain(".command-map-basemap-controls");
     expect(stylesSource).toContain(".layer-switch-group");

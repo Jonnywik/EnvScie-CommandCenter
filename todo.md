@@ -459,3 +459,13 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Add structured selected-pin state and click handlers for resources, evacuation centers, and SOS alerts.
 - [x] Build accessible responsive information sheets with source freshness, operational details, and decision-support safeguards.
 - [x] Add regression coverage, validate the hosted map on desktop and mobile, document the behavior, and synchronize the feature.
+
+## Functional navigation and incident response optimization release
+
+- [x] Map all twelve legacy workspaces, shortcuts, and entry points to the approved five functional workstreams and contextual views.
+- [x] Implement the five-tab shared navigation shell, active-state compatibility routing, status badges, and accessible contextual view selector.
+- [x] Compose the current operational surfaces under Incidents, Field Response, Community Safety, and Intelligence without changing safety or audit behavior.
+- [x] Implement the initial incident response packet with source-aware core incident, hazard, responder, and action-log context.
+- [x] Migrate relevant quick links and direct record entry points to semantic workstream destinations.
+- [x] Add regression coverage and validate reachability, accessibility, responsive containment, hosted behavior, TypeScript, and production build.
+- [x] Document and synchronize the completed first release.

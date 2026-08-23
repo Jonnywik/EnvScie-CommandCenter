@@ -79,26 +79,14 @@ import { AlertFeed, CenterList, CommandMapView, GISMapPanel, SosQueue } from "./
 import { IncidentTriageView } from "./dashboard-tabs/IncidentTriage";
 import { FleetResponderSafetyView } from "./dashboard-tabs/FleetSafety";
 import { CommandReadinessBoard, IntelligenceDashboardView, OverviewQuickActions, TriageDrawer } from "./dashboard-tabs/Intelligence";
-import { type AppearanceMode } from "./dashboard-tabs/AppearanceToggle";
+import { AppearanceToggle, type AppearanceMode } from "./dashboard-tabs/AppearanceToggle";
+import { CommandCenterNavigation, FunctionalViewSelector } from "./dashboard-tabs/CommandCenterNavigation";
 import type { CommandCenterTab } from "./dashboard-tabs/contracts";
 
 
 type Tab = CommandCenterTab;
 
-const navItems: Array<{ icon: string; label: Tab }> = [
-  { icon: "▦", label: "Overview" },
-  { icon: "↯", label: "Incident Triage" },
-  { icon: "▰", label: "Fleet & Responder Safety" },
-  { icon: "◫", label: "DRRMO Intelligence" },
-  { icon: "!", label: "Live SOS" },
-  { icon: "◈", label: "Verified Alerts" },
-  { icon: "☁", label: "Provincial Weather" },
-  { icon: "⌖", label: "Risk Map" },
-  { icon: "⌂", label: "Evacuation Centers" },
-  { icon: "▣", label: "Resources" },
-  { icon: "◎", label: "Response Groups" },
-  { icon: "◌", label: "Communications" },
-];
+const workspaceShortcutTabs: Tab[] = ["Overview", "Live SOS", "Fleet & Responder Safety", "Provincial Weather", "DRRMO Intelligence"];
 
 function formatAge(timestamp: string) {
   const minutes = Math.max(0, Math.floor((Date.now() - new Date(timestamp).getTime()) / 60000));
@@ -454,7 +442,7 @@ function OperatorAssistDrawer({ onClose, incidents, alerts, notifications }: { o
       setCopied(false);
     }
   };
-  return <div className="drawer-backdrop operator-assist-backdrop" role="presentation" onClick={onClose}><aside className="drawer operator-assist-drawer" role="dialog" aria-modal="true" aria-label="Operator quick keys and shift handoff" onClick={(event) => event.stopPropagation()}><div className="drawer-header"><div><div className="eyebrow">Operator continuity</div><h2>Quick keys and shift handoff</h2><p className="panel-subtitle">Keep context across a handover and move between command areas without reaching for the mouse.</p></div><button className="close-button" type="button" onClick={onClose} aria-label="Close quick keys and shift handoff">×</button></div><div className="drawer-body operator-assist-body"><section className="operator-assist-section"><div className="panel-title">Keyboard shortcuts</div><div className="shortcut-grid"><span><kbd>1–9</kbd> Switch command areas</span><span><kbd>R</kbd> Refresh the operational picture</span><span><kbd>N</kbd> Record a manual emergency</span><span><kbd>?</kbd> Open this operator panel</span><span><kbd>Esc</kbd> Close a drawer or panel</span></div><div className="callout"><strong>Safety boundary</strong><span>Shortcuts never send a dispatch, acknowledge a report, or assign a team. Those actions remain deliberate button presses with visible context.</span></div></section><section className="operator-assist-section"><PanelHeader title="Copyable shift handoff" subtitle="A short, current brief for the next duty officer" action={<button className="tiny-button" type="button" onClick={() => void copyHandoff()}>{copied ? "Copied" : "Copy handoff"}</button>} /><pre className="handoff-preview">{handoff}</pre><p className="handoff-note">Share this through an approved LGU channel only. Re-verify locations, field conditions, and delivery status before acting on a handoff.</p></section></div></aside></div>;
+  return <div className="drawer-backdrop operator-assist-backdrop" role="presentation" onClick={onClose}><aside className="drawer operator-assist-drawer" role="dialog" aria-modal="true" aria-label="Operator quick keys and shift handoff" onClick={(event) => event.stopPropagation()}><div className="drawer-header"><div><div className="eyebrow">Operator continuity</div><h2>Quick keys and shift handoff</h2><p className="panel-subtitle">Keep context across a handover and move between command areas without reaching for the mouse.</p></div><button className="close-button" type="button" onClick={onClose} aria-label="Close quick keys and shift handoff">×</button></div><div className="drawer-body operator-assist-body"><section className="operator-assist-section"><div className="panel-title">Keyboard shortcuts</div><div className="shortcut-grid"><span><kbd>1–5</kbd> Switch workstreams</span><span><kbd>R</kbd> Refresh the operational picture</span><span><kbd>N</kbd> Record a manual emergency</span><span><kbd>?</kbd> Open this operator panel</span><span><kbd>Esc</kbd> Close a drawer or panel</span></div><div className="callout"><strong>Safety boundary</strong><span>Shortcuts never send a dispatch, acknowledge a report, or assign a team. Those actions remain deliberate button presses with visible context.</span></div></section><section className="operator-assist-section"><PanelHeader title="Copyable shift handoff" subtitle="A short, current brief for the next duty officer" action={<button className="tiny-button" type="button" onClick={() => void copyHandoff()}>{copied ? "Copied" : "Copy handoff"}</button>} /><pre className="handoff-preview">{handoff}</pre><p className="handoff-note">Share this through an approved LGU channel only. Re-verify locations, field conditions, and delivery status before acting on a handoff.</p></section></div></aside></div>;
 }
 
 export default function Dashboard() {
@@ -484,37 +472,6 @@ export default function Dashboard() {
   useEffect(() => { window.localStorage.setItem("cfr_active_tab", tab); }, [tab]);
   useEffect(() => { window.localStorage.setItem("cfr_appearance", appearance); document.documentElement.dataset.appearance = appearance; }, [appearance]);
   useEffect(() => {
-    if (["Overview", "Incident Triage", "Fleet & Responder Safety", "DRRMO Intelligence"].includes(tab)) return;
-    const host = document.querySelector<HTMLElement>(".topbar-actions");
-    if (!host) return;
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "appearance-toggle workspace-appearance-toggle";
-    button.setAttribute("aria-pressed", String(appearance === "dark"));
-    button.setAttribute("aria-label", `Switch to ${appearance === "dark" ? "light" : "dark"} mode`);
-    button.title = button.getAttribute("aria-label") || "Switch appearance";
-    button.innerHTML = `<span aria-hidden="true">${appearance === "dark" ? "☀" : "☾"}</span><b>${appearance === "dark" ? "Light" : "Dark"}</b>`;
-    button.addEventListener("click", toggleAppearance);
-    host.append(button);
-    return () => { button.removeEventListener("click", toggleAppearance); button.remove(); };
-  }, [appearance, tab, toggleAppearance]);
-  useEffect(() => {
-    if (["Overview", "Incident Triage", "Fleet & Responder Safety", "DRRMO Intelligence"].includes(tab)) return;
-    const host = document.querySelector<HTMLElement>(".workspace > .sidebar");
-    if (!host) return;
-    const applyCollapsed = (collapsed: boolean) => { host.classList.toggle("is-collapsed", collapsed); button.setAttribute("aria-expanded", String(!collapsed)); button.setAttribute("aria-label", collapsed ? "Expand Command Center navigation" : "Collapse Command Center navigation"); button.title = button.getAttribute("aria-label") || "Toggle Command Center navigation"; button.innerHTML = `<span aria-hidden="true">${collapsed ? "›" : "‹"}</span><b>${collapsed ? "Expand" : "Collapse"}</b>`; };
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "nav-collapse-toggle";
-    button.setAttribute("aria-controls", "legacy-command-navigation");
-    host.id = "legacy-command-navigation";
-    applyCollapsed(window.localStorage.getItem("cfr_navigation_collapsed") === "true");
-    const toggleCollapsed = () => { const next = !host.classList.contains("is-collapsed"); window.localStorage.setItem("cfr_navigation_collapsed", String(next)); applyCollapsed(next); };
-    button.addEventListener("click", toggleCollapsed);
-    host.prepend(button);
-    return () => { button.removeEventListener("click", toggleCollapsed); button.remove(); host.classList.remove("is-collapsed"); host.removeAttribute("id"); };
-  }, [tab]);
-  useEffect(() => {
     let cancelled = false;
     const bootstrap = async () => {
       try { const result = await demoLogin("dispatcher"); if (!cancelled) setUser(result.user); } catch { /* Existing token or demo read-only mode may still be valid. */ }
@@ -529,13 +486,13 @@ export default function Dashboard() {
     const onKeyDown = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null;
       if (event.altKey || event.ctrlKey || event.metaKey || target?.closest("input, textarea, select, [contenteditable='true']")) return;
-      const shortcut = resolveOperatorShortcut({ key: event.key, editable: Boolean(target?.closest("input, textarea, select, [contenteditable='true']")), canRecordEmergency: canUseCoordinatorIntake(user), tabCount: navItems.length });
+      const shortcut = resolveOperatorShortcut({ key: event.key, editable: Boolean(target?.closest("input, textarea, select, [contenteditable='true']")), canRecordEmergency: canUseCoordinatorIntake(user), tabCount: workspaceShortcutTabs.length });
       if (!shortcut) return;
       event.preventDefault();
       if (shortcut.action === "close") { setSelected(null); setManualIntakeOpen(false); }
       if (shortcut.action === "refresh") { void load(); setToast("Refreshing the operational picture…"); }
       if (shortcut.action === "record-emergency") setManualIntakeOpen(true);
-      if (shortcut.action === "switch-tab" && shortcut.tabIndex !== undefined) setTab(navItems[shortcut.tabIndex].label);
+      if (shortcut.action === "switch-tab" && shortcut.tabIndex !== undefined) setTab(workspaceShortcutTabs[shortcut.tabIndex]);
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
@@ -587,6 +544,6 @@ export default function Dashboard() {
   if (tab === "Incident Triage") return <IncidentTriageView incidents={incidents} alerts={alerts} appearance={appearance} onAppearanceChange={toggleAppearance} onAction={onAction} onRefresh={load} onReturn={() => setTab("Overview")} onNavigate={setTab} />;
   if (tab === "Fleet & Responder Safety") return <FleetResponderSafetyView groups={responseGroups} gis={gis} appearance={appearance} onAppearanceChange={toggleAppearance} onAction={onAction} onRefresh={load} onReturn={() => setTab("Overview")} onNavigate={setTab} />;
   if (tab === "DRRMO Intelligence") return <IntelligenceDashboardView health={feedHealth} connection={connection} summary={summary} appearance={appearance} onAppearanceChange={toggleAppearance} onAction={onAction} onReturn={() => setTab("Overview")} onNavigate={setTab} />;
-  // @ts-expect-error Overview exits above into CommandMapView; the legacy shell keeps other tab branches together.
-  return <div className="dashboard-shell"><header className="topbar"><div className="brand"><img className="brand-mark" src="/cfr-reference-emblem.png" alt="Code for Resilience resilience emblem" /><div><div className="brand-title">Code for Resilience</div><div className="brand-subtitle">Balangiga LGU · DRRM command center</div></div></div><div className="topbar-center"><div className="connection-pill"><span className={`connection-dot ${connection === "cached" ? "offline" : ""}`} />{connection === "live" ? "Live operations" : "Cached snapshot"}</div><span>Wednesday · 12 August 2026</span></div><div className="topbar-actions"><div className="sync-label">{user ? `${user.display_name} · ${user.role}` : "Operational session"}<br /><strong>Last verified sync · {formatAge(summary.generated_at)}</strong></div><div className="avatar">{user?.display_name.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase() || "DR"}</div></div></header><div className="workspace"><aside className="sidebar"><div className="sidebar-label">Command center</div>{navItems.map((item, index) => <button key={item.label} className={`nav-item ${tab === item.label ? "active" : ""}`} onClick={() => setTab(item.label)} aria-keyshortcuts={`${index + 1}`} aria-label={item.label} title={item.label}><span className="nav-icon">{item.icon}</span><span>{item.label}</span>{item.label === "Response Groups" && notifications.pending_count > 0 && <span className="nav-notification-badge">{notifications.pending_count}</span>}</button>)}<div className="sidebar-footer"><strong>Operating period</strong>{operations.operating_period}<br /><span className="sidebar-phase">{operations.incident_phase} phase</span><br /><br />Cached records are clearly marked and should be re-verified before dispatch.</div></aside><main className="main-content"><div className="page-heading"><div><h1>{pageMeta[tab].title}</h1></div><div className="heading-actions"><button className="ghost-button" onClick={() => void load()} aria-keyshortcuts="R">↻ Refresh</button>{tab === "Live SOS" && canRecordManualEmergency && <button className="primary-button" onClick={() => setManualIntakeOpen(true)} aria-keyshortcuts="N">+ Record emergency</button>}<button className="primary-button" onClick={() => onAction("bulletin.draft_started", "communications_plan", undefined, "Started a public bulletin from the command center header.")}>Publish bulletin</button></div></div>{error && <div className="error-banner">Data refresh failed. The dashboard is showing its last known snapshot. {error}</div>}{tab === "Overview" && <OverviewView summary={summary} incidents={incidents} centers={centers} alerts={alerts} health={feedHealth} gis={gis} groups={responseGroups} notifications={notifications} onSelect={setSelected} onAction={onAction} onNavigate={setTab} />}{tab === "Live SOS" && <LiveSosView incidents={incidents} onSelect={setSelected} onAction={onAction} />}{tab === "Verified Alerts" && <AlertsView alerts={alerts} health={feedHealth} onAction={onAction} />}{tab === "Provincial Weather" && <ProvincialWeatherView snapshot={provincialWeather} onAction={onAction} onOpenRiskMap={() => setTab("Risk Map")} />}{tab === "Risk Map" && <RiskMapView incidents={incidents} hazards={operations.hazards} gis={gis} onAction={onAction} />}{tab === "Evacuation Centers" && <EvacuationCentersView centers={centers} readiness={operations.readiness} onAction={onAction} />}{tab === "Resources" && <ResourcesView resources={operations.resources} communications={operations.communications} teams={operations.teams} onAction={onAction} />}{tab === "Response Groups" && <ResponseGroupsView snapshot={responseGroups} incidents={incidents} tasks={operations.tasks} centers={centers} notifications={notifications} onAction={onAction} onRefresh={load} onAcknowledge={acknowledge} onRetry={retry} onAssignment={setToast} />}{tab === "Communications" && <CoordinationView communications={coordination} incidents={incidents} groups={responseGroups} notifications={notifications} onAction={onAction} onRefresh={load} onAcknowledge={acknowledge} onRetry={retry} />}</main></div>{selected && <TriageDrawer incident={selected} onClose={() => setSelected(null)} onUpdated={(updated) => setSummary((current) => current ? { ...current, sos: current.sos.map((item) => item.id === updated.id ? updated : item) } : current)} onAction={onAction} />}{manualIntakeOpen && <CoordinatorEmergencyDrawer onClose={() => setManualIntakeOpen(false)} onCreated={handleCoordinatorEmergencyCreated} />}{toast && <div className="action-toast" role="status"><span>✓</span>{toast}</div>}</div>;
+  // @ts-expect-error Overview exits above into CommandMapView; the shared shell keeps other contextual views together.
+  return <div className="dashboard-shell"><header className="topbar"><div className="brand"><img className="brand-mark" src="/cfr-reference-emblem.png" alt="Code for Resilience resilience emblem" /><div><div className="brand-title">Code for Resilience</div><div className="brand-subtitle">Balangiga LGU · DRRM command center</div></div></div><div className="topbar-center"><div className="connection-pill"><span className={`connection-dot ${connection === "cached" ? "offline" : ""}`} />{connection === "live" ? "Live operations" : "Cached snapshot"}</div><span>Wednesday · 12 August 2026</span></div><div className="topbar-actions"><div className="sync-label">{user ? `${user.display_name} · ${user.role}` : "Operational session"}<br /><strong>Last verified sync · {formatAge(summary.generated_at)}</strong></div><AppearanceToggle appearance={appearance} onAppearanceChange={toggleAppearance} className="workspace-appearance-toggle" /><div className="avatar">{user?.display_name.split(" ").map((part) => part[0]).join("").slice(0, 2).toUpperCase() || "DR"}</div></div></header><div className="workspace"><CommandCenterNavigation activeTab={tab} onNavigate={setTab} badges={{ Incidents: incidents.filter((incident) => incident.status === "received").length || undefined, "Field Response": notifications.pending_count || undefined }} /><main className="main-content"><div className="page-heading"><div><h1>{pageMeta[tab].title}</h1></div><div className="heading-actions"><button className="ghost-button" onClick={() => void load()} aria-keyshortcuts="R">↻ Refresh</button>{tab === "Live SOS" && canRecordManualEmergency && <button className="primary-button" onClick={() => setManualIntakeOpen(true)} aria-keyshortcuts="N">+ Record emergency</button>}<button className="primary-button" onClick={() => onAction("bulletin.draft_started", "communications_plan", undefined, "Started a public bulletin from the command center header.")}>Publish bulletin</button></div></div><FunctionalViewSelector activeTab={tab} onNavigate={setTab} />{error && <div className="error-banner">Data refresh failed. The dashboard is showing its last known snapshot. {error}</div>}{tab === "Overview" && <OverviewView summary={summary} incidents={incidents} centers={centers} alerts={alerts} health={feedHealth} gis={gis} groups={responseGroups} notifications={notifications} onSelect={setSelected} onAction={onAction} onNavigate={setTab} />}{tab === "Live SOS" && <LiveSosView incidents={incidents} onSelect={setSelected} onAction={onAction} />}{tab === "Verified Alerts" && <AlertsView alerts={alerts} health={feedHealth} onAction={onAction} />}{tab === "Provincial Weather" && <ProvincialWeatherView snapshot={provincialWeather} onAction={onAction} onOpenRiskMap={() => setTab("Risk Map")} />}{tab === "Risk Map" && <RiskMapView incidents={incidents} hazards={operations.hazards} gis={gis} onAction={onAction} />}{tab === "Evacuation Centers" && <EvacuationCentersView centers={centers} readiness={operations.readiness} onAction={onAction} />}{tab === "Resources" && <ResourcesView resources={operations.resources} communications={operations.communications} teams={operations.teams} onAction={onAction} />}{tab === "Response Groups" && <ResponseGroupsView snapshot={responseGroups} incidents={incidents} tasks={operations.tasks} centers={centers} notifications={notifications} onAction={onAction} onRefresh={load} onAcknowledge={acknowledge} onRetry={retry} onAssignment={setToast} />}{tab === "Communications" && <CoordinationView communications={coordination} incidents={incidents} groups={responseGroups} notifications={notifications} onAction={onAction} onRefresh={load} onAcknowledge={acknowledge} onRetry={retry} />}</main></div>{selected && <TriageDrawer incident={selected} onClose={() => setSelected(null)} onUpdated={(updated) => setSummary((current) => current ? { ...current, sos: current.sos.map((item) => item.id === updated.id ? updated : item) } : current)} onAction={onAction} />}{manualIntakeOpen && <CoordinatorEmergencyDrawer onClose={() => setManualIntakeOpen(false)} onCreated={handleCoordinatorEmergencyCreated} />}{toast && <div className="action-toast" role="status"><span>✓</span>{toast}</div>}</div>;
 }
