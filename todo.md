@@ -431,3 +431,10 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Preserve overlay integrity, map containment, navigation, responsiveness, and operational safety boundaries.
 - [x] Validate satellite mode and map controls with tests, TypeScript, Next.js 15 production build, hosted behavior, and local commit evidence.
 - [x] Synchronize the validated satellite-basemap commit to the EnvScie-CommandCenter GitHub repository.
+
+## Regional weather-overlay research and Command Map traffic simulation
+
+- [x] Research authoritative regional typhoon radar, satellite, precipitation, wind, surge, and lightning overlay sources with licensing and integration constraints.
+- [x] Define a repeatable, non-destructive end-to-end map-drawer and overlay interaction simulation under concurrent read traffic.
+- [x] Execute the controlled simulation, capture response and interaction evidence, and identify confirmed performance or safety gaps.
+- [x] Document source recommendations, simulation outcomes, operational limitations, and next-step integration priorities.

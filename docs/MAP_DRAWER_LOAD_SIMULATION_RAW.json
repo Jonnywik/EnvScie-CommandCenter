@@ -1,0 +1,60 @@
+{
+  "test": "controlled_read_only_command_map_api_load",
+  "started_at": "2026-08-23T04:04:28.409294+00:00",
+  "base_url": "https://3100-i945ssem2o6y5z2f9ewj6-9f6b4420.sg1.manus.computer",
+  "concurrency_per_endpoint_per_round": 24,
+  "rounds": 5,
+  "total_requests": 360,
+  "wall_time_ms": 1147.59,
+  "throughput_rps": 313.7,
+  "all_responses_valid": true,
+  "by_endpoint": {
+    "gis_map": {
+      "requests": 120,
+      "valid_200_responses": 120,
+      "status_counts": {
+        "200": 120
+      },
+      "latency_ms": {
+        "min": 100.66,
+        "mean": 536.87,
+        "p50": 529.07,
+        "p95": 1013.91,
+        "p99": 1052.39,
+        "max": 1075.34
+      }
+    },
+    "weather_radar": {
+      "requests": 120,
+      "valid_200_responses": 120,
+      "status_counts": {
+        "200": 120
+      },
+      "latency_ms": {
+        "min": 129.59,
+        "mean": 605.9,
+        "p50": 598.34,
+        "p95": 1045.75,
+        "p99": 1061.71,
+        "max": 1071.17
+      }
+    },
+    "weather_typhoon": {
+      "requests": 120,
+      "valid_200_responses": 120,
+      "status_counts": {
+        "200": 120
+      },
+      "latency_ms": {
+        "min": 195.38,
+        "mean": 657.93,
+        "p50": 624.58,
+        "p95": 1037.69,
+        "p99": 1064.81,
+        "max": 1071.15
+      }
+    }
+  },
+  "failures": [],
+  "safety_boundary": "This simulation only issues GET requests to existing map and weather endpoints. It creates no SOS, actions, notifications, assignments, dispatches, or audit mutations."
+}
