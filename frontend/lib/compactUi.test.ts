@@ -130,6 +130,7 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain(".nav-collapse-toggle");
     expect(stylesSource).toContain("--command-map-header-clearance: 94px");
     expect(stylesSource).toContain("--command-map-dock-width: 68px");
+    expect(stylesSource).toContain("--command-map-mobile-radar-reserve: 132px");
     expect(stylesSource).toContain(".command-map-topbar { position: fixed; z-index: 40; top: var(--command-map-header-top); left: calc(var(--command-map-dock-width) + var(--command-map-dock-gutter))");
     expect(stylesSource).toContain(".command-map-sidebar { position: fixed; z-index: 35; top: 0; bottom: 0; left: 0;");
     expect(stylesSource).toContain("padding: calc(var(--command-map-header-clearance) + 10px) 9px 18px");
@@ -160,17 +161,20 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain("touch-action: none");
   });
 
-  it("keeps narrow Command Map controls contained and separates the broadcast action from the responder radar", () => {
+  it("keeps narrow Command Map controls contained with safe space for the responder radar", () => {
     expect(stylesSource).toContain(".command-map-shell { min-height: 100dvh; overflow: hidden;");
     expect(stylesSource).toContain(".responder-radar { position: fixed");
-    expect(stylesSource).toContain(".broadcast-fab { right: auto; bottom: 190px; left: 17px;");
+    expect(stylesSource).toContain(".command-map-layer-drawer { width: min(258px, calc(100vw - 72px)); max-height: calc(100dvh - var(--command-map-mobile-layer-top) - var(--command-map-mobile-radar-reserve) - var(--command-map-mobile-overlay-gutter));");
+    expect(stylesSource).toContain(".map-pin-sheet { top: auto; bottom: var(--command-map-mobile-radar-reserve);");
+    expect(stylesSource).toContain(".broadcast-fab { right: auto; bottom: calc(var(--command-map-mobile-radar-reserve) + 8px); left: 17px;");
     expect(stylesSource).toContain("grid-template-columns: minmax(0, 1fr) auto");
     expect(stylesSource).toContain(".gis-tool-rail { position: absolute");
     expect(stylesSource).toContain(".command-map-layer-rail { position: relative");
     expect(stylesSource).toContain(".command-map-layer-rail.is-open .command-map-layer-trigger");
-    expect(stylesSource).toContain(".command-map-navigation { position: fixed");
-    expect(stylesSource).toContain(".command-map-navigation-list { display: grid");
-    expect(stylesSource).toContain(".command-map-shell:has(.command-map-navigation.is-open) .broadcast-fab");
+    expect(stylesSource).toContain(".map-pin-sheet { position: absolute; z-index: 13; top: 116px; left: calc(var(--command-map-dock-width) + var(--command-map-dock-gutter))");
+    expect(stylesSource).toContain(".command-map-sidebar.sidebar:not(.is-collapsed) + .command-map-shell .map-pin-sheet { left: 264px;");
+    expect(stylesSource).toContain(".command-map-shell:has(.map-pin-sheet) .broadcast-fab");
+    expect(stylesSource).toContain("@media (max-width: 760px) and (max-height: 520px)");
   });
 
   it("provides a selectable split-pane Incident Triage workspace with guarded recommendations", () => {
