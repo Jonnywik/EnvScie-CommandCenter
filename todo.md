@@ -438,3 +438,9 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Define a repeatable, non-destructive end-to-end map-drawer and overlay interaction simulation under concurrent read traffic.
 - [x] Execute the controlled simulation, capture response and interaction evidence, and identify confirmed performance or safety gaps.
 - [x] Document source recommendations, simulation outcomes, operational limitations, and next-step integration priorities.
+
+## PAGASA radar and lightning-layer integration planning
+
+- [x] Review the existing Command Map layer drawer, weather overlay contracts, rate-limit controls, and safety messaging.
+- [x] Define phased PAGASA radar-stack and licensed lightning-feed architecture, access governance, normalisation, caching, and degraded-mode behavior.
+- [x] Document the UI drawer design, source freshness states, test strategy, approval gates, and non-automated operational boundaries.
