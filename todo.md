@@ -503,3 +503,12 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Remove confirmed legacy layout conflicts and add regression coverage for the live Command Map shell.
 - [x] Validate desktop, tablet, phone portrait, and phone landscape behavior alongside accessibility, appearance, TypeScript, and production build checks.
 - [x] Document and synchronize the responsive Command Map refinement.
+
+## Project NOAH hazard and critical-facilities integration
+- [x] Confirm a supported, reusable Project NOAH hazard source and document its data contract, provenance, and ODbL license obligations.
+- [x] Add bounded Project NOAH hazard overlays, versioned source provenance, and read-only map-context APIs without overwriting local operational data.
+- [x] Add NOAH hazard-layer controls, layer metadata, and transparent critical-facility source-status handling to the Command Map.
+- [ ] Add explicit exposure summaries and evidence safeguards without automatic route decisions, dispatches, warnings, or operational-status claims.
+- [x] Validate import behavior, provenance, safety boundaries, accessibility, responsiveness, frontend/backend tests, and production builds.
+- [x] Document and synchronize the Project NOAH hazard integration.
+- [ ] Import Project NOAH critical-facility records only after a documented machine-readable source or authorized service is available; then apply category mapping and LGU validation.

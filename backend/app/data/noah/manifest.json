@@ -1,0 +1,50 @@
+{
+  "provider": "Project NOAH / UP Resilience Institute",
+  "dataset_title": "Project NOAH Hazard Maps \u2014 Eastern Samar source subset",
+  "dataset_url": "https://huggingface.co/datasets/bettergovph/project-noah-hazard-maps",
+  "license": "ODbL-1.0",
+  "attribution": "Project NOAH / UP Resilience Institute and dataset publisher BetterGov.PH; retain source attribution and ODbL obligations.",
+  "source_geometry_dates": {
+    "flood": "2021-11-08",
+    "landslide": "2021-10-12",
+    "storm_surge": "2021-07-22"
+  },
+  "focus_bbox": {
+    "west": 125.37,
+    "south": 11.1,
+    "east": 125.43,
+    "north": 11.16
+  },
+  "decision_limit": "Modeled reference context only. Not a live hazard observation, route-clearance finding, facility-status confirmation, dispatch order, or public warning.",
+  "layers": [
+    {
+      "id": "noah-flood-100yr",
+      "file": "flood_100yr.png",
+      "hazard": "flood",
+      "label": "NOAH flood exposure \u00b7 100-year rain return",
+      "scenario": "100-year rain return",
+      "rendered_parts": 10834
+    },
+    {
+      "id": "noah-landslide",
+      "file": "landslide.png",
+      "hazard": "landslide",
+      "label": "NOAH shallow and structurally controlled landslide susceptibility",
+      "scenario": "susceptibility reference",
+      "rendered_parts": 3685
+    },
+    {
+      "id": "noah-storm-surge-scenarios",
+      "file": "storm_surge_scenarios.png",
+      "hazard": "storm_surge",
+      "label": "NOAH storm-surge advisory scenarios \u00b7 SSA 1\u20134",
+      "scenario": "advisory scenarios 1\u20134",
+      "rendered_parts": 809
+    }
+  ],
+  "critical_facilities": {
+    "status": "source_access_unconfirmed",
+    "source_url": "https://noah.up.edu.ph/noah-studio",
+    "message": "NOAH Studio presents critical-facility context, but no supported machine-readable facility download was confirmed during this implementation. The Command Map will not scrape or fabricate facility records; use the official studio link and local validation workflow until a licensed source is onboarded."
+  }
+}

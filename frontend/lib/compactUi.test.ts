@@ -65,6 +65,11 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("Licensed Lightning");
     expect(workspaceSource).toContain("Provider access pending");
     expect(workspaceSource).toContain("Provider procurement pending");
+    expect(workspaceSource).toContain("getNoahMapContext");
+    expect(workspaceSource).toContain("PROJECT NOAH · REFERENCE");
+    expect(workspaceSource).toContain("Flood · 100-year rain return");
+    expect(workspaceSource).toContain("Open NOAH Studio facility context");
+    expect(workspaceSource).toContain("critical_facilities.message");
     expect(workspaceSource).toContain("getMapOverlays");
     expect(workspaceSource).toContain("command-map-layer-rail");
     expect(workspaceSource).toContain('aria-controls="command-map-layer-drawer"');

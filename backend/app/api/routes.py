@@ -6,11 +6,13 @@ import json
 import os
 import time
 from datetime import datetime, timezone
+from functools import lru_cache
+from pathlib import Path
 from uuid import UUID, uuid4
 
 import httpx
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, WebSocket, WebSocketDisconnect
-from fastapi.responses import Response
+from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, Field
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -30,6 +32,8 @@ from app.schemas.gis import (
     GisMapSnapshot,
     GisResource,
     GisSosPoint,
+    NoahMapContext,
+    NoahOverlayLayer,
     OptimizedRouteResponse,
     ResourcePositionUpdate,
     RouteOptimizationRequest,
@@ -902,6 +906,48 @@ async def gis_map_snapshot(session: AsyncSession | None = Depends(get_db)) -> Gi
             accuracy_meters=row["accuracy_meters"], summary=row["summary"],
         ) for row in sos],
     )
+
+
+NOAH_DATA_DIRECTORY = Path(__file__).resolve().parents[1] / "data" / "noah"
+
+
+@lru_cache(maxsize=1)
+def _noah_manifest() -> dict:
+    manifest_path = NOAH_DATA_DIRECTORY / "manifest.json"
+    if not manifest_path.exists():
+        raise HTTPException(status_code=503, detail="Project NOAH reference context is not installed.")
+    return json.loads(manifest_path.read_text(encoding="utf-8"))
+
+
+@router.get("/gis/noah/context", response_model=NoahMapContext)
+async def noah_map_context() -> NoahMapContext:
+    """Return versioned Project NOAH reference metadata, never an active-hazard assertion."""
+    manifest = _noah_manifest()
+    return NoahMapContext(
+        provider=manifest["provider"],
+        dataset_title=manifest["dataset_title"],
+        dataset_url=manifest["dataset_url"],
+        license=manifest["license"],
+        attribution=manifest["attribution"],
+        source_geometry_dates=manifest["source_geometry_dates"],
+        focus_bbox=manifest["focus_bbox"],
+        decision_limit=manifest["decision_limit"],
+        layers=[NoahOverlayLayer(**layer, overlay_url=f"/api/v1/gis/noah/overlays/{layer['id']}") for layer in manifest["layers"]],
+        critical_facilities=manifest["critical_facilities"],
+    )
+
+
+@router.get("/gis/noah/overlays/{layer_id}")
+async def noah_overlay(layer_id: str) -> FileResponse:
+    """Serve a bounded, pre-rendered NOAH reference overlay for the Balangiga map extent."""
+    manifest = _noah_manifest()
+    layer = next((item for item in manifest["layers"] if item["id"] == layer_id), None)
+    if layer is None:
+        raise HTTPException(status_code=404, detail="Project NOAH overlay not found.")
+    overlay_path = NOAH_DATA_DIRECTORY / layer["file"]
+    if not overlay_path.exists():
+        raise HTTPException(status_code=503, detail="Project NOAH overlay asset is unavailable.")
+    return FileResponse(overlay_path, media_type="image/png", headers={"Cache-Control": "public, max-age=86400"})
 
 
 @router.get("/weather/radar")

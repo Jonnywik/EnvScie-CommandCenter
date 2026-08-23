@@ -317,6 +317,32 @@ export type GisMapSnapshot = {
   }>;
 };
 
+export type NoahOverlayLayer = {
+  id: "noah-flood-100yr" | "noah-landslide" | "noah-storm-surge-scenarios";
+  hazard: "flood" | "landslide" | "storm_surge";
+  label: string;
+  scenario: string;
+  overlay_url: string;
+  rendered_parts: number;
+};
+
+export type NoahMapContext = {
+  provider: string;
+  dataset_title: string;
+  dataset_url: string;
+  license: string;
+  attribution: string;
+  source_geometry_dates: Record<string, string>;
+  focus_bbox: { west: number; south: number; east: number; north: number };
+  decision_limit: string;
+  layers: NoahOverlayLayer[];
+  critical_facilities: {
+    status: "source_access_unconfirmed" | "available";
+    source_url: string;
+    message: string;
+  };
+};
+
 export type RadarFrame = {
   time: number;
   path: string;
@@ -752,6 +778,10 @@ export function getSafeRoute(latitude: number, longitude: number) {
 
 export function getGisMap() {
   return request<GisMapSnapshot>("/gis/map");
+}
+
+export function getNoahMapContext() {
+  return request<NoahMapContext>("/gis/noah/context");
 }
 
 export function getWeatherRadar() {

@@ -57,6 +57,32 @@ def test_map_overlay_endpoint_keeps_unapproved_provider_layers_disabled(monkeypa
     assert "operational context" in payload["decision_limit"]
 
 
+def test_project_noah_context_preserves_provenance_and_never_fabricates_facilities() -> None:
+    context = client.get("/v1/gis/noah/context")
+
+    assert context.status_code == 200
+    payload = context.json()
+    assert payload["provider"].startswith("Project NOAH")
+    assert payload["license"] == "ODbL-1.0"
+    assert {layer["id"] for layer in payload["layers"]} == {
+        "noah-flood-100yr", "noah-landslide", "noah-storm-surge-scenarios",
+    }
+    assert all(layer["overlay_url"].startswith("/api/v1/gis/noah/overlays/") for layer in payload["layers"])
+    assert "not a live hazard observation" in payload["decision_limit"].lower()
+    assert payload["critical_facilities"]["status"] == "source_access_unconfirmed"
+    assert "will not scrape or fabricate" in payload["critical_facilities"]["message"].lower()
+
+
+def test_project_noah_overlay_endpoint_is_bounded_to_known_assets() -> None:
+    overlay = client.get("/v1/gis/noah/overlays/noah-flood-100yr")
+    missing = client.get("/v1/gis/noah/overlays/not-a-real-layer")
+
+    assert overlay.status_code == 200
+    assert overlay.headers["content-type"].startswith("image/png")
+    assert overlay.content.startswith(b"\x89PNG")
+    assert missing.status_code == 404
+
+
 def test_provincial_weather_endpoint_returns_live_and_static_source_contract(monkeypatch) -> None:
     async def fake_provincial_weather() -> dict:
         return {

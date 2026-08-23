@@ -79,6 +79,34 @@ class GisMapSnapshot(BaseModel):
     sos: list[GisSosPoint]
 
 
+class NoahOverlayLayer(BaseModel):
+    id: str
+    hazard: str
+    label: str
+    scenario: str
+    overlay_url: str
+    rendered_parts: int
+
+
+class NoahCriticalFacilitiesSource(BaseModel):
+    status: Literal["source_access_unconfirmed", "available"]
+    source_url: str
+    message: str
+
+
+class NoahMapContext(BaseModel):
+    provider: str
+    dataset_title: str
+    dataset_url: str
+    license: str
+    attribution: str
+    source_geometry_dates: dict[str, str]
+    focus_bbox: dict[str, float]
+    decision_limit: str
+    layers: list[NoahOverlayLayer]
+    critical_facilities: NoahCriticalFacilitiesSource
+
+
 class RouteOptimizationRequest(BaseModel):
     latitude: float = Field(ge=-90, le=90)
     longitude: float = Field(ge=-180, le=180)
