@@ -127,6 +127,7 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("aria-current={activeTab === view ? \"page\" : undefined}");
     expect(workspaceSource).toContain("1–5");
     expect(workspaceSource).toContain("command-map-sidebar");
+    expect(workspaceSource).not.toContain('className="command-map-quicklinks"');
     expect(workspaceSource).toContain('"Command Map"');
     expect(workspaceSource).toContain('"Incidents"');
     expect(workspaceSource).toContain('"Field Response"');

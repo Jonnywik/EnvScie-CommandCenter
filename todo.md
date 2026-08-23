@@ -547,3 +547,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Attach enabled Project NOAH ground overlays to the Google Map instance and add a rendering regression assertion.
 - [x] Resolve Project NOAH overlay assets to same-origin absolute URLs before attaching them to Google Maps.
 - [x] Pass all three Project NOAH drawer-toggle states through the Command Map layer bridge to the Google renderer.
+
+## Command Center navigation simplification
+- [x] Remove the Incidents, Field Response, Community Safety, and Intelligence quick-link cards from the Command Map.
+- [x] Remove the obsolete quick-link wiring without changing remaining Command Map navigation or safety behavior.
+- [x] Validate the simplified Command Map layout, regression suite, type checks, and production build.
