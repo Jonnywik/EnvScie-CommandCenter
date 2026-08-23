@@ -128,9 +128,14 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain(".command-map-sidebar");
     expect(stylesSource).toContain(".sidebar.is-collapsed");
     expect(stylesSource).toContain(".nav-collapse-toggle");
-    expect(stylesSource).toContain(".command-map-sidebar { position: fixed; z-index: 35; top: 94px; bottom: 0; left: 0;");
-    expect(stylesSource).toContain(".command-map-sidebar .nav-collapse-toggle { position: sticky; top: 0; z-index: 1; }");
-    expect(stylesSource).toContain(".command-map-sidebar { z-index: 45; top: 94px; right: 64px; bottom: auto; left: 9px;");
+    expect(stylesSource).toContain("--command-map-header-clearance: 94px");
+    expect(stylesSource).toContain("--command-map-dock-width: 68px");
+    expect(stylesSource).toContain(".command-map-topbar { position: fixed; z-index: 40; top: var(--command-map-header-top); left: calc(var(--command-map-dock-width) + var(--command-map-dock-gutter))");
+    expect(stylesSource).toContain(".command-map-sidebar { position: fixed; z-index: 35; top: var(--command-map-header-clearance); bottom: 0; left: 0;");
+    expect(stylesSource).toContain(".command-map-sidebar .nav-collapse-toggle { position: sticky; top: 0; z-index: 1; border-color:");
+    expect(stylesSource).toContain(".command-map-topbar { left: 18px; }");
+    expect(stylesSource).toContain(".command-map-sidebar { z-index: 45; top: var(--command-map-header-clearance); right: 64px; bottom: auto; left: 9px;");
+    expect(stylesSource).toContain('html[data-appearance="light"] .command-map-sidebar.sidebar');
     expect(stylesSource).toContain(".functional-view-selector");
     expect(stylesSource).toContain(".google-operational-map");
     expect(stylesSource).toContain(".command-map-basemap-controls");

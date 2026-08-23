@@ -483,3 +483,10 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Constrain navigation and the expand/collapse control below the header/logo boundary in collapsed and expanded states.
 - [x] Add regression coverage and validate desktop and narrow-layout containment without breaking navigation accessibility.
 - [x] Document and synchronize the verified navigation-overlap repair.
+
+## Command Map header and navigation-dock visual refinement
+- [x] Audit the desktop and responsive Command Map header/sidebar layout touchpoints and existing containment safeguards.
+- [x] Add scoped layout tokens and a cohesive dark-glass dock treatment that begins the desktop header to the right of the collapsed navigation rail.
+- [x] Preserve mobile horizontal navigation, accessible collapse/expand controls, workstream state, map controls, and dark/light appearance behavior.
+- [x] Add regression coverage and validate collapsed/expanded desktop geometry, responsive containment, TypeScript, production build, and hosted behavior.
+- [x] Document and synchronize the refined Command Map shell.
