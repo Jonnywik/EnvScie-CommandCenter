@@ -519,3 +519,9 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Add a filterable facility layer, category-aware inspectors, evidence labels, and non-automated exposure context to the Command Map.
 - [x] Validate provenance, safety boundaries, accessibility, responsive behavior, frontend/backend tests, and production builds.
 - [x] Document and synchronize the official facility-registry integration.
+
+## Command Map rendering restoration
+- [x] Inspect hosted rendering, map-loader behavior, API health, and runtime errors behind the reported blank map.
+- [x] Implement a targeted rendering reliability fix while retaining Google Maps, the local fallback, and safety guardrails.
+- [x] Validate hosted map rendering, fallback behavior, facilities overlay, frontend/backend tests, and production operation.
+- [x] Document and synchronize the rendering restoration.

@@ -9,6 +9,7 @@ const workspaceSource = [
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/contracts.ts"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/CommandCenterNavigation.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/CommandMap.tsx"), "utf8"),
+  readFileSync(resolve(process.cwd(), "components/dashboard-tabs/GoogleOperationalMap.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/IncidentTriage.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/FleetSafety.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/Intelligence.tsx"), "utf8"),
@@ -82,6 +83,11 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain('aria-controls="command-map-layer-drawer"');
     expect(workspaceSource).toContain("CommandCenterNavigation");
     expect(workspaceSource).toContain("GoogleOperationalMap");
+    expect(workspaceSource).toContain("GOOGLE_MAPS_SCRIPT_ID");
+    expect(workspaceSource).toContain("retryTimer = window.setTimeout(() => initialize(1), 700)");
+    expect(workspaceSource).toContain("googleMapsPromise = null");
+    expect(workspaceSource).toContain("googleMapTilesReady");
+    expect(workspaceSource).toContain('"tilesloaded"');
     expect(workspaceSource).toContain("onSelectCenter");
     expect(workspaceSource).toContain("onSelectSos");
     expect(workspaceSource).toContain("MapInspectablePin");
@@ -93,7 +99,7 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("command-map-basemap-controls");
     expect(workspaceSource).toContain("supported through map zoom");
     expect(workspaceSource).toContain("rainviewerMaxZoom");
-    expect(workspaceSource).toContain("{googleMapError && <svg");
+    expect(workspaceSource).toContain("(!googleMapTilesReady || googleMapError) && <svg");
     expect(workspaceSource).toContain("Google Maps {googleBasemap");
     expect(workspaceSource).toContain("unified-command-sidebar");
     expect(workspaceSource).toContain("Command Center workspaces");

@@ -11,18 +11,38 @@ type LatLng = { lat: number; lng: number };
 export type GoogleBasemap = "roadmap" | "satellite" | "terrain";
 const RAINVIEWER_MAX_ZOOM = 7;
 let googleMapsPromise: Promise<any> | null = null;
+const GOOGLE_MAPS_SCRIPT_ID = "envscie-google-maps-loader";
 
 function loadGoogleMaps() {
   if (window.google?.maps) return Promise.resolve(window.google.maps);
   if (googleMapsPromise) return googleMapsPromise;
   googleMapsPromise = new Promise((resolve, reject) => {
-    const script = document.createElement("script");
+    let settled = false;
+    const settle = (error?: Error) => {
+      if (settled) return;
+      settled = true;
+      if (error) {
+        googleMapsPromise = null;
+        document.getElementById(GOOGLE_MAPS_SCRIPT_ID)?.remove();
+        reject(error);
+        return;
+      }
+      resolve(window.google!.maps);
+    };
+    const waitForMaps = (attempt = 0) => {
+      if (window.google?.maps) return settle();
+      if (attempt >= 20) return settle(new Error("Google Maps did not initialize."));
+      window.setTimeout(() => waitForMaps(attempt + 1), 100);
+    };
+    const existing = document.getElementById(GOOGLE_MAPS_SCRIPT_ID) as HTMLScriptElement | null;
+    const script = existing || document.createElement("script");
+    script.id = GOOGLE_MAPS_SCRIPT_ID;
     script.src = "/api/v1/maps/google-script";
     script.async = true;
     script.crossOrigin = "anonymous";
-    script.onload = () => window.google?.maps ? resolve(window.google.maps) : reject(new Error("Google Maps did not initialize."));
-    script.onerror = () => reject(new Error("Google Maps could not be loaded."));
-    document.head.appendChild(script);
+    script.onload = () => waitForMaps();
+    script.onerror = () => settle(new Error("Google Maps could not be loaded."));
+    if (!existing) document.head.appendChild(script);
   });
   return googleMapsPromise;
 }
@@ -30,7 +50,7 @@ function loadGoogleMaps() {
 const position = (value: { latitude: number; longitude: number }): LatLng => ({ lat: value.latitude, lng: value.longitude });
 const darkMapStyles = [{ elementType: "geometry", stylers: [{ color: "#0b1e26" }] }, { elementType: "labels.text.fill", stylers: [{ color: "#b7d7dc" }] }, { elementType: "labels.text.stroke", stylers: [{ color: "#071318" }] }, { featureType: "water", elementType: "geometry", stylers: [{ color: "#103b4a" }] }, { featureType: "road", elementType: "geometry", stylers: [{ color: "#244d58" }] }, { featureType: "poi", elementType: "geometry", stylers: [{ color: "#122c34" }] }];
 
-export function GoogleOperationalMap({ snapshot, route, layers, radar, typhoon, mapOverlays, noahContext, facilityRegistry, facilityCategories, appearance, basemap, onSelectResource, onSelectCenter, onSelectSos, onSelectFacility, onReady, onError }: { snapshot: GisMapSnapshot; route?: OptimizedRoute | null; layers: LayerState; radar: RadarSnapshot | null; typhoon: TyphoonSnapshot | null; mapOverlays: MapOverlaysSnapshot | null; noahContext: NoahMapContext | null; facilityRegistry: OfficialFacilityRegistry | null; facilityCategories: OfficialFacility["category"][]; appearance: AppearanceMode; basemap: GoogleBasemap; onSelectResource: (resource: GisResource) => void; onSelectCenter: (center: GisMapSnapshot["centers"][number]) => void; onSelectSos: (incident: GisMapSnapshot["sos"][number]) => void; onSelectFacility: (facility: OfficialFacility) => void; onReady: (map: any) => void; onError: (message: string) => void }) {
+export function GoogleOperationalMap({ snapshot, route, layers, radar, typhoon, mapOverlays, noahContext, facilityRegistry, facilityCategories, appearance, basemap, onSelectResource, onSelectCenter, onSelectSos, onSelectFacility, onReady, onTilesReady, onError }: { snapshot: GisMapSnapshot; route?: OptimizedRoute | null; layers: LayerState; radar: RadarSnapshot | null; typhoon: TyphoonSnapshot | null; mapOverlays: MapOverlaysSnapshot | null; noahContext: NoahMapContext | null; facilityRegistry: OfficialFacilityRegistry | null; facilityCategories: OfficialFacility["category"][]; appearance: AppearanceMode; basemap: GoogleBasemap; onSelectResource: (resource: GisResource) => void; onSelectCenter: (center: GisMapSnapshot["centers"][number]) => void; onSelectSos: (incident: GisMapSnapshot["sos"][number]) => void; onSelectFacility: (facility: OfficialFacility) => void; onReady: (map: any) => void; onTilesReady: () => void; onError: (message: string) => void }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<any>(null);
   const overlaysRef = useRef<any[]>([]);
@@ -41,14 +61,26 @@ export function GoogleOperationalMap({ snapshot, route, layers, radar, typhoon, 
 
   useEffect(() => {
     let active = true;
-    void loadGoogleMaps().then((maps) => {
-      if (!active || !containerRef.current) return;
-      const map = new maps.Map(containerRef.current, { center: position(snapshot.center), zoom: 13, minZoom: 7, maxZoom: 14, disableDefaultUI: true, clickableIcons: false, gestureHandling: "greedy", keyboardShortcuts: true, mapTypeId: basemap, styles: appearance === "dark" && basemap === "roadmap" ? darkMapStyles : undefined });
-      mapRef.current = map;
-      setReady(true);
-      onReady(map);
-    }).catch((error) => { if (active) onError(error instanceof Error ? error.message : "Google Maps could not be initialized."); });
-    return () => { active = false; overlaysRef.current.forEach((overlay) => overlay?.setMap?.(null)); overlaysRef.current = []; };
+    let retryTimer: number | null = null;
+    const initialize = (attempt: number) => {
+      void loadGoogleMaps().then((maps) => {
+        if (!active || !containerRef.current) return;
+        const map = new maps.Map(containerRef.current, { center: position(snapshot.center), zoom: 13, minZoom: 7, maxZoom: 14, disableDefaultUI: true, clickableIcons: false, gestureHandling: "greedy", keyboardShortcuts: true, mapTypeId: basemap, styles: appearance === "dark" && basemap === "roadmap" ? darkMapStyles : undefined });
+        mapRef.current = map;
+        setReady(true);
+        onReady(map);
+        maps.event.addListenerOnce(map, "tilesloaded", () => window.requestAnimationFrame(() => window.requestAnimationFrame(onTilesReady)));
+      }).catch((error) => {
+        if (!active) return;
+        if (attempt === 0) {
+          retryTimer = window.setTimeout(() => initialize(1), 700);
+          return;
+        }
+        onError(error instanceof Error ? error.message : "Google Maps could not be initialized.");
+      });
+    };
+    initialize(0);
+    return () => { active = false; if (retryTimer != null) window.clearTimeout(retryTimer); overlaysRef.current.forEach((overlay) => overlay?.setMap?.(null)); overlaysRef.current = []; };
   }, []);
 
   useEffect(() => {
