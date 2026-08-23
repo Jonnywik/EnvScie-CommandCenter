@@ -325,6 +325,7 @@ export type RadarFrame = {
 export type RadarSnapshot = {
   frames: RadarFrame[];
   host: string | null;
+  max_zoom?: number;
   fetched_at: string;
   stale: boolean;
 };

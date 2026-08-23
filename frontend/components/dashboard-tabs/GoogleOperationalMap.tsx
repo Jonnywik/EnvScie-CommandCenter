@@ -9,6 +9,7 @@ declare global { interface Window { google?: any; } }
 type LayerState = { hazards: boolean; resources: boolean; sos: boolean; centers: boolean; route: boolean; radar: boolean; typhoon: boolean; pagasaRadar: boolean; pagasaStations: boolean; pagasaSatellite: boolean; lightning: boolean };
 type LatLng = { lat: number; lng: number };
 export type GoogleBasemap = "roadmap" | "satellite" | "terrain";
+const RAINVIEWER_MAX_ZOOM = 7;
 let googleMapsPromise: Promise<any> | null = null;
 
 function loadGoogleMaps() {
@@ -82,11 +83,16 @@ export function GoogleOperationalMap({ snapshot, route, layers, radar, typhoon, 
     const registerTileOverlay = (id: string, name: string, frame: RadarSnapshot["frames"][number], host: string, opacity: number, maxZoom: number) => {
       const base = host.replace(/\/$/, "");
       const path = frame.path.startsWith("/") ? frame.path : `/${frame.path}`;
-      const overlay = new maps.ImageMapType({ name, opacity, tileSize: new maps.Size(256, 256), minZoom: 0, maxZoom, getTileUrl: (coord: { x: number; y: number }, zoom: number) => zoom > maxZoom ? transparentTile : `${base}${path}/256/${zoom}/${coord.x}/${coord.y}/4/1_0.png` });
+      const overlay = new maps.ImageMapType({ name, opacity, tileSize: new maps.Size(256, 256), minZoom: 0, maxZoom, getTileUrl: (coord: { x: number; y: number }, zoom: number) => {
+        const worldTileCount = 2 ** zoom;
+        if (zoom > maxZoom || coord.y < 0 || coord.y >= worldTileCount) return transparentTile;
+        const normalizedX = ((coord.x % worldTileCount) + worldTileCount) % worldTileCount;
+        return `${base}${path}/256/${zoom}/${normalizedX}/${coord.y}/4/1_0.png`;
+      } });
       overlayTypeRegistryRef.current[id] = overlay;
       map.overlayMapTypes.push(overlay);
     };
-    if (layers.radar && radarFrame && radar?.host) registerTileOverlay("rainviewer", "RainViewer radar", radarFrame, radar.host, .56, 10);
+    if (layers.radar && radarFrame && radar?.host) registerTileOverlay("rainviewer", "RainViewer radar", radarFrame, radar.host, .56, RAINVIEWER_MAX_ZOOM);
     const pagasaRadar = mapOverlays?.pagasa_radar;
     const pagasaFrame = pagasaRadar?.frames.at(-1);
     if (layers.pagasaRadar && pagasaRadar?.freshness !== "unavailable" && pagasaFrame && pagasaRadar?.host) registerTileOverlay("pagasa-radar-qpe", "PAGASA Radar/QPE", pagasaFrame, pagasaRadar.host, .5, pagasaRadar.max_zoom ?? 10);

@@ -469,3 +469,10 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Migrate relevant quick links and direct record entry points to semantic workstream destinations.
 - [x] Add regression coverage and validate reachability, accessibility, responsive containment, hosted behavior, TypeScript, and production build.
 - [x] Document and synchronize the completed first release.
+
+## Command Map unsupported-tile overlap repair
+
+- [x] Reproduce the reported repeated “Zoom Level Not Supported” overlap and identify the active overlay/provider response path.
+- [x] Prevent unsupported map tile responses from rendering visible provider error panels and preserve supported operational overlays.
+- [x] Add regression coverage and validate the affected hosted layout, map controls, and responsive containment.
+- [x] Document and synchronize the verified map-overlap fix.

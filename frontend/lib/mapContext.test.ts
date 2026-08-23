@@ -16,9 +16,9 @@ describe("regional satellite map context", () => {
   });
 
   it("builds the documented RainViewer tile path for a Balangiga map viewport", () => {
-    const tiles = rainViewerTilesForBbox([125.382, 11.12, 125.41, 11.145], "https://tilecache.rainviewer.com", "/v2/radar/1710000000", 10);
+    const tiles = rainViewerTilesForBbox([125.382, 11.12, 125.41, 11.145], "https://tilecache.rainviewer.com", "/v2/radar/1710000000", 7);
     expect(tiles.length).toBeGreaterThan(0);
-    expect(tiles[0].url).toMatch(/^https:\/\/tilecache\.rainviewer\.com\/v2\/radar\/1710000000\/512\/10\/\d+\/\d+\/4\/1_0\.png$/);
+    expect(tiles[0].url).toMatch(/^https:\/\/tilecache\.rainviewer\.com\/v2\/radar\/1710000000\/512\/7\/\d+\/\d+\/4\/1_0\.png$/);
     expect(tiles.every((tile) => tile.west < tile.east && tile.south < tile.north)).toBe(true);
   });
 

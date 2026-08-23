@@ -79,7 +79,8 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("Verify with the reporting party, center coordinator, and field teams");
     expect(workspaceSource).toContain('"satellite"');
     expect(workspaceSource).toContain("command-map-basemap-controls");
-    expect(workspaceSource).toContain("regional scale ≤10");
+    expect(workspaceSource).toContain("supported through map zoom");
+    expect(workspaceSource).toContain("rainviewerMaxZoom");
     expect(workspaceSource).toContain("{googleMapError && <svg");
     expect(workspaceSource).toContain("Google Maps {googleBasemap");
     expect(workspaceSource).toContain("unified-command-sidebar");

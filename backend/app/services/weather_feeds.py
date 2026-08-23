@@ -31,6 +31,7 @@ TYPHOON_CACHE_TTL_SECONDS = 600
 PROVINCIAL_WEATHER_CACHE_TTL_SECONDS = 600
 REQUEST_TIMEOUT_SECONDS = 5.0
 PROVINCIAL_FORECAST_TIMEOUT_SECONDS = 12.0
+RAINVIEWER_MAX_ZOOM = 7
 
 _radar_cache: dict[str, Any] | None = None
 _typhoon_cache: dict[str, Any] | None = None
@@ -173,11 +174,11 @@ async def get_radar_snapshot() -> dict[str, Any]:
             ]
             if not isinstance(host, str) or not host or not frames:
                 raise ValueError("RainViewer response did not contain usable radar frames")
-            snapshot = {"frames": frames, "host": host.rstrip("/"), "fetched_at": _utcnow(), "stale": False}
+            snapshot = {"frames": frames, "host": host.rstrip("/"), "max_zoom": RAINVIEWER_MAX_ZOOM, "fetched_at": _utcnow(), "stale": False}
             _radar_cache = {"stored_at": time.monotonic(), "snapshot": snapshot}
             return _copy(snapshot)
         except (httpx.HTTPError, ValueError, TypeError, KeyError):
-            return _stale_value(_radar_cache, {"frames": [], "host": None, "fetched_at": _utcnow(), "stale": True})
+            return _stale_value(_radar_cache, {"frames": [], "host": None, "max_zoom": RAINVIEWER_MAX_ZOOM, "fetched_at": _utcnow(), "stale": True})
 
 
 def _strip_html(markup: str) -> str:
