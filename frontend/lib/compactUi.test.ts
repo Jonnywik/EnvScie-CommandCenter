@@ -66,10 +66,17 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("Provider access pending");
     expect(workspaceSource).toContain("Provider procurement pending");
     expect(workspaceSource).toContain("getNoahMapContext");
+    expect(workspaceSource).toContain("getOfficialFacilityRegistry");
     expect(workspaceSource).toContain("PROJECT NOAH · REFERENCE");
     expect(workspaceSource).toContain("Flood · 100-year rain return");
     expect(workspaceSource).toContain("Open NOAH Studio facility context");
     expect(workspaceSource).toContain("critical_facilities.message");
+    expect(workspaceSource).toContain("OFFICIAL FACILITY REFERENCE");
+    expect(workspaceSource).toContain("Official facility registry controls");
+    expect(workspaceSource).toContain("Show source records");
+    expect(workspaceSource).toContain("Rural health units");
+    expect(workspaceSource).toContain("coordinate_validation_status.replaceAll");
+    expect(workspaceSource).toContain("Registry inclusion does not confirm staffing");
     expect(workspaceSource).toContain("getMapOverlays");
     expect(workspaceSource).toContain("command-map-layer-rail");
     expect(workspaceSource).toContain('aria-controls="command-map-layer-drawer"');
@@ -149,6 +156,8 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain(".layer-switch-group");
     expect(stylesSource).toContain(".layer-switch.pending");
     expect(stylesSource).toContain(".map-pin-sheet");
+    expect(stylesSource).toContain(".official-facility-layer");
+    expect(stylesSource).toContain(".official-facility-panel");
     expect(stylesSource).toContain(".gis-marker.selected");
     expect(stylesSource).toContain(".nav-item:focus-visible");
     expect(stylesSource).toContain("Appearance compliance: shared legacy surfaces");
@@ -179,6 +188,7 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain(".map-pin-sheet { position: absolute; z-index: 13; top: 116px; left: calc(var(--command-map-dock-width) + var(--command-map-dock-gutter))");
     expect(stylesSource).toContain(".command-map-sidebar.sidebar:not(.is-collapsed) + .command-map-shell .map-pin-sheet { left: 264px;");
     expect(stylesSource).toContain(".command-map-shell:has(.map-pin-sheet) .broadcast-fab");
+    expect(stylesSource).toContain(".command-map-shell:has(.official-facility-layer.is-open) .broadcast-fab");
     expect(stylesSource).toContain("@media (max-width: 760px) and (max-height: 520px)");
   });
 

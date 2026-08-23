@@ -34,6 +34,8 @@ from app.schemas.gis import (
     GisSosPoint,
     NoahMapContext,
     NoahOverlayLayer,
+    OfficialFacilityRecord,
+    OfficialFacilityRegistry,
     OptimizedRouteResponse,
     ResourcePositionUpdate,
     RouteOptimizationRequest,
@@ -909,6 +911,7 @@ async def gis_map_snapshot(session: AsyncSession | None = Depends(get_db)) -> Gi
 
 
 NOAH_DATA_DIRECTORY = Path(__file__).resolve().parents[1] / "data" / "noah"
+OFFICIAL_FACILITY_REGISTRY_PATH = Path(__file__).resolve().parents[1] / "data" / "facilities" / "official_balangiga_health_registry.json"
 
 
 @lru_cache(maxsize=1)
@@ -917,6 +920,13 @@ def _noah_manifest() -> dict:
     if not manifest_path.exists():
         raise HTTPException(status_code=503, detail="Project NOAH reference context is not installed.")
     return json.loads(manifest_path.read_text(encoding="utf-8"))
+
+
+@lru_cache(maxsize=1)
+def _official_facility_registry() -> dict:
+    if not OFFICIAL_FACILITY_REGISTRY_PATH.exists():
+        raise HTTPException(status_code=503, detail="Official facility registry is not installed.")
+    return json.loads(OFFICIAL_FACILITY_REGISTRY_PATH.read_text(encoding="utf-8"))
 
 
 @router.get("/gis/noah/context", response_model=NoahMapContext)
@@ -934,6 +944,19 @@ async def noah_map_context() -> NoahMapContext:
         decision_limit=manifest["decision_limit"],
         layers=[NoahOverlayLayer(**layer, overlay_url=f"/api/v1/gis/noah/overlays/{layer['id']}") for layer in manifest["layers"]],
         critical_facilities=manifest["critical_facilities"],
+    )
+
+
+@router.get("/gis/facilities/official-registry", response_model=OfficialFacilityRegistry)
+async def official_facility_registry() -> OfficialFacilityRegistry:
+    """Return source-backed facility references; never current readiness or access assertions."""
+    registry = _official_facility_registry()
+    return OfficialFacilityRegistry(
+        provider=registry["provider"],
+        scope=registry["scope"],
+        source_status=registry["source_status"],
+        decision_limit=registry["decision_limit"],
+        facilities=[OfficialFacilityRecord(**facility) for facility in registry["facilities"]],
     )
 
 

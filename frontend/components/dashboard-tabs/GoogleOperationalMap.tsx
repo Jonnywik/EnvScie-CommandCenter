@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { GisMapSnapshot, GisResource, MapOverlaysSnapshot, NoahMapContext, OptimizedRoute, RadarSnapshot, TyphoonSnapshot } from "../../lib/api";
+import type { GisMapSnapshot, GisResource, MapOverlaysSnapshot, NoahMapContext, OfficialFacility, OfficialFacilityRegistry, OptimizedRoute, RadarSnapshot, TyphoonSnapshot } from "../../lib/api";
 import type { AppearanceMode } from "./AppearanceToggle";
 
 declare global { interface Window { google?: any; } }
 
-type LayerState = { hazards: boolean; resources: boolean; sos: boolean; centers: boolean; route: boolean; radar: boolean; typhoon: boolean; pagasaRadar: boolean; pagasaStations: boolean; pagasaSatellite: boolean; lightning: boolean; noahFlood: boolean; noahLandslide: boolean; noahStormSurge: boolean };
+type LayerState = { hazards: boolean; resources: boolean; sos: boolean; centers: boolean; route: boolean; radar: boolean; typhoon: boolean; pagasaRadar: boolean; pagasaStations: boolean; pagasaSatellite: boolean; lightning: boolean; noahFlood: boolean; noahLandslide: boolean; noahStormSurge: boolean; officialFacilities: boolean };
 type LatLng = { lat: number; lng: number };
 export type GoogleBasemap = "roadmap" | "satellite" | "terrain";
 const RAINVIEWER_MAX_ZOOM = 7;
@@ -30,12 +30,13 @@ function loadGoogleMaps() {
 const position = (value: { latitude: number; longitude: number }): LatLng => ({ lat: value.latitude, lng: value.longitude });
 const darkMapStyles = [{ elementType: "geometry", stylers: [{ color: "#0b1e26" }] }, { elementType: "labels.text.fill", stylers: [{ color: "#b7d7dc" }] }, { elementType: "labels.text.stroke", stylers: [{ color: "#071318" }] }, { featureType: "water", elementType: "geometry", stylers: [{ color: "#103b4a" }] }, { featureType: "road", elementType: "geometry", stylers: [{ color: "#244d58" }] }, { featureType: "poi", elementType: "geometry", stylers: [{ color: "#122c34" }] }];
 
-export function GoogleOperationalMap({ snapshot, route, layers, radar, typhoon, mapOverlays, noahContext, appearance, basemap, onSelectResource, onSelectCenter, onSelectSos, onReady, onError }: { snapshot: GisMapSnapshot; route?: OptimizedRoute | null; layers: LayerState; radar: RadarSnapshot | null; typhoon: TyphoonSnapshot | null; mapOverlays: MapOverlaysSnapshot | null; noahContext: NoahMapContext | null; appearance: AppearanceMode; basemap: GoogleBasemap; onSelectResource: (resource: GisResource) => void; onSelectCenter: (center: GisMapSnapshot["centers"][number]) => void; onSelectSos: (incident: GisMapSnapshot["sos"][number]) => void; onReady: (map: any) => void; onError: (message: string) => void }) {
+export function GoogleOperationalMap({ snapshot, route, layers, radar, typhoon, mapOverlays, noahContext, facilityRegistry, facilityCategories, appearance, basemap, onSelectResource, onSelectCenter, onSelectSos, onSelectFacility, onReady, onError }: { snapshot: GisMapSnapshot; route?: OptimizedRoute | null; layers: LayerState; radar: RadarSnapshot | null; typhoon: TyphoonSnapshot | null; mapOverlays: MapOverlaysSnapshot | null; noahContext: NoahMapContext | null; facilityRegistry: OfficialFacilityRegistry | null; facilityCategories: OfficialFacility["category"][]; appearance: AppearanceMode; basemap: GoogleBasemap; onSelectResource: (resource: GisResource) => void; onSelectCenter: (center: GisMapSnapshot["centers"][number]) => void; onSelectSos: (incident: GisMapSnapshot["sos"][number]) => void; onSelectFacility: (facility: OfficialFacility) => void; onReady: (map: any) => void; onError: (message: string) => void }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<any>(null);
   const overlaysRef = useRef<any[]>([]);
   const overlayTypeRegistryRef = useRef<Record<string, any>>({});
   const hasFittedInitialExtent = useRef(false);
+  const hasFittedFacilityExtent = useRef(false);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -68,6 +69,15 @@ export function GoogleOperationalMap({ snapshot, route, layers, radar, typhoon, 
         if ((map.getZoom?.() || 14) > 14) map.setZoom(14);
       });
     }
+    const visibleFacilities = facilityRegistry?.facilities.filter((facility) => facilityCategories.includes(facility.category)) || [];
+    if (!layers.officialFacilities) hasFittedFacilityExtent.current = false;
+    if (layers.officialFacilities && visibleFacilities.length && !hasFittedFacilityExtent.current) {
+      const facilityBounds = new maps.LatLngBounds();
+      facilityBounds.extend(position(snapshot.center));
+      visibleFacilities.forEach((facility) => facilityBounds.extend(position(facility.position)));
+      map.fitBounds(facilityBounds, 56);
+      hasFittedFacilityExtent.current = true;
+    }
     if (layers.hazards) snapshot.hazards.forEach((hazard) => overlaysRef.current.push(new maps.Polygon({ map, paths: hazard.polygon.map(position), fillColor: hazard.severity === "critical" ? "#ef4444" : "#f59e0b", fillOpacity: hazard.status === "active" ? .28 : .14, strokeColor: hazard.severity === "critical" ? "#be123c" : "#b45309", strokeOpacity: 1, strokeWeight: 2, clickable: true })));
     const noahBounds = noahContext ? { north: noahContext.focus_bbox.north, south: noahContext.focus_bbox.south, east: noahContext.focus_bbox.east, west: noahContext.focus_bbox.west } : null;
     const addNoahOverlay = (id: NoahMapContext["layers"][number]["id"], enabled: boolean) => {
@@ -80,6 +90,7 @@ export function GoogleOperationalMap({ snapshot, route, layers, radar, typhoon, 
     addNoahOverlay("noah-storm-surge-scenarios", layers.noahStormSurge);
     if (layers.route && route?.route.length) overlaysRef.current.push(new maps.Polyline({ map, path: route.route.map(position), strokeColor: "#0d9488", strokeOpacity: 1, strokeWeight: 5 }));
     if (layers.centers) snapshot.centers.forEach((center) => { const marker = new maps.Marker({ map, position: position(center.position), title: `${center.name} · ${center.occupancy_current}/${center.capacity_total}`, label: { text: "E", color: "#ffffff", fontWeight: "700" }, icon: { path: maps.SymbolPath.CIRCLE, fillColor: "#0f766e", fillOpacity: 1, strokeColor: "#ffffff", strokeWeight: 2, scale: 11 } }); marker.addListener("click", () => onSelectCenter(center)); overlaysRef.current.push(marker); });
+    if (layers.officialFacilities) visibleFacilities.forEach((facility) => { const marker = new maps.Marker({ map, position: position(facility.position), title: `${facility.name} · official registry reference · ${facility.coordinate_validation_status.replaceAll("_", " ")}`, label: { text: facility.category === "hospital" ? "H" : "+", color: "#ffffff", fontWeight: "800" }, icon: { path: maps.SymbolPath.CIRCLE, fillColor: facility.category === "hospital" ? "#155e75" : "#0369a1", fillOpacity: 1, strokeColor: "#d9f5fa", strokeWeight: 2, scale: 10 } }); marker.addListener("click", () => onSelectFacility(facility)); overlaysRef.current.push(marker); });
     if (layers.sos) snapshot.sos.forEach((incident) => { const marker = new maps.Marker({ map, position: position(incident.position), title: `${incident.summary} · ${incident.status}`, label: { text: "!", color: "#ffffff", fontWeight: "900" }, icon: { path: maps.SymbolPath.CIRCLE, fillColor: "#e11d48", fillOpacity: 1, strokeColor: "#ffffff", strokeWeight: 2, scale: 10 } }); marker.addListener("click", () => onSelectSos(incident)); overlaysRef.current.push(marker); });
     if (layers.resources) snapshot.resources.forEach((resource) => { const marker = new maps.Marker({ map, position: position(resource.position), title: `${resource.label} · ${resource.state}`, label: { text: resource.kind === "medical" ? "+" : resource.kind === "boat" ? "⌁" : "•", color: "#ffffff", fontWeight: "900" }, icon: { path: maps.SymbolPath.CIRCLE, fillColor: resource.state === "offline" ? "#64748b" : "#2563eb", fillOpacity: 1, strokeColor: "#ffffff", strokeWeight: 2, scale: 10 } }); marker.addListener("click", () => onSelectResource(resource)); overlaysRef.current.push(marker); });
     if (layers.typhoon && typhoon?.active && typhoon.latitude != null && typhoon.longitude != null) { if (typhoon.track.length > 1) overlaysRef.current.push(new maps.Polyline({ map, path: typhoon.track.map(position), strokeColor: "#8b5cf6", strokeOpacity: .9, strokeWeight: 3 })); overlaysRef.current.push(new maps.Marker({ map, position: { lat: typhoon.latitude, lng: typhoon.longitude }, title: `${typhoon.name || "Tropical cyclone"} · PAGASA bulletin`, label: { text: "◌", color: "#ffffff" }, icon: { path: maps.SymbolPath.CIRCLE, fillColor: "#7c3aed", fillOpacity: 1, strokeColor: "#ffffff", strokeWeight: 2, scale: 14 } })); }
@@ -105,7 +116,7 @@ export function GoogleOperationalMap({ snapshot, route, layers, radar, typhoon, 
     const pagasaRadar = mapOverlays?.pagasa_radar;
     const pagasaFrame = pagasaRadar?.frames.at(-1);
     if (layers.pagasaRadar && pagasaRadar?.freshness !== "unavailable" && pagasaFrame && pagasaRadar?.host) registerTileOverlay("pagasa-radar-qpe", "PAGASA Radar/QPE", pagasaFrame, pagasaRadar.host, .5, pagasaRadar.max_zoom ?? 10);
-  }, [appearance, basemap, layers, mapOverlays, noahContext, radar, ready, route, snapshot, typhoon]);
+  }, [appearance, basemap, facilityCategories, facilityRegistry, layers, mapOverlays, noahContext, radar, ready, route, snapshot, typhoon]);
 
   return <div ref={containerRef} className="google-operational-map" role="application" aria-label="Interactive Google Map of Balangiga operational resources, hazards, evacuation centers, and SOS locations" />;
 }

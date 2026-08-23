@@ -83,6 +83,21 @@ def test_project_noah_overlay_endpoint_is_bounded_to_known_assets() -> None:
     assert missing.status_code == 404
 
 
+def test_official_balangiga_facility_registry_preserves_provenance_and_validation_boundary() -> None:
+    response = client.get("/v1/gis/facilities/official-registry")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["source_status"] == "limited_official_coverage"
+    assert {facility["name"] for facility in payload["facilities"]} == {
+        "Albino M. Duran Memorial Hospital",
+        "Balangiga Rural Health Unit",
+    }
+    assert all(facility["source_url"].startswith("https://") for facility in payload["facilities"])
+    assert all(facility["coordinate_validation_status"] == "needs_lgu_verification" for facility in payload["facilities"])
+    assert "do not confirm current staffing" in payload["decision_limit"].lower()
+
+
 def test_provincial_weather_endpoint_returns_live_and_static_source_contract(monkeypatch) -> None:
     async def fake_provincial_weather() -> dict:
         return {

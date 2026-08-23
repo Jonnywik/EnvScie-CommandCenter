@@ -1,0 +1,34 @@
+{
+  "provider": "Department of Health Eastern Visayas and National Tuberculosis Control Program",
+  "scope": "Official government health-facility reference records for Balangiga, Eastern Samar",
+  "source_status": "limited_official_coverage",
+  "decision_limit": "Registry inclusion and provisional map placement do not confirm current staffing, service availability, capacity, accessibility, supplies, communications, or suitability for an emergency task. Verify with the LGU/DRRMO and facility contact before operational use.",
+  "facilities": [
+    {
+      "id": "doh-ntp-albino-m-duran-memorial-hospital",
+      "name": "Albino M. Duran Memorial Hospital",
+      "category": "hospital",
+      "ownership": "public",
+      "address": "National Highway, Poblacion 6, Balangiga, Eastern Samar",
+      "position": {"latitude": 11.107437, "longitude": 125.391359},
+      "source_name": "DOH National Tuberculosis Control Program facility directory",
+      "source_url": "https://ntp.doh.gov.ph/resources/facilities/?yiiwp-page=7",
+      "coordinate_source": "Google Maps Plus Code 494R+XGH resolved from the official facility name and address",
+      "coordinate_validation_status": "needs_lgu_verification",
+      "validation_message": "Confirm the pin and current facility status with Balangiga LGU/DRRMO before operational use."
+    },
+    {
+      "id": "doh-ro8-balangiga-rural-health-unit",
+      "name": "Balangiga Rural Health Unit",
+      "category": "rural_health_unit",
+      "ownership": "public",
+      "address": "Rizal Street, Balangiga, Eastern Samar (map-search reference)",
+      "position": {"latitude": 11.109362, "longitude": 125.386484},
+      "source_name": "DOH Eastern Visayas Center for Health Development rural health unit list",
+      "source_url": "https://ro8.doh.gov.ph/list-of-rural-health-units/",
+      "coordinate_source": "Google Maps Plus Code 495P+PHX resolved from the official facility name",
+      "coordinate_validation_status": "needs_lgu_verification",
+      "validation_message": "Confirm the pin, address, and current facility status with Balangiga LGU/DRRMO before operational use."
+    }
+  ]
+}

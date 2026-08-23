@@ -107,6 +107,28 @@ class NoahMapContext(BaseModel):
     critical_facilities: NoahCriticalFacilitiesSource
 
 
+class OfficialFacilityRecord(BaseModel):
+    id: str
+    name: str
+    category: Literal["hospital", "rural_health_unit"]
+    ownership: Literal["public", "private", "unknown"]
+    address: str
+    position: RoutePoint
+    source_name: str
+    source_url: str
+    coordinate_source: str
+    coordinate_validation_status: Literal["verified", "needs_lgu_verification"]
+    validation_message: str
+
+
+class OfficialFacilityRegistry(BaseModel):
+    provider: str
+    scope: str
+    source_status: Literal["available", "limited_official_coverage"]
+    decision_limit: str
+    facilities: list[OfficialFacilityRecord]
+
+
 class RouteOptimizationRequest(BaseModel):
     latitude: float = Field(ge=-90, le=90)
     longitude: float = Field(ge=-180, le=180)

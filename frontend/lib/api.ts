@@ -343,6 +343,28 @@ export type NoahMapContext = {
   };
 };
 
+export type OfficialFacility = {
+  id: string;
+  name: string;
+  category: "hospital" | "rural_health_unit";
+  ownership: "public" | "private" | "unknown";
+  address: string;
+  position: { latitude: number; longitude: number };
+  source_name: string;
+  source_url: string;
+  coordinate_source: string;
+  coordinate_validation_status: "verified" | "needs_lgu_verification";
+  validation_message: string;
+};
+
+export type OfficialFacilityRegistry = {
+  provider: string;
+  scope: string;
+  source_status: "available" | "limited_official_coverage";
+  decision_limit: string;
+  facilities: OfficialFacility[];
+};
+
 export type RadarFrame = {
   time: number;
   path: string;
@@ -782,6 +804,10 @@ export function getGisMap() {
 
 export function getNoahMapContext() {
   return request<NoahMapContext>("/gis/noah/context");
+}
+
+export function getOfficialFacilityRegistry() {
+  return request<OfficialFacilityRegistry>("/gis/facilities/official-registry");
 }
 
 export function getWeatherRadar() {

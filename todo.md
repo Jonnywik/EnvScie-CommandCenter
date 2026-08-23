@@ -512,3 +512,10 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Validate import behavior, provenance, safety boundaries, accessibility, responsiveness, frontend/backend tests, and production builds.
 - [x] Document and synchronize the Project NOAH hazard integration.
 - [ ] Import Project NOAH critical-facility records only after a documented machine-readable source or authorized service is available; then apply category mapping and LGU validation.
+
+## Official LGU/DRRMO critical-facility registry integration
+- [x] Identify and validate an official LGU, DRRMO, or government registry with Balangiga/Eastern Samar facility coverage and reusable licensing.
+- [x] Model provenance-aware critical-facility records and import the validated registry without conflating it with local operational status.
+- [x] Add a filterable facility layer, category-aware inspectors, evidence labels, and non-automated exposure context to the Command Map.
+- [x] Validate provenance, safety boundaries, accessibility, responsive behavior, frontend/backend tests, and production builds.
+- [x] Document and synchronize the official facility-registry integration.
