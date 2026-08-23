@@ -490,3 +490,9 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Preserve mobile horizontal navigation, accessible collapse/expand controls, workstream state, map controls, and dark/light appearance behavior.
 - [x] Add regression coverage and validate collapsed/expanded desktop geometry, responsive containment, TypeScript, production build, and hosted behavior.
 - [x] Document and synchronize the refined Command Map shell.
+
+## Command Map full-height navigation dock
+- [x] Inspect the current dock-height constraints and header clearance behavior.
+- [x] Remove the unused blank gap while preserving a natural header-to-navigation transition and full-height workstream access.
+- [x] Add regression coverage and validate collapsed/expanded desktop geometry, responsive containment, accessibility, TypeScript, production build, and hosted behavior.
+- [x] Document and synchronize the full-height navigation-dock refinement.
