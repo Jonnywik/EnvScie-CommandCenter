@@ -452,3 +452,10 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Add accessible PAGASA radar, station, satellite-context, and disabled licensed-lightning controls to the Command Map drawer.
 - [x] Extend Google Maps overlay rendering for the normalized overlays while preserving hazards, SOS, resources, route, zoom, and fallback behavior.
 - [x] Add backend/frontend regression tests, validate hosted desktop/mobile behavior, document the foundation, and synchronize the implementation.
+
+## Interactive Command Map pin information sheets
+
+- [x] Audit resource, evacuation-center, and SOS marker data plus the existing inspection UI and map pin handlers.
+- [x] Add structured selected-pin state and click handlers for resources, evacuation centers, and SOS alerts.
+- [x] Build accessible responsive information sheets with source freshness, operational details, and decision-support safeguards.
+- [x] Add regression coverage, validate the hosted map on desktop and mobile, document the behavior, and synchronize the feature.

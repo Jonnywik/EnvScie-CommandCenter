@@ -69,6 +69,13 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain('aria-controls="command-map-layer-drawer"');
     expect(workspaceSource).toContain("CommandCenterNavigation");
     expect(workspaceSource).toContain("GoogleOperationalMap");
+    expect(workspaceSource).toContain("onSelectCenter");
+    expect(workspaceSource).toContain("onSelectSos");
+    expect(workspaceSource).toContain("MapInspectablePin");
+    expect(workspaceSource).toContain("map-pin-sheet");
+    expect(workspaceSource).toContain("Inspect evacuation center");
+    expect(workspaceSource).toContain("Inspect SOS alert");
+    expect(workspaceSource).toContain("Verify with the reporting party, center coordinator, and field teams");
     expect(workspaceSource).toContain('"satellite"');
     expect(workspaceSource).toContain("command-map-basemap-controls");
     expect(workspaceSource).toContain("regional scale ≤10");
@@ -109,6 +116,8 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain(".command-map-basemap-controls");
     expect(stylesSource).toContain(".layer-switch-group");
     expect(stylesSource).toContain(".layer-switch.pending");
+    expect(stylesSource).toContain(".map-pin-sheet");
+    expect(stylesSource).toContain(".gis-marker.selected");
     expect(stylesSource).toContain(".nav-item:focus-visible");
     expect(stylesSource).toContain("Appearance compliance: shared legacy surfaces");
     expect(stylesSource).toContain('html[data-appearance="dark"] .sidebar');
