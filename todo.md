@@ -476,3 +476,10 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Prevent unsupported map tile responses from rendering visible provider error panels and preserve supported operational overlays.
 - [x] Add regression coverage and validate the affected hosted layout, map controls, and responsive containment.
 - [x] Document and synchronize the verified map-overlap fix.
+
+## Command Map side-navigation containment repair
+
+- [x] Inspect the fixed side-navigation rail, expand/collapse control, and Command Map header geometry at the reported narrow layout.
+- [x] Constrain navigation and the expand/collapse control below the header/logo boundary in collapsed and expanded states.
+- [x] Add regression coverage and validate desktop and narrow-layout containment without breaking navigation accessibility.
+- [x] Document and synchronize the verified navigation-overlap repair.

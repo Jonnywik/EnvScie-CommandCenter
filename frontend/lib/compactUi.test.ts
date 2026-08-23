@@ -94,6 +94,7 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("FunctionalViewSelector");
     expect(workspaceSource).toContain("aria-current={activeTab === view ? \"page\" : undefined}");
     expect(workspaceSource).toContain("1–5");
+    expect(workspaceSource).toContain("command-map-sidebar");
     expect(workspaceSource).toContain('"Command Map"');
     expect(workspaceSource).toContain('"Incidents"');
     expect(workspaceSource).toContain('"Field Response"');
@@ -127,6 +128,9 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain(".command-map-sidebar");
     expect(stylesSource).toContain(".sidebar.is-collapsed");
     expect(stylesSource).toContain(".nav-collapse-toggle");
+    expect(stylesSource).toContain(".command-map-sidebar { position: fixed; z-index: 35; top: 94px; bottom: 0; left: 0;");
+    expect(stylesSource).toContain(".command-map-sidebar .nav-collapse-toggle { position: sticky; top: 0; z-index: 1; }");
+    expect(stylesSource).toContain(".command-map-sidebar { z-index: 45; top: 94px; right: 64px; bottom: auto; left: 9px;");
     expect(stylesSource).toContain(".functional-view-selector");
     expect(stylesSource).toContain(".google-operational-map");
     expect(stylesSource).toContain(".command-map-basemap-controls");
