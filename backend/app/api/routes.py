@@ -81,7 +81,7 @@ from app.services.dispatch_recommendations import build_dispatch_recommendations
 from app.services.notifications import retry_notification, send_assignment_notification
 from app.services.sos_codec import PayloadError, decode_sms_payload
 from app.services.sos_state import is_valid_sos_transition
-from app.services.weather_feeds import evaluate_high_flood_risk, get_provincial_weather_snapshot, get_radar_snapshot, get_typhoon_snapshot
+from app.services.weather_feeds import evaluate_high_flood_risk, get_map_overlays_snapshot, get_provincial_weather_snapshot, get_radar_snapshot, get_typhoon_snapshot
 from app.services.responder_safety import build_responder_safety_assessment
 
 router = APIRouter(prefix="/v1")
@@ -914,6 +914,17 @@ async def weather_radar() -> dict:
 async def weather_typhoon() -> dict:
     """PAGASA bulletin snapshot for decision support, never route-safety confirmation."""
     return await get_typhoon_snapshot()
+
+
+@router.get("/weather/map-overlays")
+async def weather_map_overlays() -> dict:
+    """Composite Command Map overlay contract with explicit provider-access states.
+
+    Pending PAGASA radar/station/satellite and licensed-lightning layers are
+    returned as disabled states until their access terms are approved. The route
+    never turns absent data into a no-hazard, safe-route, or dispatch decision.
+    """
+    return await get_map_overlays_snapshot()
 
 
 @router.get("/weather/provincial-situation")

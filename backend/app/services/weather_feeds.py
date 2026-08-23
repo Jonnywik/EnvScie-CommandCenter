@@ -21,6 +21,9 @@ import httpx
 RAINVIEWER_URL = "https://api.rainviewer.com/public/weather-maps.json"
 PAGASA_BULLETIN_URL = "https://www.pagasa.dost.gov.ph/tropical-cyclone/severe-weather-bulletin"
 PAGASA_VISAYAS_FORECAST_URL = "https://www.pagasa.dost.gov.ph/regional-forecast/visprsd"
+PAGASA_RADAR_URL = "https://www.pagasa.dost.gov.ph/radar"
+PAGASA_SATELLITE_URL = "https://www.pagasa.dost.gov.ph/products-and-services/satellite"
+PANAHON_URL = "https://www.panahon.gov.ph/"
 PROJECT_NOAH_DATASET_URL = "https://data.bettergov.ph/datasets/22"
 PROJECT_NOAH_REPOSITORY_URL = "https://huggingface.co/datasets/bettergovph/project-noah-hazard-maps"
 RADAR_CACHE_TTL_SECONDS = 300
@@ -57,6 +60,92 @@ def _stale_value(cache: dict[str, Any] | None, fallback: dict[str, Any]) -> dict
     snapshot = _copy(cache["snapshot"])
     snapshot["stale"] = True
     return snapshot
+
+
+def _unconfigured_overlay(
+    *,
+    overlay_id: str,
+    kind: str,
+    provider: str,
+    source_url: str,
+    coverage: str,
+    decision_limit: str,
+    access_state: str = "pending_approval",
+) -> dict[str, Any]:
+    """Return an explicit disabled state without querying an unapproved provider."""
+    return {
+        "id": overlay_id,
+        "kind": kind,
+        "provider": provider,
+        "source_url": source_url,
+        "observed_at": None,
+        "fetched_at": _utcnow(),
+        "expires_at": None,
+        "freshness": "unavailable",
+        "coverage": coverage,
+        "resolution": None,
+        "decision_limit": decision_limit,
+        "access_state": access_state,
+        "message": "Provider access is pending. No external feed was requested.",
+    }
+
+
+async def get_map_overlays_snapshot() -> dict[str, Any]:
+    """Return one safe map-overlay contract for a Command Map refresh.
+
+    Existing public RainViewer/PAGASA bulletin adapters remain available. PAGASA
+    radar, station, satellite, and licensed lightning integrations deliberately
+    stay disabled until the LGU has documented provider access and credentials.
+    This function never scrapes or hotlinks those pending providers.
+    """
+    radar, typhoon = await asyncio.gather(get_radar_snapshot(), get_typhoon_snapshot())
+    pagasa_radar = _unconfigured_overlay(
+        overlay_id="pagasa-radar-qpe",
+        kind="radar_qpe",
+        provider="PAGASA",
+        source_url=PAGASA_RADAR_URL,
+        coverage="Philippine radar/QPE coverage pending approved product scope",
+        decision_limit="Not enabled. A future radar/QPE layer will remain decision support and will not confirm flood depth, road clearance, or field safety.",
+    )
+    pagasa_stations = _unconfigured_overlay(
+        overlay_id="pagasa-stations",
+        kind="station_observation",
+        provider="PAGASA PANaHON",
+        source_url=PANAHON_URL,
+        coverage="Station coverage near Balangiga pending approved data access",
+        decision_limit="Not enabled. Point observations must not be interpolated into unverified barangay or road conditions.",
+    )
+    pagasa_satellite = _unconfigured_overlay(
+        overlay_id="pagasa-himawari-context",
+        kind="satellite",
+        provider="PAGASA Himawari",
+        source_url=PAGASA_SATELLITE_URL,
+        coverage="Philippine satellite context pending approved product scope",
+        decision_limit="Not enabled. Satellite imagery is not a direct observation of ground rainfall, flood depth, damage, or surface wind.",
+    )
+    lightning = _unconfigured_overlay(
+        overlay_id="licensed-lightning",
+        kind="lightning",
+        provider="Licensed lightning provider",
+        source_url="",
+        coverage="Eastern Visayas coverage pending provider selection and contract",
+        decision_limit="Not enabled. Lightning context cannot automatically hold, reroute, dispatch, or message field units.",
+        access_state="pending_procurement",
+    )
+    lightning["message"] = "Licensed lightning provider access is pending. No lightning feed was requested."
+    lightning["history_minutes"] = 15
+    lightning["events"] = []
+    return {
+        "fetched_at": _utcnow(),
+        "stale": bool(radar.get("stale") or typhoon.get("stale")),
+        "rainviewer_radar": radar,
+        "typhoon": typhoon,
+        "pagasa_radar": {**pagasa_radar, "frames": []},
+        "pagasa_stations": {**pagasa_stations, "stations": []},
+        "pagasa_satellite": {**pagasa_satellite, "frame": None},
+        "lightning": lightning,
+        "decision_limit": "Map overlays provide operational context only and do not confirm field safety, route clearance, flood depth, damage, evacuation readiness, or transmission delivery.",
+    }
 
 
 async def get_radar_snapshot() -> dict[str, Any]:

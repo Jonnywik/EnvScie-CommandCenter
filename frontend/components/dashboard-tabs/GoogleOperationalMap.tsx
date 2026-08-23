@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { GisMapSnapshot, GisResource, OptimizedRoute, RadarSnapshot, TyphoonSnapshot } from "../../lib/api";
+import type { GisMapSnapshot, GisResource, MapOverlaysSnapshot, OptimizedRoute, RadarSnapshot, TyphoonSnapshot } from "../../lib/api";
 import type { AppearanceMode } from "./AppearanceToggle";
 
 declare global { interface Window { google?: any; } }
 
-type LayerState = { hazards: boolean; resources: boolean; sos: boolean; centers: boolean; route: boolean; radar: boolean; typhoon: boolean };
+type LayerState = { hazards: boolean; resources: boolean; sos: boolean; centers: boolean; route: boolean; radar: boolean; typhoon: boolean; pagasaRadar: boolean; pagasaStations: boolean; pagasaSatellite: boolean; lightning: boolean };
 type LatLng = { lat: number; lng: number };
 export type GoogleBasemap = "roadmap" | "satellite" | "terrain";
 let googleMapsPromise: Promise<any> | null = null;
@@ -29,10 +29,11 @@ function loadGoogleMaps() {
 const position = (value: { latitude: number; longitude: number }): LatLng => ({ lat: value.latitude, lng: value.longitude });
 const darkMapStyles = [{ elementType: "geometry", stylers: [{ color: "#0b1e26" }] }, { elementType: "labels.text.fill", stylers: [{ color: "#b7d7dc" }] }, { elementType: "labels.text.stroke", stylers: [{ color: "#071318" }] }, { featureType: "water", elementType: "geometry", stylers: [{ color: "#103b4a" }] }, { featureType: "road", elementType: "geometry", stylers: [{ color: "#244d58" }] }, { featureType: "poi", elementType: "geometry", stylers: [{ color: "#122c34" }] }];
 
-export function GoogleOperationalMap({ snapshot, route, layers, radar, typhoon, appearance, basemap, onSelectResource, onReady, onError }: { snapshot: GisMapSnapshot; route?: OptimizedRoute | null; layers: LayerState; radar: RadarSnapshot | null; typhoon: TyphoonSnapshot | null; appearance: AppearanceMode; basemap: GoogleBasemap; onSelectResource: (resource: GisResource) => void; onReady: (map: any) => void; onError: (message: string) => void }) {
+export function GoogleOperationalMap({ snapshot, route, layers, radar, typhoon, mapOverlays, appearance, basemap, onSelectResource, onReady, onError }: { snapshot: GisMapSnapshot; route?: OptimizedRoute | null; layers: LayerState; radar: RadarSnapshot | null; typhoon: TyphoonSnapshot | null; mapOverlays: MapOverlaysSnapshot | null; appearance: AppearanceMode; basemap: GoogleBasemap; onSelectResource: (resource: GisResource) => void; onReady: (map: any) => void; onError: (message: string) => void }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<any>(null);
   const overlaysRef = useRef<any[]>([]);
+  const overlayTypeRegistryRef = useRef<Record<string, any>>({});
   const hasFittedInitialExtent = useRef(false);
   const [ready, setReady] = useState(false);
 
@@ -72,10 +73,24 @@ export function GoogleOperationalMap({ snapshot, route, layers, radar, typhoon, 
     if (layers.sos) snapshot.sos.forEach((incident) => overlaysRef.current.push(new maps.Marker({ map, position: position(incident.position), title: `${incident.summary} · ${incident.status}`, label: { text: "!", color: "#ffffff", fontWeight: "900" }, icon: { path: maps.SymbolPath.CIRCLE, fillColor: "#e11d48", fillOpacity: 1, strokeColor: "#ffffff", strokeWeight: 2, scale: 10 } })));
     if (layers.resources) snapshot.resources.forEach((resource) => { const marker = new maps.Marker({ map, position: position(resource.position), title: `${resource.label} · ${resource.state}`, label: { text: resource.kind === "medical" ? "+" : resource.kind === "boat" ? "⌁" : "•", color: "#ffffff", fontWeight: "900" }, icon: { path: maps.SymbolPath.CIRCLE, fillColor: resource.state === "offline" ? "#64748b" : "#2563eb", fillOpacity: 1, strokeColor: "#ffffff", strokeWeight: 2, scale: 10 } }); marker.addListener("click", () => onSelectResource(resource)); overlaysRef.current.push(marker); });
     if (layers.typhoon && typhoon?.active && typhoon.latitude != null && typhoon.longitude != null) { if (typhoon.track.length > 1) overlaysRef.current.push(new maps.Polyline({ map, path: typhoon.track.map(position), strokeColor: "#8b5cf6", strokeOpacity: .9, strokeWeight: 3 })); overlaysRef.current.push(new maps.Marker({ map, position: { lat: typhoon.latitude, lng: typhoon.longitude }, title: `${typhoon.name || "Tropical cyclone"} · PAGASA bulletin`, label: { text: "◌", color: "#ffffff" }, icon: { path: maps.SymbolPath.CIRCLE, fillColor: "#7c3aed", fillOpacity: 1, strokeColor: "#ffffff", strokeWeight: 2, scale: 14 } })); }
+    if (layers.pagasaStations && mapOverlays?.pagasa_stations.freshness !== "unavailable") mapOverlays?.pagasa_stations.stations.forEach((station) => overlaysRef.current.push(new maps.Marker({ map, position: { lat: station.latitude, lng: station.longitude }, title: `${station.name} · observed ${station.observed_at}`, label: { text: "S", color: "#ffffff", fontWeight: "700" }, icon: { path: maps.SymbolPath.CIRCLE, fillColor: "#0891b2", fillOpacity: 1, strokeColor: "#ffffff", strokeWeight: 2, scale: 8 } })));
+    if (layers.lightning && mapOverlays?.lightning.freshness !== "unavailable") mapOverlays?.lightning.events.forEach((event) => overlaysRef.current.push(new maps.Marker({ map, position: { lat: event.latitude, lng: event.longitude }, title: `Licensed lightning observation · ${event.observed_at}`, label: { text: "ϟ", color: "#172554", fontWeight: "900" }, icon: { path: maps.SymbolPath.CIRCLE, fillColor: "#facc15", fillOpacity: .92, strokeColor: "#fff7cc", strokeWeight: 2, scale: 6 } })));
     map.overlayMapTypes.clear();
+    overlayTypeRegistryRef.current = {};
     const radarFrame = radar?.frames.at(-1);
-    if (layers.radar && radarFrame && radar?.host) { const base = radar.host.replace(/\/$/, ""); const path = radarFrame.path.startsWith("/") ? radarFrame.path : `/${radarFrame.path}`; const transparentTile = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'/%3E"; map.overlayMapTypes.push(new maps.ImageMapType({ name: "RainViewer radar", opacity: .56, tileSize: new maps.Size(256, 256), minZoom: 0, maxZoom: 10, getTileUrl: (coord: { x: number; y: number }, zoom: number) => zoom > 10 ? transparentTile : `${base}${path}/256/${zoom}/${coord.x}/${coord.y}/4/1_0.png` })); }
-  }, [appearance, basemap, layers, radar, ready, route, snapshot, typhoon]);
+    const transparentTile = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='256' height='256'/%3E";
+    const registerTileOverlay = (id: string, name: string, frame: RadarSnapshot["frames"][number], host: string, opacity: number, maxZoom: number) => {
+      const base = host.replace(/\/$/, "");
+      const path = frame.path.startsWith("/") ? frame.path : `/${frame.path}`;
+      const overlay = new maps.ImageMapType({ name, opacity, tileSize: new maps.Size(256, 256), minZoom: 0, maxZoom, getTileUrl: (coord: { x: number; y: number }, zoom: number) => zoom > maxZoom ? transparentTile : `${base}${path}/256/${zoom}/${coord.x}/${coord.y}/4/1_0.png` });
+      overlayTypeRegistryRef.current[id] = overlay;
+      map.overlayMapTypes.push(overlay);
+    };
+    if (layers.radar && radarFrame && radar?.host) registerTileOverlay("rainviewer", "RainViewer radar", radarFrame, radar.host, .56, 10);
+    const pagasaRadar = mapOverlays?.pagasa_radar;
+    const pagasaFrame = pagasaRadar?.frames.at(-1);
+    if (layers.pagasaRadar && pagasaRadar?.freshness !== "unavailable" && pagasaFrame && pagasaRadar?.host) registerTileOverlay("pagasa-radar-qpe", "PAGASA Radar/QPE", pagasaFrame, pagasaRadar.host, .5, pagasaRadar.max_zoom ?? 10);
+  }, [appearance, basemap, layers, mapOverlays, radar, ready, route, snapshot, typhoon]);
 
   return <div ref={containerRef} className="google-operational-map" role="application" aria-label="Interactive Google Map of Balangiga operational resources, hazards, evacuation centers, and SOS locations" />;
 }

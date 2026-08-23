@@ -58,6 +58,13 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("Mass Area Notification");
     expect(workspaceSource).toContain("Live Weather Radar");
     expect(workspaceSource).toContain("Flood Risk Zones");
+    expect(workspaceSource).toContain("PAGASA Radar/QPE");
+    expect(workspaceSource).toContain("PAGASA Stations");
+    expect(workspaceSource).toContain("Himawari Context");
+    expect(workspaceSource).toContain("Licensed Lightning");
+    expect(workspaceSource).toContain("Provider access pending");
+    expect(workspaceSource).toContain("Provider procurement pending");
+    expect(workspaceSource).toContain("getMapOverlays");
     expect(workspaceSource).toContain("command-map-layer-rail");
     expect(workspaceSource).toContain('aria-controls="command-map-layer-drawer"');
     expect(workspaceSource).toContain("CommandCenterNavigation");
@@ -100,6 +107,8 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain(".nav-collapse-toggle");
     expect(stylesSource).toContain(".google-operational-map");
     expect(stylesSource).toContain(".command-map-basemap-controls");
+    expect(stylesSource).toContain(".layer-switch-group");
+    expect(stylesSource).toContain(".layer-switch.pending");
     expect(stylesSource).toContain(".nav-item:focus-visible");
     expect(stylesSource).toContain("Appearance compliance: shared legacy surfaces");
     expect(stylesSource).toContain('html[data-appearance="dark"] .sidebar');

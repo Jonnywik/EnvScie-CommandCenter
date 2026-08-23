@@ -444,3 +444,11 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Review the existing Command Map layer drawer, weather overlay contracts, rate-limit controls, and safety messaging.
 - [x] Define phased PAGASA radar-stack and licensed lightning-feed architecture, access governance, normalisation, caching, and degraded-mode behavior.
 - [x] Document the UI drawer design, source freshness states, test strategy, approval gates, and non-automated operational boundaries.
+
+## PAGASA radar and lightning overlay foundation implementation
+
+- [x] Audit the existing weather APIs, map overlay rendering, drawer controls, cache safeguards, and regression coverage before implementation.
+- [x] Add a backward-compatible composite weather-overlay endpoint and normalized disabled-provider states without unauthorized data access.
+- [x] Add accessible PAGASA radar, station, satellite-context, and disabled licensed-lightning controls to the Command Map drawer.
+- [x] Extend Google Maps overlay rendering for the normalized overlays while preserving hazards, SOS, resources, route, zoom, and fallback behavior.
+- [x] Add backend/frontend regression tests, validate hosted desktop/mobile behavior, document the foundation, and synchronize the implementation.

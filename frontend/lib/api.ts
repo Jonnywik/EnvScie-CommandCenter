@@ -329,6 +329,55 @@ export type RadarSnapshot = {
   stale: boolean;
 };
 
+export type OverlayFreshness = "live" | "cached" | "stale" | "rate_limited" | "unavailable";
+
+export type MapOverlayMeta = {
+  id: string;
+  kind: "radar_qpe" | "station_observation" | "satellite" | "lightning" | string;
+  provider: string;
+  source_url: string;
+  observed_at: string | null;
+  fetched_at: string;
+  expires_at: string | null;
+  freshness: OverlayFreshness;
+  coverage: string;
+  resolution: string | null;
+  decision_limit: string;
+  access_state: "ready" | "pending_approval" | "pending_procurement" | string;
+  message: string;
+};
+
+export type MapOverlayStation = {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  observed_at: string;
+  rainfall_mm?: number | null;
+  wind_kph?: number | null;
+  freshness: OverlayFreshness;
+};
+
+export type MapOverlayLightningEvent = {
+  id: string;
+  latitude: number;
+  longitude: number;
+  observed_at: string;
+  quality?: string | null;
+};
+
+export type MapOverlaysSnapshot = {
+  fetched_at: string;
+  stale: boolean;
+  rainviewer_radar: RadarSnapshot;
+  typhoon: TyphoonSnapshot;
+  pagasa_radar: MapOverlayMeta & { frames: RadarFrame[]; host?: string | null; min_zoom?: number; max_zoom?: number };
+  pagasa_stations: MapOverlayMeta & { stations: MapOverlayStation[] };
+  pagasa_satellite: MapOverlayMeta & { frame: { url: string; bounds: [number, number, number, number] } | null };
+  lightning: MapOverlayMeta & { events: MapOverlayLightningEvent[]; history_minutes: number };
+  decision_limit: string;
+};
+
 export type TyphoonTrackPoint = {
   latitude: number;
   longitude: number;
@@ -710,6 +759,10 @@ export function getWeatherRadar() {
 
 export function getWeatherTyphoon() {
   return request<TyphoonSnapshot>("/weather/typhoon");
+}
+
+export function getMapOverlays() {
+  return request<MapOverlaysSnapshot>("/weather/map-overlays");
 }
 
 export function getProvincialWeatherSituation() {

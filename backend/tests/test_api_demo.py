@@ -30,6 +30,33 @@ def test_weather_endpoints_return_safe_snapshot_shapes(monkeypatch) -> None:
     assert typhoon.json()["track"][0]["longitude"] == 125.4
 
 
+def test_map_overlay_endpoint_keeps_unapproved_provider_layers_disabled(monkeypatch) -> None:
+    async def fake_overlays() -> dict:
+        return {
+            "fetched_at": "2026-08-23T00:00:00+00:00",
+            "stale": False,
+            "rainviewer_radar": {"frames": [], "host": None, "fetched_at": "2026-08-23T00:00:00+00:00", "stale": False},
+            "typhoon": {"active": False, "name": None, "latitude": None, "longitude": None, "issued_at": None, "track": [], "fetched_at": "2026-08-23T00:00:00+00:00", "stale": False, "source_url": "https://example.test/pagasa"},
+            "pagasa_radar": {"id": "pagasa-radar-qpe", "provider": "PAGASA", "freshness": "unavailable", "access_state": "pending_approval", "frames": []},
+            "pagasa_stations": {"id": "pagasa-stations", "freshness": "unavailable", "access_state": "pending_approval", "stations": []},
+            "pagasa_satellite": {"id": "pagasa-himawari-context", "freshness": "unavailable", "access_state": "pending_approval", "frame": None},
+            "lightning": {"id": "licensed-lightning", "freshness": "unavailable", "access_state": "pending_procurement", "events": [], "history_minutes": 15},
+            "decision_limit": "Map overlays provide operational context only.",
+        }
+
+    monkeypatch.setattr(routes, "get_map_overlays_snapshot", fake_overlays)
+    response = client.get("/v1/weather/map-overlays")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["pagasa_radar"]["access_state"] == "pending_approval"
+    assert payload["pagasa_stations"]["stations"] == []
+    assert payload["pagasa_satellite"]["frame"] is None
+    assert payload["lightning"]["access_state"] == "pending_procurement"
+    assert payload["lightning"]["events"] == []
+    assert "operational context" in payload["decision_limit"]
+
+
 def test_provincial_weather_endpoint_returns_live_and_static_source_contract(monkeypatch) -> None:
     async def fake_provincial_weather() -> dict:
         return {
