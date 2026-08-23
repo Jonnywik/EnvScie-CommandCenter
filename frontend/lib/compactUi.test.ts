@@ -62,6 +62,11 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain('aria-controls="command-map-layer-drawer"');
     expect(workspaceSource).toContain("CommandCenterNavigation");
     expect(workspaceSource).toContain("GoogleOperationalMap");
+    expect(workspaceSource).toContain('"satellite"');
+    expect(workspaceSource).toContain("command-map-basemap-controls");
+    expect(workspaceSource).toContain("regional scale ≤10");
+    expect(workspaceSource).toContain("{googleMapError && <svg");
+    expect(workspaceSource).toContain("Google Maps {googleBasemap");
     expect(workspaceSource).toContain("unified-command-sidebar");
     expect(workspaceSource).toContain("Command Center workspaces");
     expect(workspaceSource).toContain("cfr_navigation_collapsed");
@@ -94,6 +99,7 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain(".sidebar.is-collapsed");
     expect(stylesSource).toContain(".nav-collapse-toggle");
     expect(stylesSource).toContain(".google-operational-map");
+    expect(stylesSource).toContain(".command-map-basemap-controls");
     expect(stylesSource).toContain(".nav-item:focus-visible");
     expect(stylesSource).toContain("Appearance compliance: shared legacy surfaces");
     expect(stylesSource).toContain('html[data-appearance="dark"] .sidebar');

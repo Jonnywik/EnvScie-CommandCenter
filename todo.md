@@ -423,3 +423,10 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Preserve Command Center map containment, navigation, responsive behavior, and operational safety boundaries.
 - [x] Validate map pan/zoom, overlays, tests, TypeScript, Next.js 15 production build, and hosted behavior.
 - [ ] Synchronize the completed Google Maps update after GitHub authentication is refreshed; the local commit is ready.
+
+## Satellite basemap and map usability improvements
+
+- [x] Audit the current Google Maps basemap, controls, overlays, feature discoverability, and operational-state feedback.
+- [x] Add an accessible satellite basemap selector and resolve confirmed high-value map usability gaps.
+- [x] Preserve overlay integrity, map containment, navigation, responsiveness, and operational safety boundaries.
+- [x] Validate satellite mode and map controls with tests, TypeScript, Next.js 15 production build, hosted behavior, and local commit evidence.
