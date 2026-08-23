@@ -525,3 +525,9 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Implement a targeted rendering reliability fix while retaining Google Maps, the local fallback, and safety guardrails.
 - [x] Validate hosted map rendering, fallback behavior, facilities overlay, frontend/backend tests, and production operation.
 - [x] Document and synchronize the rendering restoration.
+
+## Command Map data-configuration and improvement plan
+- [x] Consolidate the current Project NOAH and official facility-registry configuration, provenance, and verification steps.
+- [x] Define operator and maintainer checks for source availability, layer visibility, data validation, and decision-support boundaries.
+- [x] Prioritize remaining Command Map improvements with dependencies, safeguards, acceptance criteria, and delivery sequence.
+- [x] Document and deliver the consolidated configuration and implementation plan.
