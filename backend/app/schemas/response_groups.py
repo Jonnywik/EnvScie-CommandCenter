@@ -13,6 +13,12 @@ DispatchLifecycleStatus = Literal["pending_confirmation", "confirmed", "acknowle
 DispatchLifecycleAction = Literal["confirm", "acknowledge", "escalate", "cancel", "close"]
 
 
+class ResponseGroupRosterRole(BaseModel):
+    role: str
+    count: int = Field(ge=1)
+    readiness: Literal["ready", "limited", "unconfirmed"] = "unconfirmed"
+
+
 class ResponseGroup(BaseModel):
     id: str
     name: str
@@ -37,6 +43,7 @@ class ResponseGroup(BaseModel):
     assignment_target: str | None = None
     estimated_response_minutes: int | None = Field(default=None, ge=0)
     equipment: list[str]
+    roster: list[ResponseGroupRosterRole] = Field(default_factory=list)
     constraints: list[str]
     last_check_in_at: datetime
     notes: str | None = None

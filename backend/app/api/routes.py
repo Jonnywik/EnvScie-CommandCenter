@@ -553,6 +553,8 @@ async def response_groups_snapshot(session: AsyncSession | None = Depends(get_db
                ru.specialties, ru.state, ru.readiness_score, ru.personnel_ready,
                ru.personnel_total, ru.call_sign, ru.location_label,
                ru.location_source, ru.equipment, ru.constraints, ru.notes,
+               COALESCE((SELECT jsonb_agg(jsonb_build_object('role', r.role_title, 'count', r.personnel_count, 'readiness', r.readiness))
+                         FROM cfr.response_group_roster r WHERE r.resource_unit_id = ru.id), '[]'::jsonb) AS roster,
                ru.current_assignment,
                COALESCE(rp.reported_at, ru.updated_at) AS last_location_at,
                COALESCE(ru.last_check_in_at, ru.updated_at) AS last_check_in_at,
@@ -588,7 +590,7 @@ async def response_groups_snapshot(session: AsyncSession | None = Depends(get_db
             "location_source": row["location_source"] or "last_known", "last_location_at": last_location_at,
             "location_accuracy_meters": row["accuracy_meters"], "vehicle_or_asset": row["label"],
             "current_assignment": row["current_assignment"], "assignment_target": None,
-            "estimated_response_minutes": None, "equipment": row["equipment"] or [],
+            "estimated_response_minutes": None, "equipment": row["equipment"] or [], "roster": row["roster"] or [],
             "constraints": row["constraints"] or [], "last_check_in_at": row["last_check_in_at"] or last_location_at,
             "notes": row["notes"],
         })

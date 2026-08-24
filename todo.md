@@ -600,3 +600,9 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Audit the existing triage recommendation cards and response-group availability contract for a safe selectable-team panel.
 - [x] Add a responsive team-selection panel that lists eligible available groups and creates only a pending dispatch proposal.
 - [x] Add regression coverage, hosted validation, documentation, and GitHub synchronization while preserving explicit human dispatch confirmation.
+
+## Dispatch team selector operational detail
+- [x] Audit response-group location, ETA, roster, equipment, and safe-routing contracts for transparent use in team selection.
+- [x] Add a selected-team ETA estimate based on the reported team location and incident coordinates, with clear calculation and route-safety limits.
+- [x] Add inspectable team roster and equipment inventory details plus search and status filtering to the dispatch team selector.
+- [x] Add regression coverage, production validation, documentation, and GitHub synchronization without converting ETA or availability into dispatch authority.

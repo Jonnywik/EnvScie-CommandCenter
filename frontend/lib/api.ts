@@ -190,6 +190,7 @@ export type ResponseGroup = {
   assignment_target?: string | null;
   estimated_response_minutes?: number | null;
   equipment: string[];
+  roster: Array<{ role: string; count: number; readiness: "ready" | "limited" | "unconfirmed" }>;
   constraints: string[];
   last_check_in_at: string;
   notes?: string | null;

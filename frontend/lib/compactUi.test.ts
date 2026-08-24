@@ -13,6 +13,7 @@ const workspaceSource = [
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/GoogleOperationalMap.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/IncidentTriage.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/IncidentCommandRecord.tsx"), "utf8"),
+  readFileSync(resolve(process.cwd(), "components/dashboard-tabs/DispatchTeamSelector.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/FleetSafety.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/Intelligence.tsx"), "utf8"),
 ].join("\n");
@@ -180,6 +181,13 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("This creates a pending proposal");
     expect(workspaceSource).toContain("No currently available, ready group is reported");
     expect(workspaceSource).toContain("getResponseGroups");
+    expect(workspaceSource).toContain("DISPATCH TEAM SELECTION");
+    expect(workspaceSource).toContain("Location-based ETA is recalculated");
+    expect(workspaceSource).toContain("View roster &amp; equipment inventory");
+    expect(workspaceSource).toContain("Dispatch team availability filter");
+    expect(workspaceSource).toContain("Search team, asset, call sign, or specialty");
+    expect(workspaceSource).toContain("Hazard exposure, traffic, launch checks");
+    expect(workspaceSource).toContain("Selecting a team creates a pending proposal only");
     expect(workspaceSource).toContain("Immutable lifecycle timeline");
     expect(workspaceSource).toContain("Notification receipt is separate from a responder’s reported dispatch acknowledgement");
     expect(workspaceSource).toContain("getDispatchLifecycle");
