@@ -191,6 +191,8 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("View roster &amp; equipment inventory");
     expect(workspaceSource).toContain("Dispatch team availability filter");
     expect(workspaceSource).toContain("Search team, asset, call sign, or specialty");
+    expect(workspaceSource).toContain("createPortal");
+    expect(workspaceSource).toContain("onPointerDown={(event) => event.stopPropagation()}");
     expect(workspaceSource).toContain("Hazard exposure, traffic, launch checks");
     expect(workspaceSource).toContain("Selecting a team creates a pending proposal only");
     expect(workspaceSource).toContain("Immutable lifecycle timeline");

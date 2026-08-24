@@ -611,3 +611,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Audit the existing Triage Queue Dispatch response team action and its relationship to the current team selector.
 - [x] Move the available-team selector into the Triage Queue Dispatch response team action while retaining ETA, filters, roster details, and explicit confirmation.
 - [x] Add regression coverage, production validation, documentation, and GitHub synchronization for the corrected control placement.
+
+## Dispatch selector search persistence bug
+- [x] Reproduce and trace the Triage Queue selector dismissal triggered by search or specialty filtering.
+- [x] Correct event containment so selector search and status filtering retain the open dispatch-team modal and drawer context.
+- [x] Add regression coverage, hosted validation, documentation, and GitHub synchronization for search persistence.
