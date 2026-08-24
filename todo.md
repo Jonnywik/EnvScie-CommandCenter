@@ -722,3 +722,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Review remaining deployment, infrastructure, identity, provider, data-governance, observability, and recovery prerequisites.
 - [x] Run a comprehensive non-destructive integration suite across implemented backend endpoints and safety boundaries.
 - [x] Analyze outcomes, document readiness blockers and evidence, and synchronize the verification record.
+
+## Privacy and retention mock-audit simulation
+- [x] Define non-destructive audit criteria for data minimization, access control, auditability, export control, retention, and deletion readiness.
+- [x] Inspect the current demo configuration, data contracts, audit/export paths, and documented governance safeguards.
+- [x] Run compliance-oriented regression checks, document findings and remediation prerequisites, and synchronize the mock-audit record.
