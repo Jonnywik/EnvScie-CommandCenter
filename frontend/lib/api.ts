@@ -118,6 +118,39 @@ export type DashboardSummary = {
   centers: Center[];
 };
 
+export type IncidentStatus = "open" | "monitoring" | "escalated" | "stabilized" | "closed" | "reopened";
+export type IncidentAction = "monitor" | "escalate" | "stabilize" | "close" | "reopen";
+
+export type IncidentEvent = {
+  id: string;
+  incident_id: string;
+  action: string;
+  from_status?: IncidentStatus | null;
+  to_status: IncidentStatus;
+  note?: string | null;
+  actor_user_id?: string | null;
+  actor_role?: UserIdentity["role"] | null;
+  occurred_at: string;
+};
+
+export type IncidentRecord = {
+  id: string;
+  status: IncidentStatus;
+  severity: Severity;
+  emergency_type: string;
+  barangay: string;
+  summary: string;
+  linked_sos_ids: string[];
+  follow_up_owner?: string | null;
+  follow_up_due_at?: string | null;
+  created_at: string;
+  updated_at: string;
+  events: IncidentEvent[];
+  decision_limit: string;
+};
+
+export type IncidentSnapshot = { generated_at: string; source: "demo-seed" | "database"; incidents: IncidentRecord[] };
+
 export type DispatchTeam = {
   id: string;
   name: string;
@@ -798,6 +831,18 @@ export function pollConfiguredFeeds() {
 
 export function getDashboardSummary() {
   return request<DashboardSummary>("/dashboard/summary");
+}
+
+export function getIncidents() {
+  return request<IncidentSnapshot>("/incidents");
+}
+
+export function createIncidentFromSos(sosId: string, payload: { summary?: string; follow_up_owner?: string; follow_up_due_at?: string }) {
+  return request<IncidentRecord>(`/incidents/from-sos/${encodeURIComponent(sosId)}`, { method: "POST", body: JSON.stringify(payload) });
+}
+
+export function transitionIncident(incidentId: string, payload: { action: IncidentAction; note: string; follow_up_owner?: string; follow_up_due_at?: string }) {
+  return request<IncidentRecord>(`/incidents/${encodeURIComponent(incidentId)}/transition`, { method: "POST", body: JSON.stringify(payload) });
 }
 
 export function getOperations() {

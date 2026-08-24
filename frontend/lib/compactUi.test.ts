@@ -12,6 +12,7 @@ const workspaceSource = [
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/FacilityVerification.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/GoogleOperationalMap.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/IncidentTriage.tsx"), "utf8"),
+  readFileSync(resolve(process.cwd(), "components/dashboard-tabs/IncidentCommandRecord.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/FleetSafety.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/Intelligence.tsx"), "utf8"),
 ].join("\n");
@@ -178,6 +179,15 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("Notification receipt is separate from a responder’s reported dispatch acknowledgement");
     expect(workspaceSource).toContain("getDispatchLifecycle");
     expect(workspaceSource).toContain("transitionDispatchLifecycle");
+    expect(workspaceSource).toContain("INCIDENT COMMAND RECORD");
+    expect(workspaceSource).toContain("Create incident command record");
+    expect(workspaceSource).toContain("Close with follow-up");
+    expect(workspaceSource).toContain("Closure requires a named follow-up owner and due date");
+    expect(workspaceSource).toContain("Immutable incident timeline");
+    expect(workspaceSource).toContain("does not authorize dispatch or verify field conditions");
+    expect(workspaceSource).toContain("SHIFT HANDOVER · INCIDENT FOLLOW-UP");
+    expect(workspaceSource).toContain("Unresolved incident command records");
+    expect(workspaceSource).toContain("This list does not alter records, dispatches, or closures");
     expect(workspaceSource).toContain("FleetResponderSafetyView");
     expect(workspaceSource).toContain("DISPATCH LIFECYCLE · SELECTED UNIT");
     expect(workspaceSource).toContain("Open Triage confirmation");

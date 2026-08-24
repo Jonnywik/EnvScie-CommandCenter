@@ -55,6 +55,7 @@ from app.schemas.response_groups import (
     ResponseGroupAssignmentResult,
     ResponseGroupSnapshot,
 )
+from app.schemas.incidents import IncidentEvent, IncidentFromSosRequest, IncidentRecord, IncidentSnapshot, IncidentTransitionRequest
 from app.schemas.notifications import AssignmentNotification, NotificationAcknowledgement, NotificationSnapshot
 from app.schemas.sos import (
     CoordinatorEmergencyCreate,
@@ -83,6 +84,9 @@ from app.services.demo_data import (
     transition_demo_dispatch_assignment,
     demo_facility_verifications,
     create_demo_facility_verification,
+    create_demo_incident_from_sos,
+    demo_incidents,
+    transition_demo_incident,
     demo_communications,
     demo_dispatch_recommendations,
     record_demo_communication,
@@ -791,6 +795,111 @@ async def transition_dispatch_lifecycle(
         await send_assignment_notification(group, row["target_type"], row["target_id"], row["assignment_note"], actor, session=session, assignment_id=str(assignment_uuid))
     await manager.publish("lgu:dispatch_lifecycle", {"event": f"dispatch.{next_status}", "assignment": assignment.model_dump(mode="json")})
     return assignment
+
+
+async def _live_incident_snapshot(session: AsyncSession) -> IncidentSnapshot:
+    rows = (await session.execute(text("""
+        SELECT i.id, i.status, i.severity, i.emergency_type, i.barangay, i.summary, i.follow_up_owner, i.follow_up_due_at, i.created_at, i.updated_at,
+               COALESCE(array_remove(array_agg(l.sos_id::text), NULL), ARRAY[]::text[]) AS linked_sos_ids
+        FROM cfr.incidents i LEFT JOIN cfr.incident_sos_links l ON l.incident_id = i.id
+        GROUP BY i.id ORDER BY i.updated_at DESC LIMIT 200
+    """))).mappings().all()
+    incident_ids = [str(row["id"]) for row in rows]
+    events_by_incident: dict[str, list[IncidentEvent]] = {incident_id: [] for incident_id in incident_ids}
+    if incident_ids:
+        events = (await session.execute(text("""
+            SELECT id, incident_id, action, from_status, to_status, note, actor_user_id, actor_role, occurred_at
+            FROM cfr.incident_events WHERE incident_id = ANY(CAST(:incident_ids AS uuid[])) ORDER BY occurred_at ASC
+        """), {"incident_ids": incident_ids})).mappings().all()
+        for event in events:
+            event_payload = {**dict(event), "id": str(event["id"]), "incident_id": str(event["incident_id"]), "actor_user_id": str(event["actor_user_id"]) if event["actor_user_id"] else None}
+            events_by_incident[str(event["incident_id"])].append(IncidentEvent(**event_payload))
+    return IncidentSnapshot(generated_at=datetime.now(timezone.utc), source="database", incidents=[IncidentRecord(**({**dict(row), "id": str(row["id"]), "linked_sos_ids": list(row["linked_sos_ids"] or []), "events": events_by_incident[str(row["id"])]})) for row in rows])
+
+
+@router.get("/incidents", response_model=IncidentSnapshot)
+async def incident_snapshot(session: AsyncSession | None = Depends(get_db)) -> IncidentSnapshot:
+    """List command records; records organize evidence but do not verify conditions or authorize actions."""
+    if settings.demo_mode:
+        return IncidentSnapshot(**demo_incidents())
+    if session is None:
+        raise HTTPException(status_code=503, detail="database unavailable")
+    return await _live_incident_snapshot(session)
+
+
+@router.post("/incidents/from-sos/{sos_id}", response_model=IncidentRecord, status_code=201)
+async def create_incident_from_sos(
+    sos_id: str, payload: IncidentFromSosRequest, session: AsyncSession | None = Depends(get_db),
+    actor: UserIdentity = Depends(require_roles("dispatcher", "responder", "admin")),
+) -> IncidentRecord:
+    """Create a human-owned command record from SOS evidence without changing SOS or dispatch state."""
+    if settings.demo_mode:
+        record = create_demo_incident_from_sos(sos_id, payload.summary, payload.follow_up_owner, payload.follow_up_due_at.isoformat() if payload.follow_up_due_at else None, str(actor.id), actor.role)
+        if record is None:
+            raise HTTPException(status_code=404, detail="SOS record not found")
+        await manager.publish("lgu:incidents", {"event": "incident.created", "incident": record})
+        return IncidentRecord(**record)
+    if session is None:
+        raise HTTPException(status_code=503, detail="database unavailable")
+    sos = (await session.execute(text("""SELECT id, severity::text, emergency_type, COALESCE(message, emergency_type) AS summary FROM cfr.sos_requests WHERE id = CAST(:sos_id AS uuid)"""), {"sos_id": sos_id})).mappings().first()
+    if sos is None:
+        raise HTTPException(status_code=404, detail="SOS record not found")
+    existing = (await session.execute(text("""SELECT incident_id FROM cfr.incident_sos_links WHERE sos_id = CAST(:sos_id AS uuid) LIMIT 1"""), {"sos_id": sos_id})).scalar()
+    if existing:
+        snapshot = await _live_incident_snapshot(session)
+        return next(item for item in snapshot.incidents if item.id == str(existing))
+    row = (await session.execute(text("""
+        INSERT INTO cfr.incidents (severity, emergency_type, barangay, summary, follow_up_owner, follow_up_due_at)
+        SELECT :severity, :emergency_type, COALESCE(metadata->>'barangay', 'Location pending verification'), :summary, :owner, :due
+        FROM cfr.sos_requests WHERE id = CAST(:sos_id AS uuid)
+        RETURNING id
+    """), {"sos_id": sos_id, "severity": sos["severity"], "emergency_type": sos["emergency_type"], "summary": payload.summary or sos["summary"], "owner": payload.follow_up_owner, "due": payload.follow_up_due_at})).mappings().one()
+    incident_id = str(row["id"])
+    await session.execute(text("""INSERT INTO cfr.incident_sos_links (incident_id, sos_id, linked_by_user_id) VALUES (CAST(:incident_id AS uuid), CAST(:sos_id AS uuid), :actor_id)"""), {"incident_id": incident_id, "sos_id": sos_id, "actor_id": str(actor.id)})
+    await session.execute(text("""INSERT INTO cfr.incident_events (incident_id, action, to_status, note, actor_user_id, actor_role) VALUES (CAST(:incident_id AS uuid), 'created_from_sos', 'open', 'Human-created incident record from SOS evidence.', :actor_id, :actor_role)"""), {"incident_id": incident_id, "actor_id": str(actor.id), "actor_role": actor.role})
+    await write_audit_event(session, actor=actor, action="incident.created", resource_type="incident", resource_id=incident_id, metadata={"sos_id": sos_id})
+    await session.commit()
+    snapshot = await _live_incident_snapshot(session)
+    record = next(item for item in snapshot.incidents if item.id == incident_id)
+    await manager.publish("lgu:incidents", {"event": "incident.created", "incident": record.model_dump(mode="json")})
+    return record
+
+
+@router.post("/incidents/{incident_id}/transition", response_model=IncidentRecord)
+async def transition_incident(
+    incident_id: str, payload: IncidentTransitionRequest, session: AsyncSession | None = Depends(get_db),
+    actor: UserIdentity = Depends(require_roles("dispatcher", "responder", "admin")),
+) -> IncidentRecord:
+    """Record an explicit human state transition; closing requires accountable follow-up and never cancels response tasking."""
+    if settings.demo_mode:
+        if payload.action == "close" and (not payload.follow_up_owner or not payload.follow_up_due_at):
+            raise HTTPException(status_code=422, detail="closure requires follow-up owner and due date")
+        try:
+            record = transition_demo_incident(incident_id, payload.action, payload.note, payload.follow_up_owner, payload.follow_up_due_at.isoformat() if payload.follow_up_due_at else None, str(actor.id), actor.role)
+        except ValueError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        if record is None:
+            raise HTTPException(status_code=404, detail="incident record not found")
+        await manager.publish("lgu:incidents", {"event": f"incident.{payload.action}", "incident": record})
+        return IncidentRecord(**record)
+    if session is None:
+        raise HTTPException(status_code=503, detail="database unavailable")
+    target_status = {"monitor": "monitoring", "escalate": "escalated", "stabilize": "stabilized", "close": "closed", "reopen": "reopened"}[payload.action]
+    if payload.action == "close" and (not payload.follow_up_owner or not payload.follow_up_due_at):
+        raise HTTPException(status_code=422, detail="closure requires follow-up owner and due date")
+    row = (await session.execute(text("""SELECT id, status FROM cfr.incidents WHERE id = CAST(:incident_id AS uuid) FOR UPDATE"""), {"incident_id": incident_id})).mappings().first()
+    if row is None:
+        raise HTTPException(status_code=404, detail="incident record not found")
+    if row["status"] == target_status:
+        raise HTTPException(status_code=409, detail="incident is already in that state")
+    await session.execute(text("""UPDATE cfr.incidents SET status = :status, follow_up_owner = COALESCE(:owner, follow_up_owner), follow_up_due_at = COALESCE(:due, follow_up_due_at), updated_at = now() WHERE id = CAST(:incident_id AS uuid)"""), {"status": target_status, "owner": payload.follow_up_owner, "due": payload.follow_up_due_at, "incident_id": incident_id})
+    await session.execute(text("""INSERT INTO cfr.incident_events (incident_id, action, from_status, to_status, note, actor_user_id, actor_role) VALUES (CAST(:incident_id AS uuid), :action, :from_status, :to_status, :note, :actor_id, :actor_role)"""), {"incident_id": incident_id, "action": payload.action, "from_status": row["status"], "to_status": target_status, "note": payload.note, "actor_id": str(actor.id), "actor_role": actor.role})
+    await write_audit_event(session, actor=actor, action=f"incident.{payload.action}", resource_type="incident", resource_id=incident_id, metadata={"from_status": row["status"], "to_status": target_status, "follow_up_owner": payload.follow_up_owner, "follow_up_due_at": payload.follow_up_due_at.isoformat() if payload.follow_up_due_at else None})
+    await session.commit()
+    snapshot = await _live_incident_snapshot(session)
+    record = next(item for item in snapshot.incidents if item.id == incident_id)
+    await manager.publish("lgu:incidents", {"event": f"incident.{payload.action}", "incident": record.model_dump(mode="json")})
+    return record
 
 
 @router.get("/notifications", response_model=NotificationSnapshot)

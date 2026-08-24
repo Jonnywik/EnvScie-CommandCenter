@@ -89,6 +89,59 @@ DEMO_AUDIO_FEED: list[dict] = []
 DEMO_NOTIFICATIONS: list[dict] = []
 DEMO_DISPATCH_ASSIGNMENTS: list[dict] = []
 DEMO_FACILITY_VERIFICATIONS: list[dict] = []
+DEMO_INCIDENTS: list[dict] = []
+
+
+def _incident_events(incident_id: str) -> list[dict]:
+    return list(reversed([event for event in DEMO_INCIDENT_EVENTS if event["incident_id"] == incident_id]))
+
+
+DEMO_INCIDENT_EVENTS: list[dict] = []
+
+
+def demo_incidents() -> dict:
+    records = []
+    for item in DEMO_INCIDENTS:
+        record = deepcopy(item)
+        record["events"] = _incident_events(item["id"])
+        records.append(record)
+    return {"generated_at": datetime.now(timezone.utc).isoformat(), "source": "demo-seed", "incidents": records}
+
+
+def create_demo_incident_from_sos(sos_id: str, summary: str | None, follow_up_owner: str | None, follow_up_due_at: str | None, actor_user_id: str | None, actor_role: str | None) -> dict | None:
+    sos = next((item for item in DEMO_SOS_QUEUE if item["id"] == sos_id), None)
+    if sos is None:
+        return None
+    existing = next((item for item in DEMO_INCIDENTS if sos_id in item["linked_sos_ids"]), None)
+    if existing:
+        return {**deepcopy(existing), "events": _incident_events(existing["id"])}
+    now = datetime.now(timezone.utc).isoformat()
+    incident = {"id": str(uuid4()), "status": "open", "severity": sos["severity"], "emergency_type": sos["emergency_type"], "barangay": sos["barangay"], "summary": summary or sos["summary"], "linked_sos_ids": [sos_id], "follow_up_owner": follow_up_owner, "follow_up_due_at": follow_up_due_at, "created_at": now, "updated_at": now}
+    DEMO_INCIDENTS.insert(0, incident)
+    event = {"id": str(uuid4()), "incident_id": incident["id"], "action": "created_from_sos", "from_status": None, "to_status": "open", "note": "Human-created incident record from SOS evidence.", "actor_user_id": actor_user_id, "actor_role": actor_role, "occurred_at": now}
+    DEMO_INCIDENT_EVENTS.insert(0, event)
+    record_demo_audit(actor_user_id=actor_user_id, actor_role=actor_role, action="incident.created", resource_type="incident", resource_id=incident["id"], metadata={"sos_id": sos_id})
+    return {**deepcopy(incident), "events": [event]}
+
+
+def transition_demo_incident(incident_id: str, action: str, note: str, follow_up_owner: str | None, follow_up_due_at: str | None, actor_user_id: str | None, actor_role: str | None) -> dict | None:
+    target = {"monitor": "monitoring", "escalate": "escalated", "stabilize": "stabilized", "close": "closed", "reopen": "reopened"}.get(action)
+    incident = next((item for item in DEMO_INCIDENTS if item["id"] == incident_id), None)
+    if incident is None or target is None:
+        return None
+    if action == "close" and (not follow_up_owner or not follow_up_due_at):
+        raise ValueError("closing an incident requires follow-up owner and due date")
+    old_status = incident["status"]
+    if old_status == target:
+        raise ValueError("incident is already in that state")
+    now = datetime.now(timezone.utc).isoformat()
+    incident["status"] = target; incident["updated_at"] = now
+    if follow_up_owner is not None: incident["follow_up_owner"] = follow_up_owner
+    if follow_up_due_at is not None: incident["follow_up_due_at"] = follow_up_due_at
+    event = {"id": str(uuid4()), "incident_id": incident_id, "action": action, "from_status": old_status, "to_status": target, "note": note, "actor_user_id": actor_user_id, "actor_role": actor_role, "occurred_at": now}
+    DEMO_INCIDENT_EVENTS.insert(0, event)
+    record_demo_audit(actor_user_id=actor_user_id, actor_role=actor_role, action=f"incident.{action}", resource_type="incident", resource_id=incident_id, metadata={"from_status": old_status, "to_status": target})
+    return {**deepcopy(incident), "events": _incident_events(incident_id)}
 
 
 def record_demo_audit(

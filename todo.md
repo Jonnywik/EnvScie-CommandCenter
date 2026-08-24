@@ -588,3 +588,10 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Add a human-confirmed incident dispatch lifecycle with assignment, acknowledgement, escalation/cancellation, closure, and immutable audit records.
 - [x] Add an LGU/DRRMO facility-verification workspace for provisional facility coordinates, capabilities, source documents, verification ownership, and revalidation due dates.
 - [x] Add regression coverage and validate all new workflows without automatic dispatch, warnings, readiness claims, or public notifications.
+
+## Incidents workspace command-record development
+- [x] Audit and extend SOS, incident, dispatch, communication, and handover contracts with actor-attributed human-only transitions.
+- [x] Add durable incident records, linked evidence, human verification, duplicate-review, and tasking relationships with demo/live parity.
+- [x] Build the responsive Incidents command record and high-volume inbox without replacing the existing triage safeguards.
+- [x] Add human closure, follow-up ownership, re-open rules, and shift-handover visibility without implicit cancellation or safety claims.
+- [x] Add regression coverage, production validation, documentation, and GitHub synchronization for the Incidents workspace release.

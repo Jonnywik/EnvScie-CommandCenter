@@ -6,6 +6,7 @@ from app.main import app
 from app.api import routes
 from app.services.responder_safety import build_responder_safety_assessment
 from app.services.weather_feeds import parse_pagasa_visayas_forecast
+from app.services import demo_data
 
 client = TestClient(app)
 
@@ -567,3 +568,27 @@ def test_dispatch_lifecycle_requires_human_confirmation_and_keeps_unit_acknowled
     )
     assert cancelled.status_code == 200
     assert cancelled.json()["status"] == "cancelled"
+
+
+def test_incident_command_record_requires_human_closure_follow_up_and_preserves_timeline() -> None:
+    demo_data.DEMO_INCIDENTS.clear()
+    demo_data.DEMO_INCIDENT_EVENTS.clear()
+    login = client.post("/v1/auth/demo-login", json={"role": "dispatcher", "display_name": "Incident coordinator"})
+    assert login.status_code == 200
+    headers = {"Authorization": f"Bearer {login.json()['access_token']}"}
+    sos_id = client.get("/v1/dashboard/summary", headers=headers).json()["sos"][0]["id"]
+
+    created = client.post(f"/v1/incidents/from-sos/{sos_id}", headers=headers, json={"follow_up_owner": "Barangay liaison", "follow_up_due_at": "2026-09-01T09:00:00Z"})
+    assert created.status_code == 201
+    incident = created.json()
+    assert incident["linked_sos_ids"] == [sos_id]
+    assert incident["status"] == "open"
+    assert "does not verify field conditions" in incident["decision_limit"]
+
+    blocked = client.post(f"/v1/incidents/{incident['id']}/transition", headers=headers, json={"action": "close", "note": "Coordinator reviewed the report."})
+    assert blocked.status_code == 422
+
+    closed = client.post(f"/v1/incidents/{incident['id']}/transition", headers=headers, json={"action": "close", "note": "Coordinator recorded remaining welfare follow-up.", "follow_up_owner": "Barangay liaison", "follow_up_due_at": "2026-09-02T09:00:00Z"})
+    assert closed.status_code == 200
+    assert closed.json()["status"] == "closed"
+    assert [event["to_status"] for event in closed.json()["events"]] == ["open", "closed"]
