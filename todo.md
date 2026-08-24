@@ -733,3 +733,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Run final backend, frontend, endpoint-integration, build, and recovery validation.
 - [x] Prepare a deployment handoff checklist, environment inventory, release evidence, and controlled activation steps.
 - [x] Synchronize the final release candidate and provide deployment handoff instructions.
+
+## Field Response glitch repair
+- [x] Reproduce and isolate the reported Field Response rendering or state glitch.
+- [x] Apply a targeted repair without changing Field Response operations, dispatch lifecycle, or operational records.
+- [x] Validate desktop/mobile behavior, document the repair, and synchronize the release.

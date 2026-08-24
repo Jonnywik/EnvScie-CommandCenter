@@ -48,6 +48,13 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain(".mobile-triage-meta");
   });
 
+  it("keeps Field Response navigation compact and header controls non-overlapping on narrow screens", () => {
+    expect(stylesSource).toContain(".sidebar .unified-command-navigation { display: flex;");
+    expect(stylesSource).toContain(".command-center-header-brand span { display: none; }");
+    expect(stylesSource).toContain(".command-center-operator { display: none; }");
+    expect(stylesSource).toContain(".command-center-return { max-width: 118px;");
+  });
+
   it("hides guide-only descriptions while preserving critical manual-intake safety context", () => {
     expect(stylesSource).toContain("Compact operational mode");
     expect(stylesSource).toContain(".page-heading > div > p");

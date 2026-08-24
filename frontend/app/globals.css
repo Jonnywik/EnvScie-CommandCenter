@@ -796,6 +796,7 @@ html[data-appearance="light"] .field-response-fleet .bg-white { background: #fff
   .unified-command-sidebar { min-height: 0; }
   .sidebar.is-collapsed, .unified-command-sidebar.is-collapsed { width: 100%; flex-basis: auto; padding: 8px; align-items: stretch; }.sidebar.is-collapsed .nav-collapse-toggle { display: none; }.sidebar.is-collapsed .unified-command-navigation { width: auto; }.sidebar.is-collapsed .nav-item { justify-content: flex-start; width: auto; padding: 9px 11px; gap: 11px; }.sidebar.is-collapsed .nav-item > span:not(.nav-icon), .sidebar.is-collapsed .sidebar-label { display: inline; }.sidebar.is-collapsed .nav-icon { width: 18px; font-size: 15px; }
   .sidebar { width: 100%; padding: 8px; border-right: 0; border-bottom: 1px solid var(--line); flex-direction: row; overflow-x: auto; gap: 3px; }
+  .sidebar .unified-command-navigation { display: flex; flex: 1 1 auto; width: auto; gap: 4px; overflow-x: auto; scrollbar-width: thin; }
   .sidebar-label, .sidebar-footer { display: none; }
   .nav-item { width: auto; white-space: nowrap; padding: 9px 11px; }
   .functional-view-selector { overflow-x: auto; flex-wrap: nowrap; margin-bottom: 12px; padding: 6px; scrollbar-width: thin; }.functional-view-selector button { flex: 0 0 auto; min-height: 31px; padding: 7px 9px; }
@@ -861,6 +862,15 @@ html[data-appearance="light"] .field-response-fleet .bg-white { background: #fff
   .shortcut-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 560px) {
+  .command-center-header { width: calc(100% + 28px); margin: -14px -14px 12px; grid-template-columns: minmax(0, 1fr) auto; gap: 7px; padding: 8px 10px; }
+  .command-center-header-brand { gap: 8px; }
+  .command-center-header-brand img { width: 34px; height: 34px; }
+  .command-center-header-brand strong { font-size: 12px; }
+  .command-center-header-brand span { display: none; }
+  .command-center-header-actions { gap: 6px; }
+  .command-center-operator { display: none; }
+  .command-center-return { max-width: 118px; overflow: hidden; padding: 7px 8px; text-overflow: ellipsis; }
+  .command-center-avatar { width: 30px; height: 30px; }
   .drawer { width: 100%; }
   .coordinator-intake-drawer { width: 100%; }
   .operator-assist-drawer { width: 100%; }
