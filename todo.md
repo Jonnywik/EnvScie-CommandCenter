@@ -642,3 +642,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Correct mobile dark-theme workboard cards, disclosure controls, empty timelines, and vertical spacing without breaking light mode.
 - [x] Complete remaining Incidents-tab interaction polish, state handling, and design-token consistency checks.
 - [x] Run backend, frontend, responsive, accessibility, and hosted acceptance validation; document and synchronize the final release.
+
+## WMCDA advisory team selection
+- [x] Audit ranked-recommendation actions and shared dispatch-selector entry points in Triage and Dispatch.
+- [x] Add a clear manual team-selection path for any eligible response group alongside ranked WMCDA recommendations.
+- [x] Preserve human-confirmed proposal, one-open-SOS-proposal, freshness, and decision-limit safeguards; add regression and hosted validation.

@@ -360,6 +360,11 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("WMCDA DISPATCH RECOMMENDATIONS");
     expect(workspaceSource).toContain("getDispatchRecommendations");
     expect(workspaceSource).toContain("assignResponseGroup");
+    expect(workspaceSource).toContain("COORDINATOR TEAM CHOICE");
+    expect(workspaceSource).toContain("Browse all eligible teams");
+    expect(workspaceSource).toContain("selectRecommendedTeam");
+    expect(workspaceSource).toContain("WMCDA ranks decision inputs; it does not restrict coordinator choice");
+    expect(workspaceSource).toContain("Select rank ${item.rank} team");
     expect(workspaceSource).toContain("!verificationComplete");
     expect(workspaceSource).toContain("lg:grid-cols-[minmax(0,35%)_minmax(0,65%)]");
   });
