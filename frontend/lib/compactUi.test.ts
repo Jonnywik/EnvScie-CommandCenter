@@ -56,7 +56,7 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("EnvScie CommandCenter");
     expect(workspaceSource).not.toContain("PRIORITY FEED");
     expect(workspaceSource).not.toContain("Situational awareness");
-    expect(workspaceSource).toContain("Responder radar");
+    expect(workspaceSource).not.toContain("Responder radar");
     expect(workspaceSource).toContain("Mass Area Notification");
     expect(workspaceSource).toContain("Live Weather Radar");
     expect(workspaceSource).toContain("Flood Risk Zones");
@@ -213,9 +213,9 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("selectMapTool");
     expect(workspaceSource).toContain('renderTrigger={false}');
     expect(workspaceSource).toContain("renderFacilityTrigger={false}");
-    expect(workspaceSource).toContain("radarMinimized");
-    expect(workspaceSource).toContain("responder-radar-toggle");
-    expect(workspaceSource).toContain("active field units");
+    expect(workspaceSource).toContain("radar-removed");
+    expect(workspaceSource).not.toContain("responder-radar-toggle");
+    expect(workspaceSource).not.toContain("active field units");
     expect(workspaceSource).toContain("critical-sos-map-label");
     expect(workspaceSource).toContain("addCriticalSosLabel");
     expect(workspaceSource).toContain("MarkerClusterer");
@@ -229,7 +229,7 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain('incident.severity === "critical"');
     expect(workspaceSource).toContain("Reported SOS ·");
     expect(stylesSource).toContain("--responder-radar-reserve");
-    expect(stylesSource).toContain(".command-map-workspace.radar-minimized");
+    expect(stylesSource).toContain(".command-map-workspace.radar-removed");
     expect(stylesSource).toContain(".command-map-hero .gis-legend");
     expect(stylesSource).toContain(".map-control-dock-zoom { grid-template-columns: 1fr");
     expect(stylesSource).toContain(".critical-sos-map-label");

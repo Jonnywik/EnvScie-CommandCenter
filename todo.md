@@ -572,3 +572,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Replace always-on critical SOS labels with hover and selected-marker labels.
 - [x] Raise the hovered or selected critical marker and label above unselected map overlays.
 - [x] Add regression coverage and validate clustered, hover, active-selection, accessibility, type-check, build, and hosted-map behavior.
+
+## Temporary Responder Radar removal
+- [x] Remove the Responder Radar segment and its compact summary state from the Command Map.
+- [x] Reclaim the radar-safe layout reserve for the map legend, utility panels, and broadcast control.
+- [x] Update regression coverage and validate the hosted Command Map after the removal.
