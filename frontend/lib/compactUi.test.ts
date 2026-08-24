@@ -242,6 +242,9 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("Record reported acknowledgement");
     expect(workspaceSource).toContain("notification receipt was not used as acknowledgement");
     expect(workspaceSource).toContain("IntelligenceDashboardView");
+    expect(workspaceSource).toContain("PRODUCTION RELEASE READINESS");
+    expect(workspaceSource).toContain("getOperationsReadiness");
+    expect(workspaceSource).toContain("Configuration gate blocked");
     expect(workspaceSource).toContain("Fleet & Responder Safety");
     expect(workspaceSource).toContain("DRRMO Intelligence");
     expect(workspaceSource).toContain("Verified Alerts");

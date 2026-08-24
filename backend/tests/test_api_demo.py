@@ -11,6 +11,19 @@ from app.services import demo_data
 client = TestClient(app)
 
 
+def test_operations_readiness_exposes_non_sensitive_demo_release_blockers() -> None:
+    response = client.get("/v1/operations/readiness")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["mode"] == "demo"
+    assert payload["release_ready"] is False
+    assert payload["checks"]["production_mode"] is False
+    assert payload["checks"]["notification_provider"] is False
+    assert any("training/demo mode" in blocker for blocker in payload["blockers"])
+    assert "does not authorize" in payload["decision_limit"].lower()
+
+
 def test_weather_endpoints_return_safe_snapshot_shapes(monkeypatch) -> None:
     async def fake_radar() -> dict:
         return {"frames": [{"time": 1710000000, "path": "/v2/radar/1710000000"}], "host": "https://tilecache.rainviewer.com", "fetched_at": "2026-08-20T00:00:00+00:00", "stale": False}

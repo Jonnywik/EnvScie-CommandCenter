@@ -118,6 +118,21 @@ export type DashboardSummary = {
   centers: Center[];
 };
 
+export type OperationsReadiness = {
+  mode: "demo" | "live";
+  release_ready: boolean;
+  checks: {
+    production_mode: boolean;
+    database: boolean;
+    governed_identity: boolean;
+    inbound_sms_gateway: boolean;
+    notification_provider: boolean;
+    authorized_alert_feed: boolean;
+  };
+  blockers: string[];
+  decision_limit: string;
+};
+
 export type IncidentStatus = "open" | "monitoring" | "escalated" | "stabilized" | "closed" | "reopened";
 export type IncidentAction = "monitor" | "escalate" | "stabilize" | "close" | "reopen";
 
@@ -849,6 +864,10 @@ export function pollConfiguredFeeds() {
 
 export function getDashboardSummary() {
   return request<DashboardSummary>("/dashboard/summary");
+}
+
+export function getOperationsReadiness() {
+  return request<OperationsReadiness>("/operations/readiness");
 }
 
 export function getIncidents() {

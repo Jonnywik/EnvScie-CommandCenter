@@ -699,3 +699,10 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Audit remaining gray neutral containers across the Command Center workspaces.
 - [x] Replace gray neutral containers with navy-teal-mint surfaces while preserving semantic safety and warning colors.
 - [x] Validate contrast, responsiveness, and operational integrity, then synchronize the release.
+
+## Production-readiness optimization program
+- [x] Establish deployable governance foundations: configuration inventory, role/authority model, migration/recovery runbook, and production release criteria.
+- [x] Implement operator-facing source freshness and service-readiness visibility without activating unapproved data providers or communications delivery.
+- [x] Strengthen field workflow readiness with read-only incident continuity, telemetry freshness, and resource-accountability evidence where compatible with current contracts.
+- [x] Extend regression, staging, resilience, accessibility, and recovery verification evidence; identify external LGU/provider decisions that block activation.
+- [x] Document the implemented optimizations, external prerequisites, and phased release evidence; validate and synchronize the release.

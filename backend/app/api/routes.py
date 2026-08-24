@@ -282,6 +282,44 @@ async def health() -> dict[str, str]:
     }
 
 
+@router.get("/operations/readiness")
+async def operations_readiness() -> dict[str, Any]:
+    """Expose non-sensitive release blockers; never disclose provider endpoints or credentials."""
+    identity_ready = settings.auth_secret not in {"", "change-me", "dev-only-change-me"}
+    inbound_gateway_ready = settings.sms_gateway_shared_secret not in {"", "change-me"}
+    notification_ready = bool(settings.sms_provider_url or settings.push_provider_url)
+    source_refresh_ready = bool(settings.alert_feed_url)
+    database_ready = bool(settings.database_url) and not settings.database_url.endswith("@localhost:5432/cfr")
+    checks = {
+        "production_mode": not settings.demo_mode,
+        "database": database_ready,
+        "governed_identity": identity_ready,
+        "inbound_sms_gateway": inbound_gateway_ready,
+        "notification_provider": notification_ready,
+        "authorized_alert_feed": source_refresh_ready,
+    }
+    blockers: list[str] = []
+    if settings.demo_mode:
+        blockers.append("The current environment is in training/demo mode; live operational activation is disabled.")
+    if not checks["database"]:
+        blockers.append("A non-default production database configuration is required before a live rollout.")
+    if not checks["governed_identity"]:
+        blockers.append("A non-default authentication secret and governed operator identity configuration are required.")
+    if not checks["inbound_sms_gateway"]:
+        blockers.append("An approved inbound SMS gateway secret is required before accepting live gateway payloads.")
+    if not checks["notification_provider"]:
+        blockers.append("An approved SMS or push notification provider is not configured; delivery remains unavailable.")
+    if not checks["authorized_alert_feed"]:
+        blockers.append("An authorized alert-feed URL is not configured; durable source refresh remains unavailable.")
+    return {
+        "mode": "demo" if settings.demo_mode else "live",
+        "release_ready": not blockers,
+        "checks": checks,
+        "blockers": blockers,
+        "decision_limit": "This status reports configuration readiness only. It does not authorize a dispatch, warning, route clearance, facility readiness, or field-safety decision.",
+    }
+
+
 @router.get("/dashboard/summary")
 async def dashboard_summary(session: AsyncSession | None = Depends(get_db)) -> dict:
     if settings.demo_mode:
