@@ -9,6 +9,7 @@ from app.schemas.sos import RoutePoint
 
 ResourceKind = Literal["team", "vehicle", "boat", "supply", "medical", "communications"]
 ResourceState = Literal["ready", "standby", "en_route", "deployed", "stale", "offline"]
+SourceHealthStatus = Literal["healthy", "stale", "reference_only", "unavailable"]
 
 
 class ResourcePositionUpdate(BaseModel):
@@ -68,6 +69,34 @@ class GisSosPoint(BaseModel):
     summary: str
 
 
+class MapSourceHealth(BaseModel):
+    """A source transparency record, not a safety or operational-clearance assertion."""
+
+    id: str
+    label: str
+    category: Literal["alert_feed", "weather_overlay", "hazard_reference", "facility_reference"]
+    provenance_url: str | None = None
+    last_success_at: datetime | None = None
+    last_checked_at: datetime | None = None
+    stale_after_seconds: int | None = Field(default=None, ge=60)
+    status: SourceHealthStatus
+    review_required: bool = True
+    decision_limit: str
+
+
+class SourceHealthReviewRequest(BaseModel):
+    source_id: str = Field(min_length=2, max_length=160)
+    review_note: str | None = Field(default=None, max_length=500)
+
+
+class SourceHealthReviewResult(BaseModel):
+    source_id: str
+    reviewed_at: datetime
+    review_required: bool = True
+    status: SourceHealthStatus
+    decision_limit: str
+
+
 class GisMapSnapshot(BaseModel):
     generated_at: datetime
     source: Literal["demo-seed", "postgis"]
@@ -77,6 +106,7 @@ class GisMapSnapshot(BaseModel):
     hazards: list[GisHazard]
     centers: list[GisCenter]
     sos: list[GisSosPoint]
+    source_health: list[MapSourceHealth] = Field(default_factory=list)
 
 
 class NoahOverlayLayer(BaseModel):
@@ -127,6 +157,43 @@ class OfficialFacilityRegistry(BaseModel):
     source_status: Literal["available", "limited_official_coverage"]
     decision_limit: str
     facilities: list[OfficialFacilityRecord]
+
+
+FacilityVerificationOutcome = Literal["reference_verified", "follow_up_required", "not_verified"]
+FacilityReportedAccess = Literal["not_assessed", "reported_open", "reported_restricted", "reported_unavailable"]
+
+
+class FacilityVerificationCreate(BaseModel):
+    facility_id: str = Field(min_length=3, max_length=180)
+    coordinate_confirmed: bool = False
+    contact_attempted: bool = False
+    reported_access: FacilityReportedAccess = "not_assessed"
+    verification_outcome: FacilityVerificationOutcome
+    source_document_reference: str = Field(min_length=3, max_length=500)
+    revalidation_due_at: datetime
+    verification_note: str = Field(min_length=5, max_length=1000)
+
+
+class FacilityVerificationRecord(BaseModel):
+    id: str
+    facility_id: str
+    coordinate_confirmed: bool
+    contact_attempted: bool
+    reported_access: FacilityReportedAccess
+    verification_outcome: FacilityVerificationOutcome
+    source_document_reference: str
+    revalidation_due_at: datetime
+    verification_note: str
+    verified_by_user_id: str | None = None
+    verified_by_role: str | None = None
+    verified_at: datetime
+    decision_limit: str = "This verification records reported reference and contact checks only. It does not establish staffing, capacity, supplies, communications, structural safety, or suitability for an emergency task."
+
+
+class FacilityVerificationSnapshot(BaseModel):
+    generated_at: datetime
+    source: Literal["demo-seed", "database"]
+    records: list[FacilityVerificationRecord]
 
 
 class RouteOptimizationRequest(BaseModel):

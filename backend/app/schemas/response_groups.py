@@ -9,6 +9,8 @@ from pydantic import BaseModel, Field
 
 GroupAvailability = Literal["available", "limited", "assigned", "standby", "offline"]
 GroupStatus = Literal["ready", "en_route", "deployed", "returning", "standby", "offline"]
+DispatchLifecycleStatus = Literal["pending_confirmation", "confirmed", "acknowledged", "escalated", "cancelled", "closed"]
+DispatchLifecycleAction = Literal["confirm", "acknowledge", "escalate", "cancel", "close"]
 
 
 class ResponseGroup(BaseModel):
@@ -57,9 +59,53 @@ class ResponseGroupAssignmentRequest(BaseModel):
 
 
 class ResponseGroupAssignmentResult(BaseModel):
-    status: Literal["assigned"]
+    status: Literal["pending_confirmation", "confirmed", "acknowledged", "escalated", "cancelled", "closed"]
     group: ResponseGroup
     target_type: str
     target_id: str
     assignment_id: str
     assigned_at: datetime
+    confirmation_required: bool = True
+    decision_limit: str = "A proposal does not dispatch a unit, confirm receipt, clear a route, or establish field safety."
+
+
+class DispatchLifecycleTransitionRequest(BaseModel):
+    action: DispatchLifecycleAction
+    note: str | None = Field(default=None, max_length=500)
+    operator_confirmed: bool = False
+
+
+class DispatchLifecycleEvent(BaseModel):
+    id: str
+    assignment_id: str
+    event_type: str
+    from_status: DispatchLifecycleStatus | None = None
+    to_status: DispatchLifecycleStatus
+    note: str | None = None
+    actor_user_id: str | None = None
+    actor_role: str | None = None
+    occurred_at: datetime
+
+
+class DispatchLifecycleAssignment(BaseModel):
+    assignment_id: str
+    group_id: str
+    target_type: str
+    target_id: str
+    assignment_note: str | None = None
+    status: DispatchLifecycleStatus
+    created_at: datetime
+    confirmed_at: datetime | None = None
+    acknowledged_at: datetime | None = None
+    escalated_at: datetime | None = None
+    cancelled_at: datetime | None = None
+    closed_at: datetime | None = None
+    events: list[DispatchLifecycleEvent] = Field(default_factory=list)
+    confirmation_required: bool = True
+    decision_limit: str = "A lifecycle status records human decisions and reported acknowledgement only; it does not prove notification delivery, route clearance, or field safety."
+
+
+class DispatchLifecycleSnapshot(BaseModel):
+    generated_at: datetime
+    source: Literal["demo-seed", "database"]
+    assignments: list[DispatchLifecycleAssignment]

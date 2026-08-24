@@ -98,6 +98,71 @@ def test_official_balangiga_facility_registry_preserves_provenance_and_validatio
     assert "do not confirm current staffing" in payload["decision_limit"].lower()
 
 
+def test_lgu_facility_verification_records_reference_checks_without_readiness_claim() -> None:
+    registry = client.get("/v1/gis/facilities/official-registry")
+    assert registry.status_code == 200
+    facility_id = registry.json()["facilities"][0]["id"]
+    login = client.post("/v1/auth/demo-login", json={"role": "dispatcher", "display_name": "Facility verifier"})
+    assert login.status_code == 200
+    headers = {"Authorization": f"Bearer {login.json()['access_token']}"}
+
+    created = client.post(
+        "/v1/gis/facilities/verifications",
+        headers=headers,
+        json={
+            "facility_id": facility_id,
+            "coordinate_confirmed": True,
+            "contact_attempted": True,
+            "reported_access": "reported_restricted",
+            "verification_outcome": "follow_up_required",
+            "source_document_reference": "Balangiga LGU facility focal-point call log, 24 Aug 2026",
+            "revalidation_due_at": "2026-09-01T09:00:00Z",
+            "verification_note": "LGU focal point contacted; pin cross-check completed and access follow-up remains required.",
+        },
+    )
+    assert created.status_code == 201
+    payload = created.json()
+    assert payload["facility_id"] == facility_id
+    assert payload["reported_access"] == "reported_restricted"
+    assert payload["source_document_reference"].startswith("Balangiga LGU")
+    assert payload["revalidation_due_at"] == "2026-09-01T09:00:00Z"
+    assert "does not establish staffing" in payload["decision_limit"].lower()
+
+    snapshot = client.get(f"/v1/gis/facilities/verifications?facility_id={facility_id}", headers=headers)
+    assert snapshot.status_code == 200
+    assert any(item["id"] == payload["id"] for item in snapshot.json()["records"])
+    audit = client.get("/v1/auth/audit?limit=30", headers=headers)
+    assert any(event["action"] == "facility.verification_recorded" for event in audit.json())
+
+
+def test_map_source_health_exposes_provenance_without_operational_clearance_and_records_review() -> None:
+    source_health = client.get("/v1/gis/source-health")
+
+    assert source_health.status_code == 200
+    records = source_health.json()
+    noah = next(item for item in records if item["id"] == "project-noah-reference")
+    facility = next(item for item in records if item["id"] == "official-facility-registry")
+    assert noah["status"] == "reference_only"
+    assert "does not confirm active hazards" in noah["decision_limit"].lower()
+    assert facility["status"] == "reference_only"
+    assert "verification is required" in facility["decision_limit"].lower()
+
+    login = client.post("/v1/auth/demo-login", json={"role": "dispatcher", "display_name": "Source health reviewer"})
+    assert login.status_code == 200
+    headers = {"Authorization": f"Bearer {login.json()['access_token']}"}
+    review = client.post(
+        "/v1/gis/source-health/review",
+        headers=headers,
+        json={"source_id": noah["id"], "review_note": "Reference date and decision limit reviewed."},
+    )
+
+    assert review.status_code == 200
+    assert review.json()["review_required"] is True
+    assert "route clearance" in review.json()["decision_limit"].lower()
+    audit = client.get("/v1/auth/audit?limit=20", headers=headers)
+    assert any(event["action"] == "gis.source_health_reviewed" for event in audit.json())
+
+
 def test_provincial_weather_endpoint_returns_live_and_static_source_contract(monkeypatch) -> None:
     async def fake_provincial_weather() -> dict:
         return {
@@ -407,6 +472,19 @@ def test_demo_assignment_notifications_retry_acknowledge_and_audit() -> None:
         },
     )
     assert assigned.status_code == 200
+    assert assigned.json()["status"] == "pending_confirmation"
+
+    snapshot = client.get("/v1/notifications", headers=headers)
+    assert snapshot.status_code == 200
+    assert not [item for item in snapshot.json()["notifications"] if item["target_id"] == "task-notification-regression"]
+
+    confirmed = client.post(
+        f"/v1/response-groups/assignments/{assigned.json()['assignment_id']}/transition",
+        headers=headers,
+        json={"action": "confirm", "operator_confirmed": True, "note": "Duty officer confirmed a dispatch record."},
+    )
+    assert confirmed.status_code == 200
+    assert confirmed.json()["status"] == "confirmed"
 
     snapshot = client.get("/v1/notifications", headers=headers)
     assert snapshot.status_code == 200
@@ -433,5 +511,59 @@ def test_demo_assignment_notifications_retry_acknowledge_and_audit() -> None:
     audit = client.get("/v1/auth/audit?limit=100", headers=headers)
     assert audit.status_code == 200
     actions = {event["action"] for event in audit.json()}
+    assert "dispatch.proposed" in actions
+    assert "dispatch.confirmed" in actions
     assert "notification.queued" in actions
     assert "notification.acknowledged" in actions
+
+
+def test_dispatch_lifecycle_requires_human_confirmation_and_keeps_unit_acknowledgement_distinct() -> None:
+    login = client.post("/v1/auth/demo-login", json={"role": "dispatcher", "display_name": "Lifecycle dispatcher"})
+    assert login.status_code == 200
+    headers = {"Authorization": f"Bearer {login.json()['access_token']}"}
+    proposal = client.post(
+        "/v1/response-groups/assign",
+        headers=headers,
+        json={"group_id": "group-charlie", "target_type": "task", "target_id": "lifecycle-regression", "assignment_note": "Review conditions before moving."},
+    )
+    assert proposal.status_code == 200
+    assignment_id = proposal.json()["assignment_id"]
+    assert proposal.json()["status"] == "pending_confirmation"
+
+    blocked = client.post(
+        f"/v1/response-groups/assignments/{assignment_id}/transition",
+        headers=headers,
+        json={"action": "confirm", "operator_confirmed": False},
+    )
+    assert blocked.status_code == 409
+
+    confirmed = client.post(
+        f"/v1/response-groups/assignments/{assignment_id}/transition",
+        headers=headers,
+        json={"action": "confirm", "operator_confirmed": True, "note": "Duty officer confirmed assignment."},
+    )
+    assert confirmed.status_code == 200
+    assert confirmed.json()["status"] == "confirmed"
+    assert confirmed.json()["acknowledged_at"] is None
+
+    acknowledged = client.post(
+        f"/v1/response-groups/assignments/{assignment_id}/transition",
+        headers=headers,
+        json={"action": "acknowledge", "note": "Unit reported acknowledgement over VHF."},
+    )
+    assert acknowledged.status_code == 200
+    assert acknowledged.json()["status"] == "acknowledged"
+    assert acknowledged.json()["acknowledged_at"]
+
+    lifecycle = client.get(f"/v1/response-groups/dispatch-lifecycle?target_id=lifecycle-regression", headers=headers)
+    assert lifecycle.status_code == 200
+    events = lifecycle.json()["assignments"][0]["events"]
+    assert [event["to_status"] for event in events] == ["pending_confirmation", "confirmed", "acknowledged"]
+
+    cancelled = client.post(
+        f"/v1/response-groups/assignments/{assignment_id}/transition",
+        headers=headers,
+        json={"action": "cancel", "note": "Coordinator cancelled after reassessment."},
+    )
+    assert cancelled.status_code == 200
+    assert cancelled.json()["status"] == "cancelled"

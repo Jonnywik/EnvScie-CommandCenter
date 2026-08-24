@@ -102,6 +102,19 @@ def test_assignment_notification_has_push_channel_and_retry_contract() -> None:
         },
     )
     assert assigned.status_code == 200
+    assert assigned.json()["status"] == "pending_confirmation"
+
+    before_confirmation = client.get("/v1/notifications", headers=headers)
+    assert before_confirmation.status_code == 200
+    assert not [item for item in before_confirmation.json()["notifications"] if item["target_id"] == target_id]
+
+    confirmed = client.post(
+        f"/v1/response-groups/assignments/{assigned.json()['assignment_id']}/transition",
+        headers=headers,
+        json={"action": "confirm", "operator_confirmed": True, "note": "Completion-audit duty officer confirmed dispatch."},
+    )
+    assert confirmed.status_code == 200
+    assert confirmed.json()["status"] == "confirmed"
 
     snapshot = client.get("/v1/notifications", headers=headers)
     assert snapshot.status_code == 200

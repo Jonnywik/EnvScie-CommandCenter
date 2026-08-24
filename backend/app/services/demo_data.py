@@ -87,6 +87,8 @@ DEMO_AUDIT_LOG: list[dict] = []
 DEMO_COMMUNICATION_EVENTS: list[dict] = []
 DEMO_AUDIO_FEED: list[dict] = []
 DEMO_NOTIFICATIONS: list[dict] = []
+DEMO_DISPATCH_ASSIGNMENTS: list[dict] = []
+DEMO_FACILITY_VERIFICATIONS: list[dict] = []
 
 
 def record_demo_audit(
@@ -804,6 +806,90 @@ def assign_demo_response_group(group_id: str, target_type: str, target_id: str, 
     return None
 
 
+def _demo_dispatch_event(assignment: dict, *, event_type: str, from_status: str | None, to_status: str, note: str | None, actor_user_id: str | None, actor_role: str | None) -> dict:
+    event = {
+        "id": str(uuid4()), "assignment_id": assignment["assignment_id"], "event_type": event_type,
+        "from_status": from_status, "to_status": to_status, "note": note,
+        "actor_user_id": actor_user_id, "actor_role": actor_role,
+        "occurred_at": datetime.now(timezone.utc).isoformat(),
+    }
+    assignment["events"].append(event)
+    return event
+
+
+def create_demo_dispatch_assignment(group_id: str, target_type: str, target_id: str, assignment_note: str | None, actor_user_id: str | None, actor_role: str | None) -> dict | None:
+    """Create a proposal only; no unit, notification, or SOS state changes until confirmation."""
+    _ensure_demo_response_groups()
+    _ensure_demo_gis_resources()
+    resources = {item["id"]: item for item in DEMO_GIS_RESOURCES}
+    group = next((item for item in DEMO_RESPONSE_GROUPS if item["id"] == group_id), None)
+    if group is None:
+        return None
+    if group["availability"] in {"offline", "assigned"}:
+        raise ValueError("group is not available for a dispatch proposal")
+    resource = resources[group["resource_id"]]
+    if not _is_fresh_for_dispatch(resource.get("reported_at") or group.get("last_location_at")):
+        raise ValueError("group location is stale; record a position check before proposing dispatch")
+    if not _is_fresh_for_dispatch(group.get("last_check_in_at")):
+        raise ValueError("group check-in is stale; record a roster check before proposing dispatch")
+    if int(group.get("readiness_score") or 0) < 60:
+        raise ValueError("group readiness is below the dispatch threshold")
+    now = datetime.now(timezone.utc).isoformat()
+    assignment = {
+        "assignment_id": str(uuid4()), "group_id": group_id, "target_type": target_type, "target_id": target_id,
+        "assignment_note": assignment_note, "status": "pending_confirmation", "created_at": now,
+        "confirmed_at": None, "acknowledged_at": None, "escalated_at": None, "cancelled_at": None, "closed_at": None,
+        "events": [], "confirmation_required": True,
+        "decision_limit": "A lifecycle status records human decisions and reported acknowledgement only; it does not prove notification delivery, route clearance, or field safety.",
+    }
+    _demo_dispatch_event(assignment, event_type="dispatch.proposed", from_status=None, to_status="pending_confirmation", note=assignment_note, actor_user_id=actor_user_id, actor_role=actor_role)
+    DEMO_DISPATCH_ASSIGNMENTS.insert(0, assignment)
+    return deepcopy(assignment)
+
+
+def demo_dispatch_lifecycle(target_id: str | None = None) -> dict:
+    assignments = [item for item in DEMO_DISPATCH_ASSIGNMENTS if target_id is None or item["target_id"] == target_id]
+    return {"generated_at": datetime.now(timezone.utc).isoformat(), "source": "demo-seed", "assignments": deepcopy(assignments)}
+
+
+def transition_demo_dispatch_assignment(assignment_id: str, action: str, note: str | None, operator_confirmed: bool, actor_user_id: str | None, actor_role: str | None) -> dict | None:
+    assignment = next((item for item in DEMO_DISPATCH_ASSIGNMENTS if item["assignment_id"] == assignment_id), None)
+    if assignment is None:
+        return None
+    current = assignment["status"]
+    transitions = {
+        "confirm": ("pending_confirmation", "confirmed"),
+        "acknowledge": ("confirmed", "acknowledged"),
+        "escalate": (("confirmed", "acknowledged"), "escalated"),
+        "cancel": (("pending_confirmation", "confirmed", "acknowledged", "escalated"), "cancelled"),
+        "close": (("confirmed", "acknowledged", "escalated"), "closed"),
+    }
+    expected, next_status = transitions.get(action, ((), ""))
+    allowed = current == expected if isinstance(expected, str) else current in expected
+    if not allowed:
+        raise ValueError(f"invalid dispatch lifecycle transition: {current} -> {action}")
+    if action == "confirm" and not operator_confirmed:
+        raise ValueError("explicit operator confirmation is required before dispatch is recorded")
+    if action == "close" and not note:
+        raise ValueError("a closure note is required before closing a dispatch")
+    now = datetime.now(timezone.utc).isoformat()
+    assignment["status"] = next_status
+    assignment[f"{next_status}_at"] = now
+    _demo_dispatch_event(assignment, event_type=f"dispatch.{next_status}", from_status=current, to_status=next_status, note=note, actor_user_id=actor_user_id, actor_role=actor_role)
+    group = next((item for item in DEMO_RESPONSE_GROUPS if item["id"] == assignment["group_id"]), None)
+    resource = next((item for item in DEMO_GIS_RESOURCES if group and item["id"] == group["resource_id"]), None)
+    if group and action == "confirm":
+        group["availability"] = "assigned"; group["status"] = "en_route"; group["current_assignment"] = assignment["assignment_note"] or f"Confirmed dispatch to {assignment['target_type']} {assignment['target_id']}"; group["assignment_target"] = assignment["target_id"]
+        if resource: resource["state"] = "en_route"; resource["current_assignment"] = group["current_assignment"]
+        if assignment["target_type"] == "sos_request":
+            incident = next((item for item in DEMO_SOS_QUEUE if item["id"] == assignment["target_id"]), None)
+            if incident and incident["status"] == "acknowledged": incident["status"] = "dispatched"
+    if group and action in {"cancel", "close"}:
+        group["availability"] = "available"; group["status"] = "ready"; group["current_assignment"] = None; group["assignment_target"] = None
+        if resource: resource["state"] = "ready"; resource["current_assignment"] = None
+    return deepcopy(assignment)
+
+
 def create_demo_assignment_notification(
     group: dict,
     target_type: str,
@@ -995,7 +1081,71 @@ def demo_gis_map() -> dict:
             }
             for item in DEMO_SOS_QUEUE
         ],
+        "source_health": [
+            {
+                "id": f"alert-feed-{item['source_name'].lower().replace(' ', '-')}",
+                "label": item["source_name"],
+                "category": "alert_feed",
+                "provenance_url": item.get("endpoint_url"),
+                "last_success_at": item.get("last_success_at"),
+                "last_checked_at": item.get("last_checked_at") or item.get("last_success_at"),
+                "stale_after_seconds": 900,
+                "status": "stale" if item.get("stale") else "healthy",
+                "review_required": True,
+                "decision_limit": "Feed freshness supports review only; verify an alert with the issuing authority and local observations before acting or warning the public.",
+            }
+            for item in demo_feed_health()
+        ] + [
+            {
+                "id": "project-noah-reference",
+                "label": "Project NOAH modeled hazard references",
+                "category": "hazard_reference",
+                "provenance_url": "https://noah.up.edu.ph/",
+                "last_success_at": None,
+                "last_checked_at": None,
+                "stale_after_seconds": None,
+                "status": "reference_only",
+                "review_required": True,
+                "decision_limit": "Static modeled reference context only; it does not confirm active hazards, route clearance, or field safety.",
+            },
+            {
+                "id": "official-facility-registry",
+                "label": "Official DOH facility reference registry",
+                "category": "facility_reference",
+                "provenance_url": "https://hfsrb.doh.gov.ph/",
+                "last_success_at": None,
+                "last_checked_at": None,
+                "stale_after_seconds": None,
+                "status": "reference_only",
+                "review_required": True,
+                "decision_limit": "Reference locations and service classification only; LGU/DRRMO or facility verification is required before readiness, access, or availability is relied on.",
+            },
+        ],
     }
+
+
+def demo_facility_verifications(facility_id: str | None = None) -> dict:
+    records = [item for item in DEMO_FACILITY_VERIFICATIONS if facility_id is None or item["facility_id"] == facility_id]
+    return {"generated_at": datetime.now(timezone.utc).isoformat(), "source": "demo-seed", "records": deepcopy(records)}
+
+
+def create_demo_facility_verification(*, facility_id: str, coordinate_confirmed: bool, contact_attempted: bool, reported_access: str, verification_outcome: str, source_document_reference: str, revalidation_due_at: str, verification_note: str, actor_user_id: str | None, actor_role: str | None) -> dict:
+    record = {
+        "id": str(uuid4()), "facility_id": facility_id, "coordinate_confirmed": coordinate_confirmed,
+        "contact_attempted": contact_attempted, "reported_access": reported_access,
+        "verification_outcome": verification_outcome, "source_document_reference": source_document_reference,
+        "revalidation_due_at": revalidation_due_at, "verification_note": verification_note,
+        "verified_by_user_id": actor_user_id, "verified_by_role": actor_role,
+        "verified_at": datetime.now(timezone.utc).isoformat(),
+        "decision_limit": "This verification records reported reference and contact checks only. It does not establish staffing, capacity, supplies, communications, structural safety, or suitability for an emergency task.",
+    }
+    DEMO_FACILITY_VERIFICATIONS.insert(0, record)
+    record_demo_audit(
+        actor_user_id=actor_user_id, actor_role=actor_role, action="facility.verification_recorded",
+        resource_type="official_facility", resource_id=facility_id,
+        metadata={"verification_outcome": verification_outcome, "coordinate_confirmed": coordinate_confirmed, "contact_attempted": contact_attempted, "reported_access": reported_access, "revalidation_due_at": revalidation_due_at},
+    )
+    return deepcopy(record)
 
 
 def demo_gis_route(latitude: float, longitude: float, destination_center_id: str | None = None) -> dict:

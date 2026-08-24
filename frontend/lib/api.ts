@@ -315,6 +315,20 @@ export type GisMapSnapshot = {
     accuracy_meters?: number | null;
     summary: string;
   }>;
+  source_health: MapSourceHealth[];
+};
+
+export type MapSourceHealth = {
+  id: string;
+  label: string;
+  category: "alert_feed" | "weather_overlay" | "hazard_reference" | "facility_reference";
+  provenance_url?: string | null;
+  last_success_at?: string | null;
+  last_checked_at?: string | null;
+  stale_after_seconds?: number | null;
+  status: "healthy" | "stale" | "reference_only" | "unavailable";
+  review_required: true;
+  decision_limit: string;
 };
 
 export type NoahOverlayLayer = {
@@ -363,6 +377,31 @@ export type OfficialFacilityRegistry = {
   source_status: "available" | "limited_official_coverage";
   decision_limit: string;
   facilities: OfficialFacility[];
+};
+
+export type FacilityVerificationOutcome = "reference_verified" | "follow_up_required" | "not_verified";
+export type FacilityReportedAccess = "not_assessed" | "reported_open" | "reported_restricted" | "reported_unavailable";
+
+export type FacilityVerificationRecord = {
+  id: string;
+  facility_id: string;
+  coordinate_confirmed: boolean;
+  contact_attempted: boolean;
+  reported_access: FacilityReportedAccess;
+  verification_outcome: FacilityVerificationOutcome;
+  source_document_reference: string;
+  revalidation_due_at: string;
+  verification_note: string;
+  verified_by_user_id?: string | null;
+  verified_by_role?: UserIdentity["role"] | null;
+  verified_at: string;
+  decision_limit: string;
+};
+
+export type FacilityVerificationSnapshot = {
+  generated_at: string;
+  source: "demo-seed" | "database";
+  records: FacilityVerificationRecord[];
 };
 
 export type RadarFrame = {
@@ -661,6 +700,44 @@ export type NotificationSnapshot = {
   failed_count: number;
 };
 
+export type DispatchLifecycleStatus = "pending_confirmation" | "confirmed" | "acknowledged" | "escalated" | "cancelled" | "closed";
+
+export type DispatchLifecycleEvent = {
+  id: string;
+  assignment_id: string;
+  event_type: string;
+  from_status?: DispatchLifecycleStatus | null;
+  to_status: DispatchLifecycleStatus;
+  note?: string | null;
+  actor_user_id?: string | null;
+  actor_role?: UserIdentity["role"] | null;
+  occurred_at: string;
+};
+
+export type DispatchLifecycleAssignment = {
+  assignment_id: string;
+  group_id: string;
+  target_type: string;
+  target_id: string;
+  assignment_note?: string | null;
+  status: DispatchLifecycleStatus;
+  created_at: string;
+  confirmed_at?: string | null;
+  acknowledged_at?: string | null;
+  escalated_at?: string | null;
+  cancelled_at?: string | null;
+  closed_at?: string | null;
+  events: DispatchLifecycleEvent[];
+  confirmation_required: true;
+  decision_limit: string;
+};
+
+export type DispatchLifecycleSnapshot = {
+  generated_at: string;
+  source: "demo-seed" | "database";
+  assignments: DispatchLifecycleAssignment[];
+};
+
 // Public deployments must not ask the operator's browser to contact its own localhost.
 // Use the Next.js same-origin proxy by default; local integrations can still override this.
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || (typeof window === "undefined" ? "http://127.0.0.1:8000/v1" : "/api/v1");
@@ -754,7 +831,18 @@ export function assignResponseGroup(payload: {
   target_id: string;
   assignment_note?: string;
 }) {
-  return request<{ status: "assigned"; group: ResponseGroup; target_type: string; target_id: string; assignment_id: string; assigned_at: string }>("/response-groups/assign", {
+  return request<{ status: DispatchLifecycleStatus; group: ResponseGroup; target_type: string; target_id: string; assignment_id: string; assigned_at: string; confirmation_required: true; decision_limit: string }>("/response-groups/assign", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function getDispatchLifecycle(targetId?: string) {
+  return request<DispatchLifecycleSnapshot>(`/response-groups/dispatch-lifecycle${targetId ? `?target_id=${encodeURIComponent(targetId)}` : ""}`);
+}
+
+export function transitionDispatchLifecycle(assignmentId: string, payload: { action: "confirm" | "acknowledge" | "escalate" | "cancel" | "close"; note?: string; operator_confirmed?: boolean }) {
+  return request<DispatchLifecycleAssignment>(`/response-groups/assignments/${assignmentId}/transition`, {
     method: "POST",
     body: JSON.stringify(payload),
   });
@@ -802,12 +890,43 @@ export function getGisMap() {
   return request<GisMapSnapshot>("/gis/map");
 }
 
+export function getMapSourceHealth() {
+  return request<MapSourceHealth[]>("/gis/source-health");
+}
+
+export function reviewMapSource(sourceId: string, reviewNote?: string) {
+  return request<{ source_id: string; reviewed_at: string; review_required: true; status: MapSourceHealth["status"]; decision_limit: string }>("/gis/source-health/review", {
+    method: "POST",
+    body: JSON.stringify({ source_id: sourceId, review_note: reviewNote }),
+  });
+}
+
 export function getNoahMapContext() {
   return request<NoahMapContext>("/gis/noah/context");
 }
 
 export function getOfficialFacilityRegistry() {
   return request<OfficialFacilityRegistry>("/gis/facilities/official-registry");
+}
+
+export function getFacilityVerifications(facilityId?: string) {
+  return request<FacilityVerificationSnapshot>(`/gis/facilities/verifications${facilityId ? `?facility_id=${encodeURIComponent(facilityId)}` : ""}`);
+}
+
+export function createFacilityVerification(payload: {
+  facility_id: string;
+  coordinate_confirmed: boolean;
+  contact_attempted: boolean;
+  reported_access: FacilityReportedAccess;
+  verification_outcome: FacilityVerificationOutcome;
+  source_document_reference: string;
+  revalidation_due_at: string;
+  verification_note: string;
+}) {
+  return request<FacilityVerificationRecord>("/gis/facilities/verifications", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
 }
 
 export function getWeatherRadar() {

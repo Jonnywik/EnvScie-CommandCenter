@@ -9,6 +9,7 @@ const workspaceSource = [
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/contracts.ts"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/CommandCenterNavigation.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/CommandMap.tsx"), "utf8"),
+  readFileSync(resolve(process.cwd(), "components/dashboard-tabs/FacilityVerification.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/GoogleOperationalMap.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/IncidentTriage.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/FleetSafety.tsx"), "utf8"),
@@ -78,12 +79,30 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("Open NOAH Studio facility context");
     expect(workspaceSource).toContain("critical_facilities.message");
     expect(workspaceSource).toContain("OFFICIAL FACILITY REFERENCE");
+    expect(workspaceSource).toContain("FacilityVerificationWorkspace");
+    expect(workspaceSource).toContain("LGU/DRRMO facility verification");
+    expect(workspaceSource).toContain("Record source-pin, contact, and reported-access checks without inferring readiness");
+    expect(workspaceSource).toContain("Source document or reference");
+    expect(workspaceSource).toContain("Revalidation due");
+    expect(workspaceSource).toContain("Schedule a renewed human check");
+    expect(workspaceSource).toContain("Entries are auditable records of human reference checks");
+    expect(workspaceSource).toContain("Record verification");
+    expect(workspaceSource).toContain("Verification history");
+    expect(workspaceSource).toContain("getFacilityVerifications");
+    expect(workspaceSource).toContain("createFacilityVerification");
     expect(workspaceSource).toContain("Official facility registry controls");
     expect(workspaceSource).toContain("Show source records");
     expect(workspaceSource).toContain("Rural health units");
     expect(workspaceSource).toContain("coordinate_validation_status.replaceAll");
     expect(workspaceSource).toContain("Registry inclusion does not confirm staffing");
     expect(workspaceSource).toContain("getMapOverlays");
+    expect(workspaceSource).toContain("CommandMapSourceHealthTool");
+    expect(workspaceSource).toContain("SOURCE HEALTH");
+    expect(workspaceSource).toContain("Freshness, provenance &amp; review");
+    expect(workspaceSource).toContain("Record human review");
+    expect(workspaceSource).toContain("reviewMapSource");
+    expect(workspaceSource).toContain('activeUtilityPanel === "sources"');
+    expect(workspaceSource).toContain("They do not refresh a provider, validate a hazard, clear a route, or authorize public action");
     expect(workspaceSource).toContain("command-map-layer-rail");
     expect(workspaceSource).toContain("CommandMapTriageFilterTool");
     expect(workspaceSource).toContain("cfr_command_map_triage_filters");
@@ -151,7 +170,19 @@ describe("compact operational interface", () => {
     expect(dashboardSource).toContain("topbar-actions");
     expect(workspaceSource).toContain("workspace-appearance-toggle");
     expect(workspaceSource).toContain("IncidentTriageView");
+    expect(workspaceSource).toContain("HUMAN-CONFIRMED DISPATCH LIFECYCLE");
+    expect(workspaceSource).toContain("Open dispatch confirmation");
+    expect(workspaceSource).toContain("I confirm I am recording a human decision to task this group");
+    expect(workspaceSource).toContain("Record reported unit acknowledgement");
+    expect(workspaceSource).toContain("Immutable lifecycle timeline");
+    expect(workspaceSource).toContain("Notification receipt is separate from a responder’s reported dispatch acknowledgement");
+    expect(workspaceSource).toContain("getDispatchLifecycle");
+    expect(workspaceSource).toContain("transitionDispatchLifecycle");
     expect(workspaceSource).toContain("FleetResponderSafetyView");
+    expect(workspaceSource).toContain("DISPATCH LIFECYCLE · SELECTED UNIT");
+    expect(workspaceSource).toContain("Open Triage confirmation");
+    expect(workspaceSource).toContain("Record reported acknowledgement");
+    expect(workspaceSource).toContain("notification receipt was not used as acknowledgement");
     expect(workspaceSource).toContain("IntelligenceDashboardView");
     expect(workspaceSource).toContain("Fleet & Responder Safety");
     expect(workspaceSource).toContain("DRRMO Intelligence");

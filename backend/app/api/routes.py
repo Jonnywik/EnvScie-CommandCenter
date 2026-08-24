@@ -32,6 +32,10 @@ from app.schemas.gis import (
     GisMapSnapshot,
     GisResource,
     GisSosPoint,
+    FacilityVerificationCreate,
+    FacilityVerificationRecord,
+    FacilityVerificationSnapshot,
+    MapSourceHealth,
     NoahMapContext,
     NoahOverlayLayer,
     OfficialFacilityRecord,
@@ -39,8 +43,14 @@ from app.schemas.gis import (
     OptimizedRouteResponse,
     ResourcePositionUpdate,
     RouteOptimizationRequest,
+    SourceHealthReviewRequest,
+    SourceHealthReviewResult,
 )
 from app.schemas.response_groups import (
+    DispatchLifecycleAssignment,
+    DispatchLifecycleEvent,
+    DispatchLifecycleSnapshot,
+    DispatchLifecycleTransitionRequest,
     ResponseGroupAssignmentRequest,
     ResponseGroupAssignmentResult,
     ResponseGroupSnapshot,
@@ -68,6 +78,11 @@ from app.services.demo_data import (
     demo_gis_map,
     demo_gis_route,
     assign_demo_response_group,
+    create_demo_dispatch_assignment,
+    demo_dispatch_lifecycle,
+    transition_demo_dispatch_assignment,
+    demo_facility_verifications,
+    create_demo_facility_verification,
     demo_communications,
     demo_dispatch_recommendations,
     record_demo_communication,
@@ -585,24 +600,28 @@ async def assign_response_group(
     session: AsyncSession | None = Depends(get_db),
     actor: UserIdentity = Depends(require_roles("dispatcher", "responder", "admin")),
 ) -> ResponseGroupAssignmentResult:
+    """Create a dispatch proposal. No resource movement or notification occurs until an explicit confirmation."""
     assigned_at = datetime.now(timezone.utc)
     if settings.demo_mode:
         try:
-            group = assign_demo_response_group(payload.group_id, payload.target_type, payload.target_id, payload.assignment_note)
+            assignment = create_demo_dispatch_assignment(
+                payload.group_id, payload.target_type, payload.target_id, payload.assignment_note, str(actor.id), actor.role,
+            )
         except ValueError as exc:
             raise HTTPException(status_code=409, detail=str(exc)) from exc
+        if assignment is None:
+            raise HTTPException(status_code=404, detail="response group not found")
+        group = next((item for item in demo_response_groups()["groups"] if item["id"] == payload.group_id), None)
         if group is None:
             raise HTTPException(status_code=404, detail="response group not found")
         record_demo_operations_action(
             actor_user_id=str(actor.id), actor_role=actor.role,
-            action="response_group.assigned", resource_type="response_group", resource_id=payload.group_id,
-            note=payload.assignment_note or f"Assigned to {payload.target_type} {payload.target_id}",
+            action="dispatch.proposed", resource_type="response_group_assignment", resource_id=assignment["assignment_id"],
+            note=payload.assignment_note or f"Proposal created for {payload.target_type} {payload.target_id}; human confirmation is pending.",
         )
-        await send_assignment_notification(group, payload.target_type, payload.target_id, payload.assignment_note, actor)
-        await manager.publish("lgu:response_groups", {"event": "response_group.assigned", "group": group})
         return ResponseGroupAssignmentResult(
-            status="assigned", group=group, target_type=payload.target_type,
-            target_id=payload.target_id, assignment_id=f"demo-{uuid4()}", assigned_at=assigned_at,
+            status="pending_confirmation", group=group, target_type=payload.target_type,
+            target_id=payload.target_id, assignment_id=assignment["assignment_id"], assigned_at=assignment["created_at"],
         )
     if session is None:
         raise HTTPException(status_code=503, detail="database unavailable")
@@ -636,26 +655,142 @@ async def assign_response_group(
     if int(current["readiness_score"] or 0) < 60:
         raise HTTPException(status_code=409, detail="group readiness is below the dispatch threshold")
     assignment = (await session.execute(text("""
-        INSERT INTO cfr.response_group_assignments (group_id, target_type, target_id, assignment_note, assigned_by_user_id)
-        VALUES (:group_id, :target_type, :target_id, :assignment_note, :actor_id)
+        INSERT INTO cfr.response_group_assignments (group_id, target_type, target_id, assignment_note, assigned_by_user_id, lifecycle_status)
+        VALUES (:group_id, :target_type, :target_id, :assignment_note, :actor_id, 'pending_confirmation')
         RETURNING id, assigned_at
     """), {"group_id": str(group_uuid), "target_type": payload.target_type, "target_id": payload.target_id, "assignment_note": payload.assignment_note, "actor_id": str(actor.id)})).mappings().one()
-    await session.execute(text("UPDATE cfr.resource_units SET state = 'deployed', current_assignment = :assignment WHERE id = :group_id"), {"assignment": payload.assignment_note or f"Assigned to {payload.target_type} {payload.target_id}", "group_id": str(group_uuid)})
-    await write_audit_event(session, actor=actor, action="response_group.assigned", resource_type="response_group", resource_id=str(group_uuid), metadata={"target_type": payload.target_type, "target_id": payload.target_id})
+    await session.execute(text("""
+        INSERT INTO cfr.response_group_assignment_events (assignment_id, event_type, to_status, note, actor_user_id, actor_role)
+        VALUES (:assignment_id, 'dispatch.proposed', 'pending_confirmation', :note, :actor_id, :actor_role)
+    """), {"assignment_id": str(assignment["id"]), "note": payload.assignment_note, "actor_id": str(actor.id), "actor_role": actor.role})
+    await write_audit_event(session, actor=actor, action="dispatch.proposed", resource_type="response_group_assignment", resource_id=str(assignment["id"]), metadata={"group_id": str(group_uuid), "target_type": payload.target_type, "target_id": payload.target_id, "confirmation_required": True})
     await session.commit()
     snapshot = await response_groups_snapshot(session)
     group = next(item for item in snapshot.groups if item.id == str(group_uuid))
-    await send_assignment_notification(
-        group,
-        payload.target_type,
-        payload.target_id,
-        payload.assignment_note,
-        actor,
-        session=session,
-        assignment_id=str(assignment["id"]),
-    )
-    await manager.publish("lgu:response_groups", {"event": "response_group.assigned", "group": group.model_dump(mode="json")})
-    return ResponseGroupAssignmentResult(status="assigned", group=group, target_type=payload.target_type, target_id=payload.target_id, assignment_id=str(assignment["id"]), assigned_at=assignment["assigned_at"])
+    await manager.publish("lgu:response_groups", {"event": "dispatch.proposed", "group": group.model_dump(mode="json"), "assignment_id": str(assignment["id"])})
+    return ResponseGroupAssignmentResult(status="pending_confirmation", group=group, target_type=payload.target_type, target_id=payload.target_id, assignment_id=str(assignment["id"]), assigned_at=assignment["assigned_at"])
+
+
+async def _live_dispatch_lifecycle(session: AsyncSession, target_id: str | None = None) -> DispatchLifecycleSnapshot:
+    rows = (await session.execute(text("""
+        SELECT a.id, a.group_id, a.target_type, a.target_id, a.assignment_note, a.lifecycle_status,
+               a.assigned_at, a.confirmed_at, a.acknowledged_at, a.escalated_at, a.cancelled_at, a.closed_at
+        FROM cfr.response_group_assignments a
+        WHERE (:target_id IS NULL OR a.target_id = :target_id)
+        ORDER BY a.assigned_at DESC
+        LIMIT 100
+    """), {"target_id": target_id})).mappings().all()
+    assignment_ids = [str(row["id"]) for row in rows]
+    events_by_assignment: dict[str, list[DispatchLifecycleEvent]] = {item: [] for item in assignment_ids}
+    if assignment_ids:
+        events = (await session.execute(text("""
+            SELECT id, assignment_id, event_type, from_status, to_status, note, actor_user_id, actor_role, occurred_at
+            FROM cfr.response_group_assignment_events
+            WHERE assignment_id = ANY(CAST(:assignment_ids AS uuid[]))
+            ORDER BY occurred_at ASC
+        """), {"assignment_ids": assignment_ids})).mappings().all()
+        for event in events:
+            events_by_assignment[str(event["assignment_id"])].append(DispatchLifecycleEvent(**dict(event)))
+    assignments = [DispatchLifecycleAssignment(
+        assignment_id=str(row["id"]), group_id=str(row["group_id"]), target_type=row["target_type"], target_id=row["target_id"],
+        assignment_note=row["assignment_note"], status=row["lifecycle_status"], created_at=row["assigned_at"],
+        confirmed_at=row["confirmed_at"], acknowledged_at=row["acknowledged_at"], escalated_at=row["escalated_at"],
+        cancelled_at=row["cancelled_at"], closed_at=row["closed_at"], events=events_by_assignment[str(row["id"])],
+    ) for row in rows]
+    return DispatchLifecycleSnapshot(generated_at=datetime.now(timezone.utc), source="database", assignments=assignments)
+
+
+@router.get("/response-groups/dispatch-lifecycle", response_model=DispatchLifecycleSnapshot)
+async def dispatch_lifecycle_snapshot(target_id: str | None = Query(default=None), session: AsyncSession | None = Depends(get_db)) -> DispatchLifecycleSnapshot:
+    if settings.demo_mode:
+        return DispatchLifecycleSnapshot(**demo_dispatch_lifecycle(target_id))
+    if session is None:
+        raise HTTPException(status_code=503, detail="database unavailable")
+    return await _live_dispatch_lifecycle(session, target_id)
+
+
+@router.post("/response-groups/assignments/{assignment_id}/transition", response_model=DispatchLifecycleAssignment)
+async def transition_dispatch_lifecycle(
+    assignment_id: str,
+    payload: DispatchLifecycleTransitionRequest,
+    session: AsyncSession | None = Depends(get_db),
+    actor: UserIdentity = Depends(require_roles("dispatcher", "responder", "admin")),
+) -> DispatchLifecycleAssignment:
+    """Advance only through human-recorded states; notification receipts are not lifecycle acknowledgement."""
+    if settings.demo_mode:
+        try:
+            assignment = transition_demo_dispatch_assignment(assignment_id, payload.action, payload.note, payload.operator_confirmed, str(actor.id), actor.role)
+        except ValueError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        if assignment is None:
+            raise HTTPException(status_code=404, detail="dispatch assignment not found")
+        record_demo_operations_action(
+            actor_user_id=str(actor.id), actor_role=actor.role, action=f"dispatch.{assignment['status']}",
+            resource_type="response_group_assignment", resource_id=assignment_id, note=payload.note or f"Dispatch transition recorded: {assignment['status']}.",
+        )
+        if payload.action == "confirm":
+            group = next((item for item in demo_response_groups()["groups"] if item["id"] == assignment["group_id"]), None)
+            if group is not None:
+                await send_assignment_notification(group, assignment["target_type"], assignment["target_id"], assignment["assignment_note"], actor)
+        await manager.publish("lgu:dispatch_lifecycle", {"event": f"dispatch.{assignment['status']}", "assignment": assignment})
+        return DispatchLifecycleAssignment(**assignment)
+    if session is None:
+        raise HTTPException(status_code=503, detail="database unavailable")
+    try:
+        assignment_uuid = UUID(assignment_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail="assignment_id must be a UUID in live mode") from exc
+    row = (await session.execute(text("""
+        SELECT a.id, a.group_id, a.target_type, a.target_id, a.assignment_note, a.lifecycle_status
+        FROM cfr.response_group_assignments a WHERE a.id = :assignment_id FOR UPDATE
+    """), {"assignment_id": str(assignment_uuid)})).mappings().first()
+    if row is None:
+        raise HTTPException(status_code=404, detail="dispatch assignment not found")
+    current = row["lifecycle_status"]
+    transitions = {
+        "confirm": (("pending_confirmation",), "confirmed"),
+        "acknowledge": (("confirmed",), "acknowledged"),
+        "escalate": (("confirmed", "acknowledged"), "escalated"),
+        "cancel": (("pending_confirmation", "confirmed", "acknowledged", "escalated"), "cancelled"),
+        "close": (("confirmed", "acknowledged", "escalated"), "closed"),
+    }
+    allowed_from, next_status = transitions[payload.action]
+    if current not in allowed_from:
+        raise HTTPException(status_code=409, detail=f"invalid dispatch lifecycle transition: {current} -> {payload.action}")
+    if payload.action == "confirm" and not payload.operator_confirmed:
+        raise HTTPException(status_code=409, detail="explicit operator confirmation is required before dispatch is recorded")
+    if payload.action == "close" and not payload.note:
+        raise HTTPException(status_code=422, detail="a closure note is required before closing a dispatch")
+    time_field = {"confirmed": "confirmed_at", "acknowledged": "acknowledged_at", "escalated": "escalated_at", "cancelled": "cancelled_at", "closed": "closed_at"}[next_status]
+    actor_field = {"confirmed": "confirmed_by_user_id", "acknowledged": "acknowledged_by_user_id"}.get(next_status)
+    assignments_update = f"lifecycle_status = :next_status, {time_field} = now()"
+    if actor_field:
+        assignments_update += f", {actor_field} = :actor_id"
+    if next_status == "closed":
+        assignments_update += ", closure_note = :note, released_at = now()"
+    if next_status == "cancelled":
+        assignments_update += ", released_at = now()"
+    await session.execute(text(f"UPDATE cfr.response_group_assignments SET {assignments_update} WHERE id = :assignment_id"), {"next_status": next_status, "note": payload.note, "actor_id": str(actor.id), "assignment_id": str(assignment_uuid)})
+    await session.execute(text("""
+        INSERT INTO cfr.response_group_assignment_events (assignment_id, event_type, from_status, to_status, note, actor_user_id, actor_role)
+        VALUES (:assignment_id, :event_type, :from_status, :to_status, :note, :actor_id, :actor_role)
+    """), {"assignment_id": str(assignment_uuid), "event_type": f"dispatch.{next_status}", "from_status": current, "to_status": next_status, "note": payload.note, "actor_id": str(actor.id), "actor_role": actor.role})
+    if payload.action == "confirm":
+        await session.execute(text("UPDATE cfr.resource_units SET state = 'en_route', current_assignment = :assignment WHERE id = :group_id"), {"assignment": row["assignment_note"] or f"Confirmed dispatch to {row['target_type']} {row['target_id']}", "group_id": str(row["group_id"])})
+        if row["target_type"] == "sos_request":
+            await session.execute(text("UPDATE cfr.sos_requests SET status = 'dispatched', updated_at = now() WHERE id = CAST(:target_id AS uuid) AND status = 'acknowledged'"), {"target_id": row["target_id"]})
+    if payload.action in {"cancel", "close"}:
+        await session.execute(text("UPDATE cfr.resource_units SET state = 'ready', current_assignment = NULL WHERE id = :group_id"), {"group_id": str(row["group_id"])})
+    await write_audit_event(session, actor=actor, action=f"dispatch.{next_status}", resource_type="response_group_assignment", resource_id=str(assignment_uuid), metadata={"from_status": current, "note": payload.note, "operator_confirmed": payload.operator_confirmed})
+    await session.commit()
+    lifecycle = await _live_dispatch_lifecycle(session)
+    assignment = next(item for item in lifecycle.assignments if item.assignment_id == str(assignment_uuid))
+    if payload.action == "confirm":
+        group_snapshot = await response_groups_snapshot(session)
+        group = next(item for item in group_snapshot.groups if item.id == str(row["group_id"]))
+        await send_assignment_notification(group, row["target_type"], row["target_id"], row["assignment_note"], actor, session=session, assignment_id=str(assignment_uuid))
+    await manager.publish("lgu:dispatch_lifecycle", {"event": f"dispatch.{next_status}", "assignment": assignment.model_dump(mode="json")})
+    return assignment
 
 
 @router.get("/notifications", response_model=NotificationSnapshot)
@@ -882,6 +1017,7 @@ async def gis_map_snapshot(session: AsyncSession | None = Depends(get_db)) -> Gi
         FROM cfr.sos_requests
         WHERE resolved_at IS NULL ORDER BY received_at DESC LIMIT 100
     """))).mappings().all()
+    source_health = await _source_health_snapshot(session)
     return GisMapSnapshot(
         generated_at=datetime.now(timezone.utc),
         source="postgis",
@@ -907,11 +1043,133 @@ async def gis_map_snapshot(session: AsyncSession | None = Depends(get_db)) -> Gi
             position={"latitude": row["latitude"], "longitude": row["longitude"]},
             accuracy_meters=row["accuracy_meters"], summary=row["summary"],
         ) for row in sos],
+        source_health=source_health,
     )
 
 
 NOAH_DATA_DIRECTORY = Path(__file__).resolve().parents[1] / "data" / "noah"
 OFFICIAL_FACILITY_REGISTRY_PATH = Path(__file__).resolve().parents[1] / "data" / "facilities" / "official_balangiga_health_registry.json"
+
+
+def _reference_last_changed(path: Path) -> datetime | None:
+    if not path.exists():
+        return None
+    return datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc)
+
+
+def _static_source_health() -> list[MapSourceHealth]:
+    """Describe packaged map references without presenting them as live operational feeds."""
+    return [
+        MapSourceHealth(
+            id="project-noah-reference",
+            label="Project NOAH modeled hazard references",
+            category="hazard_reference",
+            provenance_url="https://noah.up.edu.ph/",
+            last_success_at=_reference_last_changed(NOAH_DATA_DIRECTORY / "manifest.json"),
+            last_checked_at=_reference_last_changed(NOAH_DATA_DIRECTORY / "manifest.json"),
+            status="reference_only" if (NOAH_DATA_DIRECTORY / "manifest.json").exists() else "unavailable",
+            review_required=True,
+            decision_limit="Static modeled reference context only; it does not confirm active hazards, route clearance, or field safety.",
+        ),
+        MapSourceHealth(
+            id="official-facility-registry",
+            label="Official DOH facility reference registry",
+            category="facility_reference",
+            provenance_url="https://hfsrb.doh.gov.ph/",
+            last_success_at=_reference_last_changed(OFFICIAL_FACILITY_REGISTRY_PATH),
+            last_checked_at=_reference_last_changed(OFFICIAL_FACILITY_REGISTRY_PATH),
+            status="reference_only" if OFFICIAL_FACILITY_REGISTRY_PATH.exists() else "unavailable",
+            review_required=True,
+            decision_limit="Reference locations and service classification only; LGU/DRRMO or facility verification is required before readiness, access, or availability is relied on.",
+        ),
+    ]
+
+
+async def _source_health_snapshot(session: AsyncSession | None = None) -> list[MapSourceHealth]:
+    if settings.demo_mode:
+        now = datetime.now(timezone.utc)
+        feed_items = demo_feed_health()
+        records = [
+            MapSourceHealth(
+                id=f"alert-feed-{item['source_name'].lower().replace(' ', '-')}",
+                label=item["source_name"],
+                category="alert_feed",
+                provenance_url=item.get("endpoint_url"),
+                last_success_at=item.get("last_success_at"),
+                last_checked_at=item.get("last_checked_at") or item.get("last_success_at"),
+                stale_after_seconds=settings.alert_stale_after_seconds,
+                status="stale" if item.get("stale") else "healthy",
+                review_required=True,
+                decision_limit="Feed freshness supports review only; verify an alert with the issuing authority and local observations before acting or warning the public.",
+            ) for item in feed_items
+        ]
+        return records + _static_source_health()
+    if session is None:
+        return _static_source_health()
+    rows = (await session.execute(text("""
+        SELECT source_name, endpoint_url, last_success_at, last_error_at
+        FROM cfr.external_feed_sources
+        ORDER BY source_name
+    """))).mappings().all()
+    now = datetime.now(timezone.utc)
+    records = []
+    for row in rows:
+        last_success_at = row["last_success_at"]
+        stale = last_success_at is None or (now - last_success_at).total_seconds() > settings.alert_stale_after_seconds
+        records.append(MapSourceHealth(
+            id=f"alert-feed-{row['source_name'].lower().replace(' ', '-')}",
+            label=row["source_name"],
+            category="alert_feed",
+            provenance_url=row["endpoint_url"],
+            last_success_at=last_success_at,
+            last_checked_at=row["last_error_at"] or last_success_at,
+            stale_after_seconds=settings.alert_stale_after_seconds,
+            status="stale" if stale else "healthy",
+            review_required=True,
+            decision_limit="Feed freshness supports review only; verify an alert with the issuing authority and local observations before acting or warning the public.",
+        ))
+    return records + _static_source_health()
+
+
+@router.get("/gis/source-health", response_model=list[MapSourceHealth])
+async def gis_source_health(session: AsyncSession | None = Depends(get_db)) -> list[MapSourceHealth]:
+    """Expose provenance and freshness status without silently refreshing or authorizing a decision."""
+    if settings.demo_mode:
+        return await _source_health_snapshot()
+    if session is None:
+        raise HTTPException(status_code=503, detail="database unavailable")
+    return await _source_health_snapshot(session)
+
+
+@router.post("/gis/source-health/review", response_model=SourceHealthReviewResult)
+async def review_gis_source_health(
+    payload: SourceHealthReviewRequest,
+    session: AsyncSession | None = Depends(get_db),
+    actor: UserIdentity = Depends(require_roles("dispatcher", "responder", "admin")),
+) -> SourceHealthReviewResult:
+    """Record a human review; never refresh a source, clear a route, or authorize an operational action."""
+    records = await _source_health_snapshot(session if not settings.demo_mode else None)
+    record = next((item for item in records if item.id == payload.source_id), None)
+    if record is None:
+        raise HTTPException(status_code=404, detail="source-health record not found")
+    note = payload.review_note or f"Reviewed {record.label} provenance and freshness."
+    if settings.demo_mode:
+        record_demo_operations_action(
+            actor_user_id=str(actor.id), actor_role=actor.role,
+            action="gis.source_health_reviewed", resource_type="map_source", resource_id=record.id, note=note,
+        )
+    else:
+        if session is None:
+            raise HTTPException(status_code=503, detail="database unavailable")
+        await write_audit_event(
+            session, actor=actor, action="gis.source_health_reviewed", resource_type="map_source", resource_id=record.id,
+            metadata={"source_label": record.label, "source_status": record.status, "review_note": payload.review_note},
+        )
+        await session.commit()
+    return SourceHealthReviewResult(
+        source_id=record.id, reviewed_at=datetime.now(timezone.utc), status=record.status,
+        decision_limit=record.decision_limit,
+    )
 
 
 @lru_cache(maxsize=1)
@@ -958,6 +1216,72 @@ async def official_facility_registry() -> OfficialFacilityRegistry:
         decision_limit=registry["decision_limit"],
         facilities=[OfficialFacilityRecord(**facility) for facility in registry["facilities"]],
     )
+
+
+@router.get("/gis/facilities/verifications", response_model=FacilityVerificationSnapshot)
+async def facility_verification_snapshot(
+    facility_id: str | None = Query(default=None),
+    session: AsyncSession | None = Depends(get_db),
+) -> FacilityVerificationSnapshot:
+    """List human-entered reference checks; no result communicates readiness, access clearance, or suitability."""
+    if settings.demo_mode:
+        return FacilityVerificationSnapshot(**demo_facility_verifications(facility_id))
+    if session is None:
+        raise HTTPException(status_code=503, detail="database unavailable")
+    rows = (await session.execute(text("""
+        SELECT id, facility_id, coordinate_confirmed, contact_attempted, reported_access, verification_outcome,
+               source_document_reference, revalidation_due_at, verification_note, verified_by_user_id, verified_by_role, verified_at
+        FROM cfr.facility_verifications
+        WHERE (:facility_id IS NULL OR facility_id = :facility_id)
+        ORDER BY verified_at DESC LIMIT 200
+    """), {"facility_id": facility_id})).mappings().all()
+    return FacilityVerificationSnapshot(
+        generated_at=datetime.now(timezone.utc), source="database",
+        records=[FacilityVerificationRecord(**({**dict(row), "id": str(row["id"]), "verified_by_user_id": str(row["verified_by_user_id"]) if row["verified_by_user_id"] else None})) for row in rows],
+    )
+
+
+@router.post("/gis/facilities/verifications", response_model=FacilityVerificationRecord, status_code=201)
+async def record_facility_verification(
+    payload: FacilityVerificationCreate,
+    session: AsyncSession | None = Depends(get_db),
+    actor: UserIdentity = Depends(require_roles("dispatcher", "responder", "admin")),
+) -> FacilityVerificationRecord:
+    """Store a human reference check; intentionally does not turn a facility into a ready or cleared resource."""
+    registry = _official_facility_registry()
+    if not any(item["id"] == payload.facility_id for item in registry["facilities"]):
+        raise HTTPException(status_code=404, detail="official facility reference not found")
+    if settings.demo_mode:
+        record = create_demo_facility_verification(
+            facility_id=payload.facility_id, coordinate_confirmed=payload.coordinate_confirmed,
+            contact_attempted=payload.contact_attempted, reported_access=payload.reported_access,
+            verification_outcome=payload.verification_outcome, source_document_reference=payload.source_document_reference,
+            revalidation_due_at=payload.revalidation_due_at.isoformat(), verification_note=payload.verification_note,
+            actor_user_id=str(actor.id), actor_role=actor.role,
+        )
+        await manager.publish("lgu:facilities", {"event": "facility.verification_recorded", "record": record})
+        return FacilityVerificationRecord(**record)
+    if session is None:
+        raise HTTPException(status_code=503, detail="database unavailable")
+    row = (await session.execute(text("""
+        INSERT INTO cfr.facility_verifications (
+            facility_id, coordinate_confirmed, contact_attempted, reported_access, verification_outcome,
+            source_document_reference, revalidation_due_at, verification_note, verified_by_user_id, verified_by_role
+        ) VALUES (
+            :facility_id, :coordinate_confirmed, :contact_attempted, :reported_access, :verification_outcome,
+            :source_document_reference, :revalidation_due_at, :verification_note, :actor_id, :actor_role
+        )
+        RETURNING id, facility_id, coordinate_confirmed, contact_attempted, reported_access, verification_outcome,
+                  source_document_reference, revalidation_due_at, verification_note, verified_by_user_id, verified_by_role, verified_at
+    """), {**payload.model_dump(), "actor_id": str(actor.id), "actor_role": actor.role})).mappings().one()
+    await write_audit_event(
+        session, actor=actor, action="facility.verification_recorded", resource_type="official_facility", resource_id=payload.facility_id,
+        metadata={"coordinate_confirmed": payload.coordinate_confirmed, "contact_attempted": payload.contact_attempted, "reported_access": payload.reported_access, "verification_outcome": payload.verification_outcome, "source_document_reference": payload.source_document_reference, "revalidation_due_at": payload.revalidation_due_at.isoformat()},
+    )
+    await session.commit()
+    record = FacilityVerificationRecord(**({**dict(row), "id": str(row["id"]), "verified_by_user_id": str(row["verified_by_user_id"]) if row["verified_by_user_id"] else None}))
+    await manager.publish("lgu:facilities", {"event": "facility.verification_recorded", "record": record.model_dump(mode="json")})
+    return record
 
 
 @router.get("/gis/noah/overlays/{layer_id}")
