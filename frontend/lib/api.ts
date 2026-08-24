@@ -931,6 +931,7 @@ export function recordOperationsAction(payload: {
   resource_type: string;
   resource_id?: string;
   note?: string;
+  metadata?: Record<string, unknown>;
 }) {
   return request<OperationsActionResult>("/dashboard/operations/actions", {
     method: "POST",

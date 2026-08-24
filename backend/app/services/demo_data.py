@@ -1375,8 +1375,6 @@ def apply_demo_operations_action(*, action: str, resource_type: str, resource_id
             item["last_action_at"] = now
             if action == "resource.resupply_requested":
                 item["status"] = "low"
-            elif action == "resource.reserve_requested":
-                item["status"] = "deployed" if item["available"] > 0 else "unavailable"
             mutated = True
     elif resource_type == "communications_plan":
         if action == "bulletin.draft_started":
@@ -1479,6 +1477,7 @@ def record_demo_operations_action(
     resource_type: str,
     resource_id: str | None = None,
     note: str | None = None,
+    metadata: dict[str, object] | None = None,
 ) -> dict:
     mutated = apply_demo_operations_action(action=action, resource_type=resource_type, resource_id=resource_id, note=note)
     if resource_type == "verified_alert" and resource_id:
@@ -1502,7 +1501,7 @@ def record_demo_operations_action(
         action=action,
         resource_type=resource_type,
         resource_id=resource_id,
-        metadata={"note": note, "mutated_demo_state": mutated} if note else {"mutated_demo_state": mutated},
+        metadata={"note": note, "details": metadata or {}, "mutated_demo_state": mutated} if note or metadata else {"mutated_demo_state": mutated},
     )
     return {
         "status": "recorded",

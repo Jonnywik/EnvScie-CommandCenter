@@ -8,6 +8,7 @@ import time
 from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
+from typing import Any
 from uuid import UUID, uuid4
 
 import httpx
@@ -186,6 +187,7 @@ class OperationsActionRequest(BaseModel):
     resource_type: str = Field(min_length=2, max_length=80)
     resource_id: str | None = Field(default=None, max_length=120)
     note: str | None = Field(default=None, max_length=500)
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class ResponderSafetyAssessmentRequest(BaseModel):
@@ -512,6 +514,7 @@ async def dashboard_operations_action(
             resource_type=payload.resource_type,
             resource_id=payload.resource_id,
             note=payload.note,
+            metadata=payload.metadata,
         )
     if session is None:
         raise HTTPException(status_code=503, detail="database unavailable")
@@ -572,7 +575,7 @@ async def dashboard_operations_action(
         action=payload.action,
         resource_type=payload.resource_type,
         resource_id=payload.resource_id,
-        metadata={"note": payload.note, "mutated_live_state": mutated},
+        metadata={"note": payload.note, "details": payload.metadata, "mutated_live_state": mutated},
     )
     return {
         "status": "recorded",

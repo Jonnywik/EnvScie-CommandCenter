@@ -16,4 +16,4 @@ export function workspaceForTab(tab: CommandCenterTab): WorkspaceDefinition {
   return commandWorkspaces.find((workspace) => workspace.views.includes(tab)) || commandWorkspaces[0];
 }
 
-export type OperationalAction = (action: string, type: string, id?: string, note?: string) => Promise<void>;
+export type OperationalAction = (action: string, type: string, id?: string, note?: string, metadata?: Record<string, unknown>) => Promise<void>;

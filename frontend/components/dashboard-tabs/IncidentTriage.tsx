@@ -55,7 +55,7 @@ function triageStatus(record: TriageRecord) {
   return record.status.replaceAll("_", " ").toUpperCase();
 }
 
-export function IncidentTriageView({ incidents, alerts, appearance, onAppearanceChange, onAction, onRefresh, onReturn, onNavigate, selectedIncidentId }: { incidents: SosIncident[]; alerts: AlertItem[]; appearance: AppearanceMode; onAppearanceChange: () => void; onAction: OperationalAction; onRefresh: () => Promise<void>; onReturn: () => void; onNavigate: (tab: CommandCenterTab) => void; selectedIncidentId?: string | null }) {
+export function IncidentTriageView({ incidents, alerts, appearance, onAppearanceChange, onAction, onRefresh, onReturn, onNavigate, selectedIncidentId, preferredGroupId }: { incidents: SosIncident[]; alerts: AlertItem[]; appearance: AppearanceMode; onAppearanceChange: () => void; onAction: OperationalAction; onRefresh: () => Promise<void>; onReturn: () => void; onNavigate: (tab: CommandCenterTab) => void; selectedIncidentId?: string | null; preferredGroupId?: string | null }) {
   const [sort, setSort] = useState<"severity" | "time" | "unread">("severity");
   const [selectedKey, setSelectedKey] = useState("");
   const [checks, setChecks] = useState<Record<string, boolean>>({});
@@ -149,6 +149,8 @@ export function IncidentTriageView({ incidents, alerts, appearance, onAppearance
       const snapshot = await getResponseGroups();
       const eligible = snapshot.groups.filter((group) => group.availability !== "offline");
       setAvailableTeams(eligible); setTeamSelectorOpen(true);
+      const suggested = preferredGroupId ? eligible.find((group) => group.id === preferredGroupId) : null;
+      if (suggested) setActionStatus(`Field Response context suggests ${suggested.name}. Its latest reported readiness and constraints are displayed for review; select any eligible team deliberately.`);
       if (!eligible.some((group) => group.availability === "available" && group.status === "ready")) setActionStatus("No currently available, ready response group is reported. Review Field Response and verify directly before tasking.");
     } catch (error) { setActionStatus(error instanceof Error ? error.message : "Available teams could not be loaded."); }
     finally { setLoadingTeams(false); }

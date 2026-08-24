@@ -6,12 +6,17 @@ import { type AppearanceMode } from "./AppearanceToggle";
 import { CommandCenterHeader } from "./CommandCenterHeader";
 import { CommandCenterNavigation, FunctionalViewSelector } from "./CommandCenterNavigation";
 import type { CommandCenterTab, OperationalAction } from "./contracts";
-type FleetFilter = "all" | "idle" | "en_route" | "on_scene";
+type FleetFilter = "all" | "idle" | "en_route" | "on_scene" | "review";
 type FleetSort = "unit" | "status" | "assignment" | "eta";
 
+function ageMinutes(timestamp?: string | null) {
+  const parsed = timestamp ? new Date(timestamp).getTime() : Number.NaN;
+  return Number.isFinite(parsed) ? Math.max(0, Math.floor((Date.now() - parsed) / 60000)) : null;
+}
+
 function formatAge(timestamp?: string | null) {
-  if (!timestamp) return "Not reported";
-  const minutes = Math.max(0, Math.floor((Date.now() - new Date(timestamp).getTime()) / 60000));
+  const minutes = ageMinutes(timestamp);
+  if (minutes === null) return "Not reported";
   if (minutes < 1) return "just now";
   if (minutes === 1) return "1 min ago";
   if (minutes < 60) return `${minutes} min ago`;
@@ -53,7 +58,7 @@ function pointWithinPolygon(point: { latitude: number; longitude: number }, poly
   return inside;
 }
 
-export function FleetResponderSafetyView({ groups, gis, appearance, onAppearanceChange, onAction, onRefresh, onReturn, onNavigate }: { groups: ResponseGroupSnapshot; gis: GisMapSnapshot; appearance: AppearanceMode; onAppearanceChange: () => void; onAction: OperationalAction; onRefresh: () => Promise<void>; onReturn: () => void; onNavigate: (tab: CommandCenterTab) => void }) {
+export function FleetResponderSafetyView({ groups, gis, appearance, onAppearanceChange, onAction, onRefresh, onReturn, onNavigate, selectedGroupId, onSelectedGroupChange }: { groups: ResponseGroupSnapshot; gis: GisMapSnapshot; appearance: AppearanceMode; onAppearanceChange: () => void; onAction: OperationalAction; onRefresh: () => Promise<void>; onReturn: () => void; onNavigate: (tab: CommandCenterTab) => void; selectedGroupId?: string | null; onSelectedGroupChange?: (groupId: string) => void }) {
   const [filter, setFilter] = useState<FleetFilter>("all");
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<FleetSort>("unit");
@@ -66,7 +71,6 @@ export function FleetResponderSafetyView({ groups, gis, appearance, onAppearance
   const [hailConfirmOpen, setHailConfirmOpen] = useState(false);
   const [dispatchLifecycle, setDispatchLifecycle] = useState<DispatchLifecycleSnapshot | null>(null);
   const [lifecycleBusy, setLifecycleBusy] = useState(false);
-  const now = Date.now();
   const activeHazards = useMemo(() => gis.hazards.filter((hazard) => hazard.status === "active"), [gis.hazards]);
   const fleetUnits = useMemo(() => groups.groups.map((group) => {
     const identifiers = [group.id, group.name, group.call_sign, group.vehicle_or_asset].map((value) => value.toLowerCase()).filter((value) => value.length > 3);
@@ -75,22 +79,24 @@ export function FleetResponderSafetyView({ groups, gis, appearance, onAppearance
       return identifiers.some((identifier) => values.some((value) => value.includes(identifier) || identifier.includes(value)));
     });
     const position = telemetry?.position || group.location;
-    const locationAge = Math.max(0, Math.floor((now - new Date(telemetry?.reported_at || group.last_location_at).getTime()) / 60000));
-    const checkInAge = Math.max(0, Math.floor((now - new Date(group.last_check_in_at).getTime()) / 60000));
+    const locationAge = ageMinutes(telemetry?.reported_at || group.last_location_at);
+    const checkInAge = ageMinutes(group.last_check_in_at);
     const overlappingHazards = activeHazards.filter((hazard) => pointWithinPolygon(position, hazard.polygon));
     const reviewTriggers = [
       ...(group.constraints.length ? [`Recorded constraint${group.constraints.length === 1 ? "" : "s"}: ${group.constraints.slice(0, 2).join("; ")}`] : []),
       ...(group.availability === "offline" || group.status === "offline" ? ["Unit is marked offline."] : []),
-      ...(locationAge > 15 ? [`Location report is ${locationAge} minutes old.`] : []),
-      ...(checkInAge > 15 ? [`Field check-in is ${checkInAge} minutes old.`] : []),
+      ...(locationAge === null ? ["No reported location time is available."] : locationAge > 15 ? [`Location report is ${locationAge} minutes old.`] : []),
+      ...(checkInAge === null ? ["No reported field check-in time is available."] : checkInAge > 15 ? [`Field check-in is ${checkInAge} minutes old.`] : []),
       ...(telemetry?.state === "stale" || telemetry?.state === "offline" ? [`Telemetry state is ${telemetry.state.replace("_", " ")}.`] : []),
       ...(overlappingHazards.length ? [`Position overlaps active GIS hazard geometry: ${overlappingHazards.map((hazard) => hazard.name).join(", ")}.`] : []),
     ];
     return { group, telemetry, position, locationAge, checkInAge, overlappingHazards, reviewTriggers };
-  }), [activeHazards, gis.resources, groups.groups, now]);
-  const filteredUnits = useMemo(() => fleetUnits.filter(({ group }) => {
+  }), [activeHazards, gis.resources, groups.groups]);
+  const filteredUnits = useMemo(() => fleetUnits.filter((unit) => {
+    const { group } = unit;
     const searchable = `${group.id} ${group.name} ${group.call_sign} ${group.lead} ${group.personnel_ready}/${group.personnel_total}`.toLowerCase();
-    return (filter === "all" || fleetBucket(group) === filter) && searchable.includes(query.trim().toLowerCase());
+    const matchesFilter = filter === "all" || (filter === "review" ? unit.reviewTriggers.length > 0 : fleetBucket(group) === filter);
+    return matchesFilter && searchable.includes(query.trim().toLowerCase());
   }).sort((left, right) => {
     const leftValue = sort === "unit" ? `${left.group.call_sign} ${left.group.name}` : sort === "status" ? fleetStatusLabel(left.group) : sort === "assignment" ? left.group.current_assignment || "" : String(left.group.estimated_response_minutes ?? Number.MAX_SAFE_INTEGER);
     const rightValue = sort === "unit" ? `${right.group.call_sign} ${right.group.name}` : sort === "status" ? fleetStatusLabel(right.group) : sort === "assignment" ? right.group.current_assignment || "" : String(right.group.estimated_response_minutes ?? Number.MAX_SAFE_INTEGER);
@@ -111,7 +117,11 @@ export function FleetResponderSafetyView({ groups, gis, appearance, onAppearance
   useEffect(() => {
     if (filteredUnits.length && !filteredUnits.some((unit) => unit.group.id === selectedId)) setSelectedId(filteredUnits[0].group.id);
   }, [filteredUnits, selectedId]);
+  useEffect(() => {
+    if (selectedGroupId && fleetUnits.some((unit) => unit.group.id === selectedGroupId)) setSelectedId(selectedGroupId);
+  }, [fleetUnits, selectedGroupId]);
   useEffect(() => { setRoute(null); setActionStatus(null); setHailConfirmOpen(false); }, [selected?.group.id]);
+  useEffect(() => { if (selected?.group.id) onSelectedGroupChange?.(selected.group.id); }, [onSelectedGroupChange, selected?.group.id]);
   useEffect(() => {
     let active = true;
     void getDispatchLifecycle().then((snapshot) => { if (active) setDispatchLifecycle(snapshot); }).catch(() => { if (active) setDispatchLifecycle(null); });
@@ -124,7 +134,7 @@ export function FleetResponderSafetyView({ groups, gis, appearance, onAppearance
     try {
       const nextRoute = await optimizeGisRoute(selectedPosition.latitude, selectedPosition.longitude);
       setRoute(nextRoute);
-      await onAction(reason === "recalculate" ? "fleet.route_recalculated" : "fleet.force_reroute_review_requested", "response_group", selected.group.id, `${reason === "recalculate" ? "Generated" : "Requested coordinator review of"} advisory route preview for ${selected.group.name}; engine status ${nextRoute.route_status}; blocked segments ${nextRoute.blocked_segment_count}. No route clearance or movement instruction was created.`);
+      await onAction(reason === "recalculate" ? "fleet.route_recalculated" : "fleet.alternative_route_review_requested", "response_group", selected.group.id, `${reason === "recalculate" ? "Generated" : "Requested coordinator review of"} advisory route preview for ${selected.group.name}; engine status ${nextRoute.route_status}; blocked segments ${nextRoute.blocked_segment_count}. No route clearance or movement instruction was created.`);
       setActionStatus(`Advisory route preview ${nextRoute.route_status}. ${nextRoute.warnings[0] || "Confirm road, hazard, and field conditions before movement."}`);
     } catch (error) { setActionStatus(error instanceof Error ? error.message : "Route preview could not be calculated."); }
     finally { setRouteLoading(false); }
@@ -146,8 +156,8 @@ export function FleetResponderSafetyView({ groups, gis, appearance, onAppearance
     if (!selected || !route || actionBusy) return;
     setActionBusy(true); setActionStatus(null);
     try {
-      await onAction("fleet.mobile_route_draft_recorded", "response_group", selected.group.id, `Audited route-push draft for ${selected.group.name}: route status ${route.route_status}, destination ${route.center_name}. No mobile delivery endpoint is configured and no route was transmitted.`);
-      setActionStatus("Route-push draft audited. No mobile delivery endpoint is configured, so nothing was transmitted.");
+      await onAction("fleet.route_handoff_draft_recorded", "response_group", selected.group.id, `Audited route handoff draft for ${selected.group.name}: route status ${route.route_status}, destination ${route.center_name}. No mobile delivery endpoint is configured and no route was transmitted.`);
+      setActionStatus("Route handoff draft audited. No mobile delivery endpoint is configured, so nothing was transmitted.");
     } finally { setActionBusy(false); }
   };
   const selectedDispatches = dispatchLifecycle?.assignments.filter((assignment) => assignment.group_id === selected?.group.id).slice(0, 3) || [];
