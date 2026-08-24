@@ -25,6 +25,7 @@ export function CommandCenterHeader({
   syncLabel = "Last verified sync · current snapshot",
   connection = "live",
   actions,
+  centerContent,
   onReturn,
   returnLabel = "Command Map",
   className = "",
@@ -37,6 +38,7 @@ export function CommandCenterHeader({
   syncLabel?: string;
   connection?: "live" | "cached" | "attention";
   actions?: ReactNode;
+  centerContent?: ReactNode;
   onReturn?: () => void;
   returnLabel?: string;
   className?: string;
@@ -45,7 +47,7 @@ export function CommandCenterHeader({
   const initials = operatorLabel.split(/[·\s]+/).filter(Boolean).map((part) => part[0]).join("").slice(0, 2).toUpperCase() || "DO";
   return <header className={`command-center-header ${className}`.trim()} aria-label={title}>
     <CommandCenterHeaderIdentity context={context} />
-    <div className="command-center-header-status" aria-label="WORKSPACE"><span className={`command-center-connection ${connection}`}><i aria-hidden="true" />{connectionLabel}</span><span className="command-center-date">Wednesday · 12 August 2026</span></div>
+    {centerContent ? <div className="command-center-header-center">{centerContent}</div> : <div className="command-center-header-status" aria-label="WORKSPACE"><span className={`command-center-connection ${connection}`}><i aria-hidden="true" />{connectionLabel}</span><span className="command-center-date">Wednesday · 12 August 2026</span></div>}
     <div className="command-center-header-actions">
       {actions}
       <span className="command-center-operator"><span>{operatorLabel}</span><strong>{syncLabel}</strong></span>

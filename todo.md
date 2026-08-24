@@ -738,3 +738,9 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Reproduce and isolate the reported Field Response rendering or state glitch.
 - [x] Apply a targeted repair without changing Field Response operations, dispatch lifecycle, or operational records.
 - [x] Validate desktop/mobile behavior, document the repair, and synchronize the release.
+
+## Command Center all-tabs design consistency
+- [x] Audit the visible header, sidebar, navigation, shared controls, layout spacing, and theme treatment across every workspace.
+- [x] Standardize reusable shell components and scoped design tokens without changing tab-specific workflows or operational safety semantics.
+- [x] Validate desktop and mobile consistency in dark and light appearance, regression coverage, and hosted workspace rendering.
+- [x] Document and synchronize the shared design-consistency refinement.

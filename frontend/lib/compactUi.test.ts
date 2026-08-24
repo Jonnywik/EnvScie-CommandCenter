@@ -147,7 +147,8 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain('aria-controls="command-map-layer-drawer"');
     expect(workspaceSource).toContain("CommandCenterNavigation");
     expect(workspaceSource).toContain("CommandCenterHeader");
-    expect(workspaceSource).toContain("CommandCenterHeaderIdentity");
+    expect(workspaceSource).toContain('title="Command Map / Live Operations"');
+    expect(workspaceSource).toContain("centerContent={<div className=\"command-search-wrap\">");
     expect(workspaceSource).toContain("WORKSPACE");
     expect(workspaceSource).toContain("GoogleOperationalMap");
     expect(workspaceSource).toContain("GOOGLE_MAPS_SCRIPT_ID");
@@ -179,7 +180,7 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("FunctionalViewSelector");
     expect(workspaceSource).toContain("aria-current={activeTab === view ? \"page\" : undefined}");
     expect(workspaceSource).toContain("1–5");
-    expect(workspaceSource).toContain("command-map-sidebar");
+    expect(workspaceSource).toContain('activeTab="Overview" onNavigate={onNavigate} />');
     expect(workspaceSource).not.toContain('className="command-map-quicklinks"');
     expect(workspaceSource).toContain("CommandMapUtilityPanel");
     expect(workspaceSource).toContain("activeUtilityPanel");
@@ -276,19 +277,16 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain(".workspace-navigation-shell");
     expect(stylesSource).toContain(".command-center-header { width: calc(100% + 24px)");
     expect(stylesSource).toContain("border-radius: 0");
-    expect(stylesSource).toContain(".command-map-sidebar");
     expect(stylesSource).toContain(".sidebar.is-collapsed");
     expect(stylesSource).toContain(".nav-collapse-toggle");
     expect(stylesSource).toContain("--command-map-header-clearance: 94px");
     expect(stylesSource).toContain("--command-map-dock-width: 68px");
     expect(stylesSource).toContain("--command-map-mobile-radar-reserve: 132px");
-    expect(stylesSource).toContain(".command-map-topbar { position: fixed; z-index: 40; top: 0; left: 0; right: 0;");
-    expect(stylesSource).toContain(".command-map-sidebar { position: fixed; z-index: 35; top: 0; bottom: 0; left: 0;");
-    expect(stylesSource).toContain("padding: calc(var(--command-map-header-clearance) + 10px) 9px 18px");
-    expect(stylesSource).toContain(".command-map-sidebar .nav-collapse-toggle { position: sticky; top: 0; z-index: 1; border-color:");
-    expect(stylesSource).toContain(".command-map-topbar { left: 0; right: 0; padding-left: 18px; }");
-    expect(stylesSource).toContain(".command-map-sidebar { z-index: 45; top: var(--command-map-header-clearance); right: 64px; bottom: auto; left: 9px;");
-    expect(stylesSource).toContain('html[data-appearance="light"] .command-map-sidebar.sidebar');
+    expect(stylesSource).toContain(".command-map-topbar.command-center-header { position: relative;");
+    expect(stylesSource).toContain(".command-center-header-center { min-width: 0; }");
+    expect(stylesSource).toContain(".dashboard-shell > .topbar { min-height: 78px;");
+    expect(stylesSource).toContain(".dashboard-shell:has(.unified-command-sidebar.is-collapsed) > .topbar");
+    expect(stylesSource).toContain(".command-map-workspace .command-map-shell { height: calc(100dvh - 64px);");
     expect(stylesSource).toContain(".functional-view-selector");
     expect(stylesSource).toContain(".google-operational-map");
     expect(stylesSource).toContain(".command-map-basemap-controls");
@@ -306,9 +304,8 @@ describe("compact operational interface", () => {
   });
 
   it("keeps Command Map visibility controls compact, mutually exclusive, and protected from radar overlap", () => {
-    expect(workspaceSource).toContain("overlayOnExpand");
-    expect(workspaceSource).toContain("command-map-navigation-backdrop");
-    expect(workspaceSource).toContain("is-overlay-open");
+    expect(workspaceSource).toContain('activeTab="Overview" onNavigate={onNavigate} />');
+    expect(workspaceSource).toContain('title="Command Map / Live Operations"');
     expect(workspaceSource).toContain("command-map-tools-trigger");
     expect(workspaceSource).toContain("command-map-tools-menu");
     expect(workspaceSource).toContain("selectMapTool");
@@ -359,8 +356,7 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain(".command-map-layer-rail { position: relative");
     expect(stylesSource).toContain(".command-map-layer-rail.is-open .command-map-layer-trigger");
     expect(stylesSource).toContain(".command-map-filter-rail.is-open .command-map-filter-trigger");
-    expect(stylesSource).toContain(".map-pin-sheet { position: absolute; z-index: 13; top: 116px; left: calc(var(--command-map-dock-width) + var(--command-map-dock-gutter))");
-    expect(stylesSource).toContain(".command-map-sidebar.sidebar:not(.is-collapsed) + .command-map-shell .map-pin-sheet { left: 264px;");
+    expect(stylesSource).toContain(".map-pin-sheet { position: absolute; z-index: 13; top: 104px; left: 14px;");
     expect(stylesSource).toContain(".command-map-shell:has(.map-pin-sheet) .broadcast-fab");
     expect(stylesSource).toContain(".command-map-shell:has(.official-facility-layer.is-open) .broadcast-fab");
     expect(stylesSource).toContain("@media (max-width: 760px) and (max-height: 520px)");
