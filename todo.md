@@ -566,3 +566,9 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Add a minimizable responder radar and dynamically reserve bottom-left space for the protected map legend.
 - [x] Render concise, persistent reported-event labels for critical SOS markers in Google Maps and fallback map modes.
 - [x] Validate accessibility, responsive non-overlap, NOAH/facility safeguards, tests, type checks, production build, and hosted behavior.
+
+## Critical SOS marker clutter remediation
+- [x] Cluster nearby SOS markers at the current Google Map zoom and zoom to the grouped extent when a cluster is selected.
+- [x] Replace always-on critical SOS labels with hover and selected-marker labels.
+- [x] Raise the hovered or selected critical marker and label above unselected map overlays.
+- [x] Add regression coverage and validate clustered, hover, active-selection, accessibility, type-check, build, and hosted-map behavior.

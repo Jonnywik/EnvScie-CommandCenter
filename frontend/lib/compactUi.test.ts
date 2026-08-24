@@ -218,8 +218,14 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("active field units");
     expect(workspaceSource).toContain("critical-sos-map-label");
     expect(workspaceSource).toContain("addCriticalSosLabel");
-    expect(workspaceSource).toContain("offsets = [-12, -38, 14, -64, 40, -90, 66]");
-    expect(workspaceSource).toContain("overlapsAnotherLabel");
+    expect(workspaceSource).toContain("MarkerClusterer");
+    expect(workspaceSource).toContain("sosClustererRef");
+    expect(workspaceSource).toContain("nearby SOS incidents. Select to zoom in.");
+    expect(workspaceSource).toContain("targetMap.fitBounds(cluster.bounds, 72)");
+    expect(workspaceSource).toContain("hoveredSosId");
+    expect(workspaceSource).toContain('state: "active" | "hovered"');
+    expect(workspaceSource).toContain("is-active");
+    expect(workspaceSource).toContain("is-hovered");
     expect(workspaceSource).toContain('incident.severity === "critical"');
     expect(workspaceSource).toContain("Reported SOS ·");
     expect(stylesSource).toContain("--responder-radar-reserve");
@@ -227,6 +233,8 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain(".command-map-hero .gis-legend");
     expect(stylesSource).toContain(".map-control-dock-zoom { grid-template-columns: 1fr");
     expect(stylesSource).toContain(".critical-sos-map-label");
+    expect(stylesSource).toContain(".critical-sos-map-label.is-active");
+    expect(stylesSource).toContain(".critical-sos-map-label.is-hovered");
     expect(stylesSource).toContain("pointer-events: none");
   });
 

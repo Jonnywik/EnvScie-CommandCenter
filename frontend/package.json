@@ -10,6 +10,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@googlemaps/markerclusterer": "^2.6.2",
     "next": "15.5.23",
     "react": "18.2.0",
     "react-dom": "18.2.0"

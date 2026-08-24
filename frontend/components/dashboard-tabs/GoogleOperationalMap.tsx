@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { MarkerClusterer } from "@googlemaps/markerclusterer";
 import type { GisMapSnapshot, GisResource, MapOverlaysSnapshot, NoahMapContext, OfficialFacility, OfficialFacilityRegistry, OptimizedRoute, RadarSnapshot, TyphoonSnapshot } from "../../lib/api";
 import type { AppearanceMode } from "./AppearanceToggle";
 
@@ -51,32 +52,20 @@ const position = (value: { latitude: number; longitude: number }): LatLng => ({ 
 const darkMapStyles = [{ elementType: "geometry", stylers: [{ color: "#0b1e26" }] }, { elementType: "labels.text.fill", stylers: [{ color: "#b7d7dc" }] }, { elementType: "labels.text.stroke", stylers: [{ color: "#071318" }] }, { featureType: "water", elementType: "geometry", stylers: [{ color: "#103b4a" }] }, { featureType: "road", elementType: "geometry", stylers: [{ color: "#244d58" }] }, { featureType: "poi", elementType: "geometry", stylers: [{ color: "#122c34" }] }];
 const criticalSosLabel = (incident: GisMapSnapshot["sos"][number]) => `Reported SOS · ${incident.summary}`.slice(0, 54);
 
-function addCriticalSosLabel(maps: any, map: any, incident: GisMapSnapshot["sos"][number]) {
+function addCriticalSosLabel(maps: any, map: any, incident: GisMapSnapshot["sos"][number], state: "active" | "hovered") {
   const overlay = new maps.OverlayView();
   const location = new maps.LatLng(incident.position.latitude, incident.position.longitude);
   let label: HTMLDivElement | null = null;
   overlay.onAdd = () => {
     label = document.createElement("div");
-    label.className = "critical-sos-map-label";
+    label.className = `critical-sos-map-label is-${state}`;
     label.textContent = criticalSosLabel(incident);
     label.setAttribute("aria-hidden", "true");
-    overlay.getPanes()?.overlayLayer.appendChild(label);
+    overlay.getPanes()?.floatPane.appendChild(label);
   };
   overlay.draw = () => {
     const point = overlay.getProjection()?.fromLatLngToDivPixel(location);
-    if (label && point) {
-      const offsets = [-12, -38, 14, -64, 40, -90, 66];
-      for (const offset of offsets) {
-        label.style.transform = `translate(${Math.round(point.x + 14)}px, ${Math.round(point.y + offset)}px)`;
-        const labelBounds = label.getBoundingClientRect();
-        const overlapsAnotherLabel = Array.from(document.querySelectorAll<HTMLElement>(".critical-sos-map-label")).some((other) => {
-          if (other === label) return false;
-          const otherBounds = other.getBoundingClientRect();
-          return labelBounds.left < otherBounds.right && labelBounds.right > otherBounds.left && labelBounds.top < otherBounds.bottom && labelBounds.bottom > otherBounds.top;
-        });
-        if (!overlapsAnotherLabel) break;
-      }
-    }
+    if (label && point) label.style.transform = `translate(${Math.round(point.x + 14)}px, ${Math.round(point.y - 12)}px)`;
   };
   overlay.onRemove = () => { label?.remove(); label = null; };
   overlay.setMap(map);
@@ -87,10 +76,12 @@ export function GoogleOperationalMap({ snapshot, route, layers, radar, typhoon, 
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<any>(null);
   const overlaysRef = useRef<any[]>([]);
+  const sosClustererRef = useRef<MarkerClusterer | null>(null);
   const overlayTypeRegistryRef = useRef<Record<string, any>>({});
   const hasFittedInitialExtent = useRef(false);
   const hasFittedFacilityExtent = useRef(false);
   const [ready, setReady] = useState(false);
+  const [hoveredSosId, setHoveredSosId] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -113,13 +104,15 @@ export function GoogleOperationalMap({ snapshot, route, layers, radar, typhoon, 
       });
     };
     initialize(0);
-    return () => { active = false; if (retryTimer != null) window.clearTimeout(retryTimer); overlaysRef.current.forEach((overlay) => overlay?.setMap?.(null)); overlaysRef.current = []; };
+    return () => { active = false; if (retryTimer != null) window.clearTimeout(retryTimer); sosClustererRef.current?.clearMarkers(); sosClustererRef.current = null; overlaysRef.current.forEach((overlay) => overlay?.setMap?.(null)); overlaysRef.current = []; };
   }, []);
 
   useEffect(() => {
     const map = mapRef.current;
     const maps = window.google?.maps;
     if (!ready || !map || !maps) return;
+    sosClustererRef.current?.clearMarkers();
+    sosClustererRef.current = null;
     overlaysRef.current.forEach((overlay) => overlay?.setMap?.(null));
     overlaysRef.current = [];
     map.setOptions({ styles: appearance === "dark" && basemap === "roadmap" ? darkMapStyles : undefined, mapTypeId: basemap });
@@ -159,7 +152,36 @@ export function GoogleOperationalMap({ snapshot, route, layers, radar, typhoon, 
     if (layers.route && route?.route.length) overlaysRef.current.push(new maps.Polyline({ map, path: route.route.map(position), strokeColor: "#0d9488", strokeOpacity: 1, strokeWeight: 5 }));
     if (layers.centers) snapshot.centers.forEach((center) => { const selected = center.id === selectedCenterId; const marker = new maps.Marker({ map, position: position(center.position), title: `${center.name} · ${center.occupancy_current}/${center.capacity_total}`, zIndex: selected ? 20 : undefined, label: { text: "E", color: "#ffffff", fontWeight: "700" }, icon: { path: maps.SymbolPath.CIRCLE, fillColor: "#0f766e", fillOpacity: 1, strokeColor: selected ? "#fef3c7" : "#ffffff", strokeWeight: selected ? 4 : 2, scale: selected ? 13 : 11 } }); marker.addListener("click", () => onSelectCenter(center)); overlaysRef.current.push(marker); });
     if (layers.officialFacilities) visibleFacilities.forEach((facility) => { const marker = new maps.Marker({ map, position: position(facility.position), title: `${facility.name} · official registry reference · ${facility.coordinate_validation_status.replaceAll("_", " ")}`, label: { text: facility.category === "hospital" ? "H" : "+", color: "#ffffff", fontWeight: "800" }, icon: { path: maps.SymbolPath.CIRCLE, fillColor: facility.category === "hospital" ? "#155e75" : "#0369a1", fillOpacity: 1, strokeColor: "#d9f5fa", strokeWeight: 2, scale: 10 } }); marker.addListener("click", () => onSelectFacility(facility)); overlaysRef.current.push(marker); });
-    if (layers.sos) snapshot.sos.forEach((incident) => { const selected = incident.id === selectedSosId; const marker = new maps.Marker({ map, position: position(incident.position), title: `${incident.summary} · ${incident.status}`, zIndex: selected ? 20 : undefined, label: { text: "!", color: "#ffffff", fontWeight: "900" }, icon: { path: maps.SymbolPath.CIRCLE, fillColor: "#e11d48", fillOpacity: 1, strokeColor: selected ? "#fef3c7" : "#ffffff", strokeWeight: selected ? 4 : 2, scale: selected ? 12 : 10 } }); marker.addListener("click", () => onSelectSos(incident)); overlaysRef.current.push(marker); if (incident.severity === "critical") overlaysRef.current.push(addCriticalSosLabel(maps, map, incident)); });
+    if (layers.sos) {
+      const sosMarkers = snapshot.sos.map((incident) => {
+        const selected = incident.id === selectedSosId;
+        const hovered = incident.id === hoveredSosId;
+        const marker = new maps.Marker({ position: position(incident.position), title: `${incident.summary} · ${incident.status}`, zIndex: selected ? 1200 : hovered ? 1100 : 100, label: { text: "!", color: "#ffffff", fontWeight: "900" }, icon: { path: maps.SymbolPath.CIRCLE, fillColor: "#e11d48", fillOpacity: 1, strokeColor: selected ? "#fef3c7" : hovered ? "#fed7aa" : "#ffffff", strokeWeight: selected ? 4 : hovered ? 3 : 2, scale: selected ? 12 : hovered ? 11 : 10 } });
+        marker.addListener("click", () => { setHoveredSosId(null); onSelectSos(incident); });
+        if (incident.severity === "critical") {
+          marker.addListener("mouseover", () => setHoveredSosId(incident.id));
+          marker.addListener("mouseout", () => setHoveredSosId((current) => current === incident.id ? null : current));
+          if (selected || hovered) overlaysRef.current.push(addCriticalSosLabel(maps, map, incident, selected ? "active" : "hovered"));
+        }
+        return marker;
+      });
+      sosClustererRef.current = new MarkerClusterer({
+        map,
+        markers: sosMarkers,
+        renderer: {
+          render: (cluster) => new maps.Marker({
+            position: cluster.position,
+            zIndex: 1000 + cluster.count,
+            title: `${cluster.count} nearby SOS incidents. Select to zoom in.`,
+            label: { text: String(cluster.count), color: "#ffffff", fontWeight: "900", fontSize: "13px" },
+            icon: { path: maps.SymbolPath.CIRCLE, fillColor: "#be123c", fillOpacity: 1, strokeColor: "#fff1f2", strokeWeight: 3, scale: 16 },
+          }),
+        },
+        onClusterClick: (_event, cluster, targetMap) => {
+          if (cluster.bounds) targetMap.fitBounds(cluster.bounds, 72);
+        },
+      });
+    }
     if (layers.resources) snapshot.resources.forEach((resource) => { const selected = resource.id === selectedResourceId; const marker = new maps.Marker({ map, position: position(resource.position), title: `${resource.label} · ${resource.state}`, zIndex: selected ? 20 : undefined, label: { text: resource.kind === "medical" ? "+" : resource.kind === "boat" ? "⌁" : "•", color: "#ffffff", fontWeight: "900" }, icon: { path: maps.SymbolPath.CIRCLE, fillColor: resource.state === "offline" ? "#64748b" : "#2563eb", fillOpacity: 1, strokeColor: selected ? "#fef3c7" : "#ffffff", strokeWeight: selected ? 4 : 2, scale: selected ? 12 : 10 } }); marker.addListener("click", () => onSelectResource(resource)); overlaysRef.current.push(marker); });
     if (layers.typhoon && typhoon?.active && typhoon.latitude != null && typhoon.longitude != null) { if (typhoon.track.length > 1) overlaysRef.current.push(new maps.Polyline({ map, path: typhoon.track.map(position), strokeColor: "#8b5cf6", strokeOpacity: .9, strokeWeight: 3 })); overlaysRef.current.push(new maps.Marker({ map, position: { lat: typhoon.latitude, lng: typhoon.longitude }, title: `${typhoon.name || "Tropical cyclone"} · PAGASA bulletin`, label: { text: "◌", color: "#ffffff" }, icon: { path: maps.SymbolPath.CIRCLE, fillColor: "#7c3aed", fillOpacity: 1, strokeColor: "#ffffff", strokeWeight: 2, scale: 14 } })); }
     if (layers.pagasaStations && mapOverlays?.pagasa_stations.freshness !== "unavailable") mapOverlays?.pagasa_stations.stations.forEach((station) => overlaysRef.current.push(new maps.Marker({ map, position: { lat: station.latitude, lng: station.longitude }, title: `${station.name} · observed ${station.observed_at}`, label: { text: "S", color: "#ffffff", fontWeight: "700" }, icon: { path: maps.SymbolPath.CIRCLE, fillColor: "#0891b2", fillOpacity: 1, strokeColor: "#ffffff", strokeWeight: 2, scale: 8 } })));
@@ -184,7 +206,7 @@ export function GoogleOperationalMap({ snapshot, route, layers, radar, typhoon, 
     const pagasaRadar = mapOverlays?.pagasa_radar;
     const pagasaFrame = pagasaRadar?.frames.at(-1);
     if (layers.pagasaRadar && pagasaRadar?.freshness !== "unavailable" && pagasaFrame && pagasaRadar?.host) registerTileOverlay("pagasa-radar-qpe", "PAGASA Radar/QPE", pagasaFrame, pagasaRadar.host, .5, pagasaRadar.max_zoom ?? 10);
-  }, [appearance, basemap, facilityCategories, facilityRegistry, layers, mapOverlays, noahContext, radar, ready, route, selectedCenterId, selectedResourceId, selectedSosId, snapshot, typhoon]);
+  }, [appearance, basemap, facilityCategories, facilityRegistry, hoveredSosId, layers, mapOverlays, noahContext, radar, ready, route, selectedCenterId, selectedResourceId, selectedSosId, snapshot, typhoon]);
 
   return <div ref={containerRef} className="google-operational-map" role="application" aria-label="Interactive Google Map of Balangiga operational resources, hazards, evacuation centers, and SOS locations" />;
 }
