@@ -616,3 +616,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Reproduce and trace the Triage Queue selector dismissal triggered by search or specialty filtering.
 - [x] Correct event containment so selector search and status filtering retain the open dispatch-team modal and drawer context.
 - [x] Add regression coverage, hosted validation, documentation, and GitHub synchronization for search persistence.
+
+## Live SOS and Triage Queue UI review
+- [x] Inspect current Live SOS and Triage Queue layout, drawer, selector, keyboard, and state-transition edge cases without changing behavior.
+- [x] Exercise responsive, loading, empty/filter, keyboard, and modal-interaction behavior in the hosted interface.
+- [x] Deliver a prioritized, remediation-ready review of remaining UI bugs and operational edge cases.
