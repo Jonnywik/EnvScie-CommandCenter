@@ -684,3 +684,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Audit the Command Map, Field Response, and Intelligence headers against the established Community Safety and Incidents shared header pattern.
 - [x] Standardize header composition, hierarchy, status treatment, operator information, and appearance controls without changing workspace behavior.
 - [x] Validate desktop/mobile and dark/light header consistency, document evidence, and synchronize the release.
+
+## Continuous Command Center header
+- [x] Create a visual mockup for the intended end-to-end horizontal operational header.
+- [x] Replace the inset workspace header with a continuous full-width horizontal bar while retaining controls and behavior.
+- [x] Validate the new header on desktop and mobile, then document and synchronize the release.
