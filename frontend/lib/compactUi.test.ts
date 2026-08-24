@@ -6,6 +6,7 @@ const dashboardSource = readFileSync(resolve(process.cwd(), "components/Dashboar
 const workspaceSource = [
   dashboardSource,
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/AppearanceToggle.tsx"), "utf8"),
+  readFileSync(resolve(process.cwd(), "components/dashboard-tabs/CommandCenterHeader.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/contracts.ts"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/CommandCenterNavigation.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/CommandMap.tsx"), "utf8"),
@@ -138,6 +139,9 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("selectedSosId");
     expect(workspaceSource).toContain('aria-controls="command-map-layer-drawer"');
     expect(workspaceSource).toContain("CommandCenterNavigation");
+    expect(workspaceSource).toContain("CommandCenterHeader");
+    expect(workspaceSource).toContain("CommandCenterHeaderIdentity");
+    expect(workspaceSource).toContain("WORKSPACE");
     expect(workspaceSource).toContain("GoogleOperationalMap");
     expect(workspaceSource).toContain("GOOGLE_MAPS_SCRIPT_ID");
     expect(workspaceSource).toContain("retryTimer = window.setTimeout(() => initialize(1), 700)");
@@ -260,6 +264,8 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain('html[data-appearance="dark"]');
     expect(stylesSource).toContain(".command-map-shell.appearance-light");
     expect(stylesSource).toContain(".workspace-navigation-shell");
+    expect(stylesSource).toContain(".command-center-header { width: min(1800px, 100%)");
+    expect(stylesSource).toContain(".command-center-header-workspace { grid-column: 1 / -1");
     expect(stylesSource).toContain(".command-map-sidebar");
     expect(stylesSource).toContain(".sidebar.is-collapsed");
     expect(stylesSource).toContain(".nav-collapse-toggle");

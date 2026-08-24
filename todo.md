@@ -647,3 +647,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Audit ranked-recommendation actions and shared dispatch-selector entry points in Triage and Dispatch.
 - [x] Add a clear manual team-selection path for any eligible response group alongside ranked WMCDA recommendations.
 - [x] Preserve human-confirmed proposal, one-open-SOS-proposal, freshness, and decision-limit safeguards; add regression and hosted validation.
+
+## Unified Command Center header
+- [x] Audit all workspace headers, title treatments, utility controls, and mobile behavior to define the shared contract.
+- [x] Implement a reusable header that aligns Command Center identity, workspace context, appearance control, navigation, and operator status across every tab.
+- [x] Validate dark/light appearance, narrow-screen containment, keyboard access, and consistent rendering across all workspaces; document and synchronize the release.
