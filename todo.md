@@ -706,3 +706,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Strengthen field workflow readiness with read-only incident continuity, telemetry freshness, and resource-accountability evidence where compatible with current contracts.
 - [x] Extend regression, staging, resilience, accessibility, and recovery verification evidence; identify external LGU/provider decisions that block activation.
 - [x] Document the implemented optimizations, external prerequisites, and phased release evidence; validate and synchronize the release.
+
+## Network-partition resilience drill
+- [x] Record baseline service health and define non-destructive recovery criteria.
+- [x] Simulate and restore a local frontend-to-backend network partition without mutating operational records.
+- [x] Verify recovery, document evidence and limitations, and synchronize the drill record.
