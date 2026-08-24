@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { type AlertItem, type AuditEvent, type Center, type DashboardSummary, type FeedHealth, type IncidentRecord, type NotificationSnapshot, type RecommendationResponse, type ResponderSafetyAssessment, type ResponseGroup, type ResponseGroupSnapshot, type SosIncident, type SosStatus, assessResponderSafety, assignResponseGroup, getAuditEvents, getDispatchRecommendations, getIncidents, getResponseGroups, updateSosStatus } from "../../lib/api";
+import { type AlertItem, type AuditEvent, type Center, type DashboardSummary, type DispatchLifecycleSnapshot, type FeedHealth, type IncidentRecord, type NotificationSnapshot, type RecommendationResponse, type ResponderSafetyAssessment, type ResponseGroup, type ResponseGroupSnapshot, type SosIncident, type SosStatus, assessResponderSafety, assignResponseGroup, getAuditEvents, getDispatchLifecycle, getDispatchRecommendations, getIncidents, getResponseGroups, updateSosStatus } from "../../lib/api";
 import { AppearanceToggle, type AppearanceMode } from "./AppearanceToggle";
 import { CommandCenterNavigation } from "./CommandCenterNavigation";
 import { DispatchTeamSelector } from "./DispatchTeamSelector";
@@ -119,7 +119,18 @@ export function TriageDrawer({ incident, onClose, onUpdated, onAction }: { incid
   const [selectingTeam, setSelectingTeam] = useState(false);
   const [dispatchTeams, setDispatchTeams] = useState<ResponseGroup[]>([]);
   const [dispatchRecommendation, setDispatchRecommendation] = useState<RecommendationResponse | null>(null);
+  const [dispatchLifecycle, setDispatchLifecycle] = useState<DispatchLifecycleSnapshot | null>(null);
   const assessmentEligible = incident.status === "acknowledged" || incident.status === "dispatched";
+  const refreshDispatchLifecycle = useCallback(async () => {
+    try {
+      const lifecycle = await getDispatchLifecycle(incident.id);
+      setDispatchLifecycle(lifecycle);
+      const activeAssignment = lifecycle.assignments.find((assignment) => !["cancelled", "closed"].includes(assignment.status));
+      if (activeAssignment) setError(`Existing dispatch lifecycle: assignment ${activeAssignment.assignment_id.slice(0, 8)} is ${activeAssignment.status.replaceAll("_", " ")}. Review, confirm, or cancel it before selecting another team.`);
+    }
+    catch { setDispatchLifecycle(null); }
+  }, [incident.id]);
+  useEffect(() => { void refreshDispatchLifecycle(); }, [refreshDispatchLifecycle]);
   const transition = async (status: SosStatus) => {
     setSaving(true); setError(null);
     try {
@@ -146,6 +157,13 @@ export function TriageDrawer({ incident, onClose, onUpdated, onAction }: { incid
     if (incident.status !== "acknowledged" || selectorLoading) return;
     setSelectorLoading(true); setError(null);
     try {
+      const lifecycle = await getDispatchLifecycle(incident.id);
+      setDispatchLifecycle(lifecycle);
+      const activeAssignment = lifecycle.assignments.find((assignment) => !["cancelled", "closed"].includes(assignment.status));
+      if (activeAssignment) {
+        setError(`Dispatch team selection is blocked because assignment ${activeAssignment.assignment_id.slice(0, 8)} is ${activeAssignment.status.replaceAll("_", " ")}. Review, confirm, or cancel the existing lifecycle record before selecting another team.`);
+        return;
+      }
       const requiredSpecialties = /flood|water|trapped/i.test(incident.emergency_type) ? ["water_rescue"] : incident.emergency_type === "MEDICAL" ? ["medical"] : [];
       const [groups, ranking] = await Promise.all([getResponseGroups(), getDispatchRecommendations({ incident_id: incident.id, severity: incident.severity, emergency_type: incident.emergency_type, latitude: incident.location.latitude, longitude: incident.location.longitude, required_specialties: requiredSpecialties, max_results: 3 })]);
       setDispatchTeams(groups.groups.filter((group) => group.availability !== "offline")); setDispatchRecommendation(ranking); setTeamSelectorOpen(true);
@@ -159,8 +177,8 @@ export function TriageDrawer({ incident, onClose, onUpdated, onAction }: { incid
       const ranked = dispatchRecommendation?.recommendations.find((item) => item.group_id === team.id);
       const proposal = await assignResponseGroup({ group_id: team.id, target_type: "sos_request", target_id: incident.id, assignment_note: `Triage Queue selection. ${ranked ? `Advisory rank ${ranked.rank}; score ${ranked.score}/100.` : "Coordinator-selected available team after review."}` });
       await onAction("triage_queue.dispatch_proposed", "sos_request", incident.id, `Triage Queue created a pending confirmation proposal for ${team.name}; no dispatch or notification was sent.`);
-      setTeamSelectorOpen(false); setError(`Pending confirmation created for ${team.name}. ${proposal.decision_limit}`);
-    } catch (requestError) { setError(requestError instanceof Error ? requestError.message : "The pending dispatch proposal could not be created."); }
+      setTeamSelectorOpen(false); await refreshDispatchLifecycle(); setError(`Pending confirmation created for ${team.name}. ${proposal.decision_limit}`);
+    } catch (requestError) { await refreshDispatchLifecycle(); setTeamSelectorOpen(false); setError(requestError instanceof Error ? requestError.message : "The pending dispatch proposal could not be created."); }
     finally { setSelectingTeam(false); }
   };
   const actions: Array<{ status: SosStatus; label: string; className: string }> = incident.status === "received" ? [{ status: "acknowledged", label: "Acknowledge receipt", className: "primary-button" }, { status: "false_alarm", label: "Mark false alarm", className: "ghost-button" }] : incident.status === "dispatched" ? [{ status: "resolved", label: "Mark resolved", className: "primary-button" }] : [];

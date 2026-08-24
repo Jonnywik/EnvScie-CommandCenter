@@ -621,3 +621,9 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Inspect current Live SOS and Triage Queue layout, drawer, selector, keyboard, and state-transition edge cases without changing behavior.
 - [x] Exercise responsive, loading, empty/filter, keyboard, and modal-interaction behavior in the hosted interface.
 - [x] Deliver a prioritized, remediation-ready review of remaining UI bugs and operational edge cases.
+
+## One open dispatch proposal per SOS
+- [x] Audit existing dispatch lifecycle records and Triage Queue state to identify open-proposal behavior.
+- [x] Enforce one pending, confirmed, acknowledged, or escalated dispatch assignment per SOS across database and demo paths.
+- [x] Surface the existing proposal in Triage Queue and block a second team-selection action until human cancellation or closure.
+- [x] Add regression coverage, hosted validation, documentation, and GitHub synchronization for duplicate-proposal prevention.

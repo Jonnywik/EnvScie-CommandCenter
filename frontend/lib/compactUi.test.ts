@@ -181,6 +181,9 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("Loading response teams…");
     expect(workspaceSource).toContain("Triage Queue selection.");
     expect(workspaceSource).toContain("triage_queue.dispatch_proposed");
+    expect(workspaceSource).toContain("Dispatch team selection is blocked because assignment");
+    expect(workspaceSource).toContain("Team selection is blocked because assignment");
+    expect(workspaceSource).toContain("Review, confirm, or cancel");
     expect(workspaceSource).toContain("<DispatchTeamSelector teams={dispatchTeams}");
     expect(workspaceSource).toContain("Select an available response group");
     expect(workspaceSource).toContain("This creates a pending proposal");

@@ -570,6 +570,47 @@ def test_dispatch_lifecycle_requires_human_confirmation_and_keeps_unit_acknowled
     assert cancelled.json()["status"] == "cancelled"
 
 
+def test_dispatch_lifecycle_blocks_a_second_open_proposal_for_one_sos() -> None:
+    login = client.post("/v1/auth/demo-login", json={"role": "dispatcher", "display_name": "Duplicate-proposal regression dispatcher"})
+    assert login.status_code == 200
+    headers = {"Authorization": f"Bearer {login.json()['access_token']}"}
+    target_id = "sos-one-open-proposal-regression"
+    first = client.post(
+        "/v1/response-groups/assign",
+        headers=headers,
+        json={"group_id": "group-charlie", "target_type": "sos_request", "target_id": target_id, "assignment_note": "First candidate pending human confirmation."},
+    )
+    assert first.status_code == 200
+    assert first.json()["status"] == "pending_confirmation"
+
+    duplicate = client.post(
+        "/v1/response-groups/assign",
+        headers=headers,
+        json={"group_id": "group-echo", "target_type": "sos_request", "target_id": target_id, "assignment_note": "This competing candidate must be blocked."},
+    )
+    assert duplicate.status_code == 409
+    assert "active dispatch proposal already exists" in duplicate.json()["detail"]
+
+    lifecycle = client.get(f"/v1/response-groups/dispatch-lifecycle?target_id={target_id}", headers=headers)
+    assert lifecycle.status_code == 200
+    assert [assignment["assignment_id"] for assignment in lifecycle.json()["assignments"]] == [first.json()["assignment_id"]]
+
+    cancelled = client.post(
+        f"/v1/response-groups/assignments/{first.json()['assignment_id']}/transition",
+        headers=headers,
+        json={"action": "cancel", "note": "Regression cleanup after confirming one-open-proposal guard."},
+    )
+    assert cancelled.status_code == 200
+
+    replacement = client.post(
+        "/v1/response-groups/assign",
+        headers=headers,
+        json={"group_id": "group-echo", "target_type": "sos_request", "target_id": target_id, "assignment_note": "Replacement candidate after explicit cancellation."},
+    )
+    assert replacement.status_code == 200
+    assert replacement.json()["status"] == "pending_confirmation"
+
+
 def test_incident_command_record_requires_human_closure_follow_up_and_preserves_timeline() -> None:
     demo_data.DEMO_INCIDENTS.clear()
     demo_data.DEMO_INCIDENT_EVENTS.clear()

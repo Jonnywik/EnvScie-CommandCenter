@@ -15,6 +15,7 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Query, WebSocket,
 from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, Field
 from sqlalchemy import text
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import get_settings
@@ -636,6 +637,21 @@ async def assign_response_group(
     except ValueError as exc:
         raise HTTPException(status_code=422, detail="group_id must be a UUID in live mode") from exc
     assigned_at = datetime.now(timezone.utc)
+    if payload.target_type == "sos_request":
+        existing = (await session.execute(text("""
+            SELECT id, lifecycle_status
+            FROM cfr.response_group_assignments
+            WHERE target_type = 'sos_request'
+              AND target_id = :target_id
+              AND lifecycle_status IN ('pending_confirmation', 'confirmed', 'acknowledged', 'escalated')
+            ORDER BY assigned_at DESC
+            LIMIT 1
+        """), {"target_id": payload.target_id})).mappings().first()
+        if existing is not None:
+            raise HTTPException(
+                status_code=409,
+                detail=f"an active dispatch proposal already exists for this SOS (assignment {existing['id']}, status {existing['lifecycle_status']}); review or cancel it before selecting another team",
+            )
     current = (await session.execute(text("""
         SELECT ru.id, ru.state, ru.readiness_score,
                COALESCE(ru.last_check_in_at, ru.updated_at) AS last_check_in_at,
@@ -660,11 +676,18 @@ async def assign_response_group(
         raise HTTPException(status_code=409, detail="group check-in is stale; record a roster check before assigning")
     if int(current["readiness_score"] or 0) < 60:
         raise HTTPException(status_code=409, detail="group readiness is below the dispatch threshold")
-    assignment = (await session.execute(text("""
-        INSERT INTO cfr.response_group_assignments (group_id, target_type, target_id, assignment_note, assigned_by_user_id, lifecycle_status)
-        VALUES (:group_id, :target_type, :target_id, :assignment_note, :actor_id, 'pending_confirmation')
-        RETURNING id, assigned_at
-    """), {"group_id": str(group_uuid), "target_type": payload.target_type, "target_id": payload.target_id, "assignment_note": payload.assignment_note, "actor_id": str(actor.id)})).mappings().one()
+    try:
+        assignment = (await session.execute(text("""
+            INSERT INTO cfr.response_group_assignments (group_id, target_type, target_id, assignment_note, assigned_by_user_id, lifecycle_status)
+            VALUES (:group_id, :target_type, :target_id, :assignment_note, :actor_id, 'pending_confirmation')
+            RETURNING id, assigned_at
+        """), {"group_id": str(group_uuid), "target_type": payload.target_type, "target_id": payload.target_id, "assignment_note": payload.assignment_note, "actor_id": str(actor.id)})).mappings().one()
+    except IntegrityError as exc:
+        await session.rollback()
+        raise HTTPException(
+            status_code=409,
+            detail="an active dispatch proposal already exists for this SOS; refresh its dispatch lifecycle before selecting another team",
+        ) from exc
     await session.execute(text("""
         INSERT INTO cfr.response_group_assignment_events (assignment_id, event_type, to_status, note, actor_user_id, actor_role)
         VALUES (:assignment_id, 'dispatch.proposed', 'pending_confirmation', :note, :actor_id, :actor_role)

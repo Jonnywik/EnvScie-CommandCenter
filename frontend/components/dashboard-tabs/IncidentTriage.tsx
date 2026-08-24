@@ -138,6 +138,13 @@ export function IncidentTriageView({ incidents, alerts, appearance, onAppearance
     if (!selected?.sos || !verificationComplete || loadingTeams) return;
     setLoadingTeams(true); setActionStatus(null);
     try {
+      const currentLifecycle = await getDispatchLifecycle(selected.sos.id);
+      setLifecycle(currentLifecycle);
+      const activeAssignment = currentLifecycle.assignments.find((assignment) => !["cancelled", "closed"].includes(assignment.status));
+      if (activeAssignment) {
+        setActionStatus(`Team selection is blocked because assignment ${activeAssignment.assignment_id.slice(0, 8)} is ${activeAssignment.status.replaceAll("_", " ")}. Review, confirm, or cancel that lifecycle record before selecting another team.`);
+        return;
+      }
       const snapshot = await getResponseGroups();
       const eligible = snapshot.groups.filter((group) => group.availability !== "offline");
       setAvailableTeams(eligible); setTeamSelectorOpen(true);
@@ -149,6 +156,14 @@ export function IncidentTriageView({ incidents, alerts, appearance, onAppearance
     if (!selected?.sos || deploying || !verificationComplete || team.availability !== "available" || team.status !== "ready") return;
     setDeploying(true); setActionStatus(null);
     try {
+      const currentLifecycle = await getDispatchLifecycle(selected.sos.id);
+      setLifecycle(currentLifecycle);
+      const activeAssignment = currentLifecycle.assignments.find((assignment) => !["cancelled", "closed"].includes(assignment.status));
+      if (activeAssignment) {
+        setTeamSelectorOpen(false);
+        setActionStatus(`A dispatch proposal is already ${activeAssignment.status.replaceAll("_", " ")} for this SOS. Review, confirm, or cancel assignment ${activeAssignment.assignment_id.slice(0, 8)} before selecting another team.`);
+        return;
+      }
       const ranking = recommendation?.recommendations.find((item) => item.group_id === team.id);
       const rankNote = ranking ? `Rank ${ranking.rank}; score ${ranking.score}/100; ETA ${ranking.estimated_response_minutes ?? "unknown"} min.` : "Not in the current top-three advisory ranking; coordinator selected this currently available team after review.";
       const proposal = await assignResponseGroup({ group_id: team.id, target_type: "sos_request", target_id: selected.sos.id, assignment_note: `Dispatcher selected ${team.name}. ${rankNote}` });
@@ -156,7 +171,7 @@ export function IncidentTriageView({ incidents, alerts, appearance, onAppearance
       setTeamSelectorOpen(false); setActionStatus(`${team.name} is pending explicit dispatch confirmation. ${proposal.decision_limit}`);
       await refreshLifecycle(selected.sos.id);
       await onRefresh();
-    } catch (error) { setActionStatus(error instanceof Error ? error.message : "Deployment could not be recorded."); }
+    } catch (error) { await refreshLifecycle(selected.sos.id); setTeamSelectorOpen(false); setActionStatus(error instanceof Error ? error.message : "Deployment could not be recorded."); }
     finally { setDeploying(false); }
   };
   const activeAssignment = lifecycle?.assignments.find((item) => !["cancelled", "closed"].includes(item.status)) || null;

@@ -879,6 +879,10 @@ def create_demo_dispatch_assignment(group_id: str, target_type: str, target_id: 
     """Create a proposal only; no unit, notification, or SOS state changes until confirmation."""
     _ensure_demo_response_groups()
     _ensure_demo_gis_resources()
+    if target_type == "sos_request":
+        existing = next((item for item in DEMO_DISPATCH_ASSIGNMENTS if item["target_type"] == "sos_request" and item["target_id"] == target_id and item["status"] in {"pending_confirmation", "confirmed", "acknowledged", "escalated"}), None)
+        if existing is not None:
+            raise ValueError(f"an active dispatch proposal already exists for this SOS (assignment {existing['assignment_id']}, status {existing['status']}); review or cancel it before selecting another team")
     resources = {item["id"]: item for item in DEMO_GIS_RESOURCES}
     group = next((item for item in DEMO_RESPONSE_GROUPS if item["id"] == group_id), None)
     if group is None:
