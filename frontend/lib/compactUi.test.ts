@@ -394,6 +394,11 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain("html[data-appearance=\"light\"] .field-response-fleet");
     expect(stylesSource).toContain(".audio-waveform { overflow: hidden; }");
     expect(stylesSource).toContain("max-height: 28px");
+    expect(stylesSource).toContain("Dark Field Response neutral controls use tactical navy-teal surfaces; status colors remain semantic.");
+    expect(stylesSource).toContain('html[data-appearance="dark"] .functional-view-selector');
+    expect(stylesSource).toContain('html[data-appearance="dark"] .field-response-fleet [role="group"]');
+    expect(stylesSource).toContain('html[data-appearance="dark"] .field-response-fleet thead');
+    expect(stylesSource).toContain('html[data-appearance="dark"] .sidebar .nav-collapse-toggle');
   });
 
   it("provides DRRMO Intelligence with bounded immutable audit review and deliberate exports", () => {

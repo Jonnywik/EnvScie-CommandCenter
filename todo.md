@@ -662,3 +662,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Audit Fleet Safety, Teams & Assets, Resource Logistics, and Communications for inconsistent header, panel, control, state, and responsive treatments.
 - [x] Apply shared Command Center design tokens and component patterns to every Field Response subtab without changing dispatch or safety semantics.
 - [x] Validate dark/light appearance, keyboard access, mobile containment, telemetry/dispatch controls, regression coverage, and hosted behavior; document and synchronize the release.
+
+## Field Response neutral-surface token alignment
+- [x] Audit the reported gray and white Field Response tabs, controls, table headings, and non-semantic badges against the navy-teal design system.
+- [x] Replace neutral gray/white surfaces with consistent navy-teal tokens while preserving semantic red, amber, blue, and green status meaning.
+- [x] Validate dark/light contrast, mobile containment, visual hierarchy, regression coverage, and hosted rendering; document and synchronize the release.
