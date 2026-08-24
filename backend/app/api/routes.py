@@ -320,6 +320,27 @@ async def operations_readiness() -> dict[str, Any]:
     }
 
 
+@router.get("/operations/service-health")
+async def operations_service_health() -> dict[str, Any]:
+    """Expose bounded infrastructure evidence without fabricating migration or delivery health."""
+    migration_dir = Path(__file__).resolve().parents[3] / "db"
+    known_migrations = [path.name for path in sorted(migration_dir.glob("*.sql"))]
+    return {
+        "mode": "demo" if settings.demo_mode else "live",
+        "realtime": manager.health_snapshot(),
+        "database": {
+            "status": "demo_seed" if settings.demo_mode else "not_probed",
+            "decision_limit": "This endpoint does not execute a database write or claim migration completion. Confirm live database health and migration history through approved infrastructure records.",
+        },
+        "migrations": {
+            "known_files": known_migrations,
+            "tracking_status": "not_configured",
+            "decision_limit": "Known migration files are an application inventory only. They do not prove the target database version or a successful backup, rollback, or restore.",
+        },
+        "decision_limit": "Service health is operational observability only. It does not authorize a dispatch, warning, route clearance, facility readiness, or field-safety decision.",
+    }
+
+
 @router.get("/dashboard/summary")
 async def dashboard_summary(session: AsyncSession | None = Depends(get_db)) -> dict:
     if settings.demo_mode:

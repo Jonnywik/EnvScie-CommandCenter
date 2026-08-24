@@ -23,6 +23,15 @@ class DashboardConnectionManager:
     def disconnect(self, websocket: WebSocket, topic: str) -> None:
         self.connections[topic].discard(websocket)
 
+    def health_snapshot(self) -> dict[str, Any]:
+        """Return process-local observability only; this does not prove cross-worker delivery."""
+        return {
+            "transport": "in_process",
+            "multi_worker_durable": False,
+            "topics": {topic: len(connections) for topic, connections in sorted(self.connections.items())},
+            "decision_limit": "Counts are process-local websocket connections only. They do not prove event delivery across workers, provider availability, or responder acknowledgement.",
+        }
+
     async def publish(self, topic: str, event: dict[str, Any]) -> None:
         dead: list[WebSocket] = []
         for websocket in self.connections[topic]:

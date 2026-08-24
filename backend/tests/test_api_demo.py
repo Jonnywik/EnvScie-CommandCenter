@@ -24,6 +24,19 @@ def test_operations_readiness_exposes_non_sensitive_demo_release_blockers() -> N
     assert "does not authorize" in payload["decision_limit"].lower()
 
 
+def test_operations_service_health_reports_truthful_process_and_migration_limits() -> None:
+    response = client.get("/v1/operations/service-health")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["mode"] == "demo"
+    assert payload["realtime"]["transport"] == "in_process"
+    assert payload["realtime"]["multi_worker_durable"] is False
+    assert "001_init.sql" in payload["migrations"]["known_files"]
+    assert payload["migrations"]["tracking_status"] == "not_configured"
+    assert "do not prove" in payload["migrations"]["decision_limit"].lower()
+
+
 def test_weather_endpoints_return_safe_snapshot_shapes(monkeypatch) -> None:
     async def fake_radar() -> dict:
         return {"frames": [{"time": 1710000000, "path": "/v2/radar/1710000000"}], "host": "https://tilecache.rainviewer.com", "fetched_at": "2026-08-20T00:00:00+00:00", "stale": False}
