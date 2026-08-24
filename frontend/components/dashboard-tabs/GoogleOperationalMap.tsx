@@ -49,6 +49,39 @@ function loadGoogleMaps() {
 
 const position = (value: { latitude: number; longitude: number }): LatLng => ({ lat: value.latitude, lng: value.longitude });
 const darkMapStyles = [{ elementType: "geometry", stylers: [{ color: "#0b1e26" }] }, { elementType: "labels.text.fill", stylers: [{ color: "#b7d7dc" }] }, { elementType: "labels.text.stroke", stylers: [{ color: "#071318" }] }, { featureType: "water", elementType: "geometry", stylers: [{ color: "#103b4a" }] }, { featureType: "road", elementType: "geometry", stylers: [{ color: "#244d58" }] }, { featureType: "poi", elementType: "geometry", stylers: [{ color: "#122c34" }] }];
+const criticalSosLabel = (incident: GisMapSnapshot["sos"][number]) => `Reported SOS · ${incident.summary}`.slice(0, 54);
+
+function addCriticalSosLabel(maps: any, map: any, incident: GisMapSnapshot["sos"][number]) {
+  const overlay = new maps.OverlayView();
+  const location = new maps.LatLng(incident.position.latitude, incident.position.longitude);
+  let label: HTMLDivElement | null = null;
+  overlay.onAdd = () => {
+    label = document.createElement("div");
+    label.className = "critical-sos-map-label";
+    label.textContent = criticalSosLabel(incident);
+    label.setAttribute("aria-hidden", "true");
+    overlay.getPanes()?.overlayLayer.appendChild(label);
+  };
+  overlay.draw = () => {
+    const point = overlay.getProjection()?.fromLatLngToDivPixel(location);
+    if (label && point) {
+      const offsets = [-12, -38, 14, -64, 40, -90, 66];
+      for (const offset of offsets) {
+        label.style.transform = `translate(${Math.round(point.x + 14)}px, ${Math.round(point.y + offset)}px)`;
+        const labelBounds = label.getBoundingClientRect();
+        const overlapsAnotherLabel = Array.from(document.querySelectorAll<HTMLElement>(".critical-sos-map-label")).some((other) => {
+          if (other === label) return false;
+          const otherBounds = other.getBoundingClientRect();
+          return labelBounds.left < otherBounds.right && labelBounds.right > otherBounds.left && labelBounds.top < otherBounds.bottom && labelBounds.bottom > otherBounds.top;
+        });
+        if (!overlapsAnotherLabel) break;
+      }
+    }
+  };
+  overlay.onRemove = () => { label?.remove(); label = null; };
+  overlay.setMap(map);
+  return overlay;
+}
 
 export function GoogleOperationalMap({ snapshot, route, layers, radar, typhoon, mapOverlays, noahContext, facilityRegistry, facilityCategories, appearance, basemap, selectedResourceId, selectedCenterId, selectedSosId, onSelectResource, onSelectCenter, onSelectSos, onSelectFacility, onReady, onTilesReady, onError }: { snapshot: GisMapSnapshot; route?: OptimizedRoute | null; layers: LayerState; radar: RadarSnapshot | null; typhoon: TyphoonSnapshot | null; mapOverlays: MapOverlaysSnapshot | null; noahContext: NoahMapContext | null; facilityRegistry: OfficialFacilityRegistry | null; facilityCategories: OfficialFacility["category"][]; appearance: AppearanceMode; basemap: GoogleBasemap; selectedResourceId?: string; selectedCenterId?: string; selectedSosId?: string; onSelectResource: (resource: GisResource) => void; onSelectCenter: (center: GisMapSnapshot["centers"][number]) => void; onSelectSos: (incident: GisMapSnapshot["sos"][number]) => void; onSelectFacility: (facility: OfficialFacility) => void; onReady: (map: any) => void; onTilesReady: () => void; onError: (message: string) => void }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -126,7 +159,7 @@ export function GoogleOperationalMap({ snapshot, route, layers, radar, typhoon, 
     if (layers.route && route?.route.length) overlaysRef.current.push(new maps.Polyline({ map, path: route.route.map(position), strokeColor: "#0d9488", strokeOpacity: 1, strokeWeight: 5 }));
     if (layers.centers) snapshot.centers.forEach((center) => { const selected = center.id === selectedCenterId; const marker = new maps.Marker({ map, position: position(center.position), title: `${center.name} · ${center.occupancy_current}/${center.capacity_total}`, zIndex: selected ? 20 : undefined, label: { text: "E", color: "#ffffff", fontWeight: "700" }, icon: { path: maps.SymbolPath.CIRCLE, fillColor: "#0f766e", fillOpacity: 1, strokeColor: selected ? "#fef3c7" : "#ffffff", strokeWeight: selected ? 4 : 2, scale: selected ? 13 : 11 } }); marker.addListener("click", () => onSelectCenter(center)); overlaysRef.current.push(marker); });
     if (layers.officialFacilities) visibleFacilities.forEach((facility) => { const marker = new maps.Marker({ map, position: position(facility.position), title: `${facility.name} · official registry reference · ${facility.coordinate_validation_status.replaceAll("_", " ")}`, label: { text: facility.category === "hospital" ? "H" : "+", color: "#ffffff", fontWeight: "800" }, icon: { path: maps.SymbolPath.CIRCLE, fillColor: facility.category === "hospital" ? "#155e75" : "#0369a1", fillOpacity: 1, strokeColor: "#d9f5fa", strokeWeight: 2, scale: 10 } }); marker.addListener("click", () => onSelectFacility(facility)); overlaysRef.current.push(marker); });
-    if (layers.sos) snapshot.sos.forEach((incident) => { const selected = incident.id === selectedSosId; const marker = new maps.Marker({ map, position: position(incident.position), title: `${incident.summary} · ${incident.status}`, zIndex: selected ? 20 : undefined, label: { text: "!", color: "#ffffff", fontWeight: "900" }, icon: { path: maps.SymbolPath.CIRCLE, fillColor: "#e11d48", fillOpacity: 1, strokeColor: selected ? "#fef3c7" : "#ffffff", strokeWeight: selected ? 4 : 2, scale: selected ? 12 : 10 } }); marker.addListener("click", () => onSelectSos(incident)); overlaysRef.current.push(marker); });
+    if (layers.sos) snapshot.sos.forEach((incident) => { const selected = incident.id === selectedSosId; const marker = new maps.Marker({ map, position: position(incident.position), title: `${incident.summary} · ${incident.status}`, zIndex: selected ? 20 : undefined, label: { text: "!", color: "#ffffff", fontWeight: "900" }, icon: { path: maps.SymbolPath.CIRCLE, fillColor: "#e11d48", fillOpacity: 1, strokeColor: selected ? "#fef3c7" : "#ffffff", strokeWeight: selected ? 4 : 2, scale: selected ? 12 : 10 } }); marker.addListener("click", () => onSelectSos(incident)); overlaysRef.current.push(marker); if (incident.severity === "critical") overlaysRef.current.push(addCriticalSosLabel(maps, map, incident)); });
     if (layers.resources) snapshot.resources.forEach((resource) => { const selected = resource.id === selectedResourceId; const marker = new maps.Marker({ map, position: position(resource.position), title: `${resource.label} · ${resource.state}`, zIndex: selected ? 20 : undefined, label: { text: resource.kind === "medical" ? "+" : resource.kind === "boat" ? "⌁" : "•", color: "#ffffff", fontWeight: "900" }, icon: { path: maps.SymbolPath.CIRCLE, fillColor: resource.state === "offline" ? "#64748b" : "#2563eb", fillOpacity: 1, strokeColor: selected ? "#fef3c7" : "#ffffff", strokeWeight: selected ? 4 : 2, scale: selected ? 12 : 10 } }); marker.addListener("click", () => onSelectResource(resource)); overlaysRef.current.push(marker); });
     if (layers.typhoon && typhoon?.active && typhoon.latitude != null && typhoon.longitude != null) { if (typhoon.track.length > 1) overlaysRef.current.push(new maps.Polyline({ map, path: typhoon.track.map(position), strokeColor: "#8b5cf6", strokeOpacity: .9, strokeWeight: 3 })); overlaysRef.current.push(new maps.Marker({ map, position: { lat: typhoon.latitude, lng: typhoon.longitude }, title: `${typhoon.name || "Tropical cyclone"} · PAGASA bulletin`, label: { text: "◌", color: "#ffffff" }, icon: { path: maps.SymbolPath.CIRCLE, fillColor: "#7c3aed", fillOpacity: 1, strokeColor: "#ffffff", strokeWeight: 2, scale: 14 } })); }
     if (layers.pagasaStations && mapOverlays?.pagasa_stations.freshness !== "unavailable") mapOverlays?.pagasa_stations.stations.forEach((station) => overlaysRef.current.push(new maps.Marker({ map, position: { lat: station.latitude, lng: station.longitude }, title: `${station.name} · observed ${station.observed_at}`, label: { text: "S", color: "#ffffff", fontWeight: "700" }, icon: { path: maps.SymbolPath.CIRCLE, fillColor: "#0891b2", fillOpacity: 1, strokeColor: "#ffffff", strokeWeight: 2, scale: 8 } })));

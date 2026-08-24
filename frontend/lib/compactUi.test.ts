@@ -204,6 +204,32 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain('html[data-appearance="light"] .panel');
   });
 
+  it("keeps Command Map visibility controls compact, mutually exclusive, and protected from radar overlap", () => {
+    expect(workspaceSource).toContain("overlayOnExpand");
+    expect(workspaceSource).toContain("command-map-navigation-backdrop");
+    expect(workspaceSource).toContain("is-overlay-open");
+    expect(workspaceSource).toContain("command-map-tools-trigger");
+    expect(workspaceSource).toContain("command-map-tools-menu");
+    expect(workspaceSource).toContain("selectMapTool");
+    expect(workspaceSource).toContain('renderTrigger={false}');
+    expect(workspaceSource).toContain("renderFacilityTrigger={false}");
+    expect(workspaceSource).toContain("radarMinimized");
+    expect(workspaceSource).toContain("responder-radar-toggle");
+    expect(workspaceSource).toContain("active field units");
+    expect(workspaceSource).toContain("critical-sos-map-label");
+    expect(workspaceSource).toContain("addCriticalSosLabel");
+    expect(workspaceSource).toContain("offsets = [-12, -38, 14, -64, 40, -90, 66]");
+    expect(workspaceSource).toContain("overlapsAnotherLabel");
+    expect(workspaceSource).toContain('incident.severity === "critical"');
+    expect(workspaceSource).toContain("Reported SOS ·");
+    expect(stylesSource).toContain("--responder-radar-reserve");
+    expect(stylesSource).toContain(".command-map-workspace.radar-minimized");
+    expect(stylesSource).toContain(".command-map-hero .gis-legend");
+    expect(stylesSource).toContain(".map-control-dock-zoom { grid-template-columns: 1fr");
+    expect(stylesSource).toContain(".critical-sos-map-label");
+    expect(stylesSource).toContain("pointer-events: none");
+  });
+
   it("contains wheel and touch gestures within the operational map", () => {
     expect(workspaceSource).toContain("const mapShellRef = useRef<HTMLDivElement | null>(null)");
     expect(workspaceSource).toContain('mapShell.addEventListener("wheel", containWheel, { passive: false })');

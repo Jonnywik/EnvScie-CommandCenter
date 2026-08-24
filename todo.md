@@ -558,3 +558,11 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Prevent expanded utility panels from covering another dock action, toggle, zoom/reset control, responder radar, broadcast action, or evidence sheet.
 - [x] Rebuild desktop, tablet, mobile, dark-mode, and light-mode placement rules using shared map-safe-area variables.
 - [x] Add regression coverage and validate the dock’s expanded states, keyboard behavior, responsive containment, and preserved NOAH/facility safeguards.
+
+## Command Map visibility and tactical controls
+- [x] Convert the Command Center sidebar into a persistent icon-only rail with an accessible full-navigation overlay.
+- [x] Move Map view, Triage, and Facilities into a top-bar Map tools control while retaining one active utility panel.
+- [x] Reduce right-edge controls to a compact zoom/reset pill with a protected broadcast safe area.
+- [x] Add a minimizable responder radar and dynamically reserve bottom-left space for the protected map legend.
+- [x] Render concise, persistent reported-event labels for critical SOS markers in Google Maps and fallback map modes.
+- [x] Validate accessibility, responsive non-overlap, NOAH/facility safeguards, tests, type checks, production build, and hosted behavior.
