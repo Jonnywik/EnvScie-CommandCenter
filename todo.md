@@ -577,3 +577,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Remove the Responder Radar segment and its compact summary state from the Command Map.
 - [x] Reclaim the radar-safe layout reserve for the map legend, utility panels, and broadcast control.
 - [x] Update regression coverage and validate the hosted Command Map after the removal.
+
+## Command Map and filter validation
+- [x] Validate hosted Google Map rendering, compact controls, map navigation, and filtered operational layers.
+- [x] Exercise Project NOAH, official-facility, and triage filter workflows without altering operational data.
+- [x] Assess remaining current-feature gaps and document a prioritized, safety-bounded completion roadmap.
