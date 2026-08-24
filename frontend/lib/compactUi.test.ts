@@ -389,6 +389,11 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("No mobile delivery endpoint is configured");
     expect(workspaceSource).toContain("OPERATOR CONFIRMATION");
     expect(workspaceSource).toContain("does not force a field reroute");
+    expect(workspaceSource).toContain("field-response-fleet");
+    expect(stylesSource).toContain("Field Response contextual views share one bounded operational surface system");
+    expect(stylesSource).toContain("html[data-appearance=\"light\"] .field-response-fleet");
+    expect(stylesSource).toContain(".audio-waveform { overflow: hidden; }");
+    expect(stylesSource).toContain("max-height: 28px");
   });
 
   it("provides DRRMO Intelligence with bounded immutable audit review and deliberate exports", () => {

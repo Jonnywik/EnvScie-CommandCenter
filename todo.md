@@ -657,3 +657,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Audit outstanding delivery-ledger items, source-level placeholders, migrations, and operational decision limits without changing behavior.
 - [x] Rank remaining workflow, accessibility, data-quality, notification, map, and production-readiness gaps with clear ownership and acceptance criteria.
 - [x] Deliver and synchronize a remediation-ready backlog review without implementing the proposed work.
+
+## Field Response subtab consistency
+- [x] Audit Fleet Safety, Teams & Assets, Resource Logistics, and Communications for inconsistent header, panel, control, state, and responsive treatments.
+- [x] Apply shared Command Center design tokens and component patterns to every Field Response subtab without changing dispatch or safety semantics.
+- [x] Validate dark/light appearance, keyboard access, mobile containment, telemetry/dispatch controls, regression coverage, and hosted behavior; document and synchronize the release.
