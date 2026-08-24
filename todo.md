@@ -636,3 +636,9 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Add a unified selected-incident workboard with required-next-action context, durable verification evidence, and safe closure dependencies.
 - [x] Add freshness, ownership, handover, communications, and decision-input context without treating any record as proof of field safety or delivery.
 - [x] Add regression, browser, responsive, accessibility, demo/live-parity, and safety-boundary validation; document and synchronize the release.
+
+## Final Incidents tab hardening
+- [x] Audit the reported mobile dark-theme workboard contrast and empty-state defect against the current component and theme tokens.
+- [x] Correct mobile dark-theme workboard cards, disclosure controls, empty timelines, and vertical spacing without breaking light mode.
+- [x] Complete remaining Incidents-tab interaction polish, state handling, and design-token consistency checks.
+- [x] Run backend, frontend, responsive, accessibility, and hosted acceptance validation; document and synchronize the final release.

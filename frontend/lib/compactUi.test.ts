@@ -39,6 +39,11 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("Incident workboard");
     expect(workspaceSource).toContain("Record reported verification input");
     expect(workspaceSource).toContain("does not establish field safety");
+    expect(workspaceSource).toContain("workboard-context-card");
+    expect(workspaceSource).toContain("setLoadError");
+    expect(stylesSource).toContain("--workboard-surface");
+    expect(stylesSource).toContain("html[data-appearance=\"dark\"] .incident-workboard");
+    expect(stylesSource).toContain(".workboard-context-card { grid-template-columns: 1fr;");
     expect(stylesSource).toContain(".mobile-triage-meta");
   });
 
