@@ -679,3 +679,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Implement structured resource-accountability and communications preflight/confirmation workflows with explicit audit feedback.
 - [x] Add non-mutating attention navigation, keyboard/focus safeguards, responsive dense-data layouts, and bounded review behavior.
 - [x] Validate the final Field Response workspace, document evidence, and synchronize the release.
+
+## Command Center header consistency
+- [x] Audit the Command Map, Field Response, and Intelligence headers against the established Community Safety and Incidents shared header pattern.
+- [x] Standardize header composition, hierarchy, status treatment, operator information, and appearance controls without changing workspace behavior.
+- [x] Validate desktop/mobile and dark/light header consistency, document evidence, and synchronize the release.

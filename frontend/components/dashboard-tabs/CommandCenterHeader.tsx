@@ -10,8 +10,8 @@ type HeaderIdentityProps = {
 
 export function CommandCenterHeaderIdentity({ context, timeLabel, timeDateTime, className = "" }: HeaderIdentityProps) {
   return <div className={`command-center-header-brand ${className}`.trim()}>
-    <img src="/cfr-reference-emblem.png" alt="EnvScie CommandCenter emblem" />
-    <div><strong>EnvScie CommandCenter</strong><span>{context}</span></div>
+    <img src="/cfr-reference-emblem.png" alt="Code for Resilience emblem" />
+    <div><strong>Code for Resilience</strong><span>{context}</span></div>
     {timeLabel && <time dateTime={timeDateTime}>{timeLabel}</time>}
   </div>;
 }
@@ -43,12 +43,12 @@ export function CommandCenterHeader({
 }) {
   const connectionLabel = connection === "live" ? "Live operations" : connection === "cached" ? "Cached snapshot" : "Review required";
   const initials = operatorLabel.split(/[·\s]+/).filter(Boolean).map((part) => part[0]).join("").slice(0, 2).toUpperCase() || "DO";
-  return <header className={`command-center-header ${className}`.trim()}>
+  return <header className={`command-center-header ${className}`.trim()} aria-label={title}>
     <CommandCenterHeaderIdentity context={context} />
-    <div className="command-center-header-workspace"><span>WORKSPACE</span><h1>{title}</h1></div>
-    <div className="command-center-header-status"><span className={`command-center-connection ${connection}`}><i aria-hidden="true" />{connectionLabel}</span><span className="command-center-sync">{syncLabel}</span></div>
+    <div className="command-center-header-status" aria-label="WORKSPACE"><span className={`command-center-connection ${connection}`}><i aria-hidden="true" />{connectionLabel}</span><span className="command-center-date">Wednesday · 12 August 2026</span></div>
     <div className="command-center-header-actions">
       {actions}
+      <span className="command-center-operator"><span>{operatorLabel}</span><strong>{syncLabel}</strong></span>
       {onReturn && <button type="button" onClick={onReturn} className="command-center-return">← {returnLabel}</button>}
       <AppearanceToggle appearance={appearance} onAppearanceChange={onAppearanceChange} className="workspace-appearance-toggle" />
       <span className="command-center-avatar" aria-label={operatorLabel} title={operatorLabel}>{initials}</span>

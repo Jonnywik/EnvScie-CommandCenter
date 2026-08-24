@@ -78,7 +78,7 @@ describe("compact operational interface", () => {
   it("renders the map-first Command Map dashboard with protected operational controls", () => {
     expect(workspaceSource).toContain("CommandMapView");
     expect(workspaceSource).toContain('variant="command"');
-    expect(workspaceSource).toContain("EnvScie CommandCenter");
+    expect(workspaceSource).toContain("Code for Resilience");
     expect(workspaceSource).not.toContain("PRIORITY FEED");
     expect(workspaceSource).not.toContain("Situational awareness");
     expect(workspaceSource).not.toContain("Responder radar");
