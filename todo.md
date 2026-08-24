@@ -717,3 +717,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Implement remaining safe backend features and validation without fabricating external provider integrations or bypassing LGU authority controls.
 - [x] Add regression and failure-handling coverage for completed backend contracts.
 - [x] Validate integration, document external activation prerequisites, and synchronize the backend-completion release.
+
+## Production prerequisites and backend integration verification
+- [x] Review remaining deployment, infrastructure, identity, provider, data-governance, observability, and recovery prerequisites.
+- [x] Run a comprehensive non-destructive integration suite across implemented backend endpoints and safety boundaries.
+- [x] Analyze outcomes, document readiness blockers and evidence, and synchronize the verification record.
