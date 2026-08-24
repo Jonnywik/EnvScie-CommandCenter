@@ -694,3 +694,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Audit the selected Fleet row markup and table styling that produces broken cell seams.
 - [x] Replace the artifact with a coherent accessible selected-row treatment without changing fleet behavior.
 - [x] Validate selection rendering and synchronize the repair.
+
+## Neutral container design-system alignment
+- [x] Audit remaining gray neutral containers across the Command Center workspaces.
+- [x] Replace gray neutral containers with navy-teal-mint surfaces while preserving semantic safety and warning colors.
+- [x] Validate contrast, responsiveness, and operational integrity, then synchronize the release.
