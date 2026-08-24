@@ -667,3 +667,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Audit the reported gray and white Field Response tabs, controls, table headings, and non-semantic badges against the navy-teal design system.
 - [x] Replace neutral gray/white surfaces with consistent navy-teal tokens while preserving semantic red, amber, blue, and green status meaning.
 - [x] Validate dark/light contrast, mobile containment, visual hierarchy, regression coverage, and hosted rendering; document and synchronize the release.
+
+## Field Response finalization plan
+- [x] Audit remaining Field Response workflow, data-quality, accessibility, responsiveness, and visual-hierarchy gaps across all contextual views.
+- [x] Define a prioritized, safety-preserving finalization backlog with concrete acceptance criteria and verification evidence.
+- [x] Deliver the Field Response finalization plan and recommended implementation sequence without changing operational behavior.
