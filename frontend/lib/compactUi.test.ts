@@ -128,6 +128,16 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("1–5");
     expect(workspaceSource).toContain("command-map-sidebar");
     expect(workspaceSource).not.toContain('className="command-map-quicklinks"');
+    expect(workspaceSource).toContain("CommandMapUtilityPanel");
+    expect(workspaceSource).toContain("activeUtilityPanel");
+    expect(workspaceSource).toContain('activeUtilityPanel === "view"');
+    expect(workspaceSource).toContain('activeUtilityPanel === "triage"');
+    expect(workspaceSource).toContain('activeUtilityPanel === "facilities"');
+    expect(workspaceSource).toContain("map-control-dock");
+    expect(workspaceSource).toContain('event.key === "Escape"');
+    expect(workspaceSource).toContain("Map view");
+    expect(workspaceSource).toContain("Triage");
+    expect(workspaceSource).toContain("Facilities");
     expect(workspaceSource).toContain('"Command Map"');
     expect(workspaceSource).toContain('"Incidents"');
     expect(workspaceSource).toContain('"Field Response"');
@@ -156,6 +166,10 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain(".command-map-shell");
     expect(stylesSource).toContain(".command-map-filter-rail");
     expect(stylesSource).toContain(".command-map-triage-drawer");
+    expect(stylesSource).toContain(".map-control-dock");
+    expect(stylesSource).toContain("--map-control-panel-width");
+    expect(stylesSource).toContain("--map-control-panel-bottom-reserve");
+    expect(stylesSource).toContain("calc(var(--map-control-dock-right) + var(--map-control-dock-width) + var(--map-control-panel-gap))");
     expect(stylesSource).toContain(".command-map-topbar");
     expect(stylesSource).toContain(".mass-notification-modal");
     expect(stylesSource).toContain('html[data-appearance="dark"]');

@@ -552,3 +552,9 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Remove the Incidents, Field Response, Community Safety, and Intelligence quick-link cards from the Command Map.
 - [x] Remove the obsolete quick-link wiring without changing remaining Command Map navigation or safety behavior.
 - [x] Validate the simplified Command Map layout, regression suite, type checks, and production build.
+
+## Command Map collision-safe control dock
+- [x] Consolidate map view, triage, facilities, zoom, and reset controls into one consistent dock with a single active utility panel.
+- [x] Prevent expanded utility panels from covering another dock action, toggle, zoom/reset control, responder radar, broadcast action, or evidence sheet.
+- [x] Rebuild desktop, tablet, mobile, dark-mode, and light-mode placement rules using shared map-safe-area variables.
+- [x] Add regression coverage and validate the dock’s expanded states, keyboard behavior, responsive containment, and preserved NOAH/facility safeguards.
