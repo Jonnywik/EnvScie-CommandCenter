@@ -606,3 +606,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Add a selected-team ETA estimate based on the reported team location and incident coordinates, with clear calculation and route-safety limits.
 - [x] Add inspectable team roster and equipment inventory details plus search and status filtering to the dispatch team selector.
 - [x] Add regression coverage, production validation, documentation, and GitHub synchronization without converting ETA or availability into dispatch authority.
+
+## Triage Queue dispatch response team placement
+- [x] Audit the existing Triage Queue Dispatch response team action and its relationship to the current team selector.
+- [x] Move the available-team selector into the Triage Queue Dispatch response team action while retaining ETA, filters, roster details, and explicit confirmation.
+- [x] Add regression coverage, production validation, documentation, and GitHub synchronization for the corrected control placement.

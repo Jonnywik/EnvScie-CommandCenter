@@ -177,6 +177,11 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("I confirm I am recording a human decision to task this group");
     expect(workspaceSource).toContain("Record reported unit acknowledgement");
     expect(workspaceSource).toContain("Select dispatch team");
+    expect(workspaceSource).toContain("Dispatch response team");
+    expect(workspaceSource).toContain("Loading response teams…");
+    expect(workspaceSource).toContain("Triage Queue selection.");
+    expect(workspaceSource).toContain("triage_queue.dispatch_proposed");
+    expect(workspaceSource).toContain("<DispatchTeamSelector teams={dispatchTeams}");
     expect(workspaceSource).toContain("Select an available response group");
     expect(workspaceSource).toContain("This creates a pending proposal");
     expect(workspaceSource).toContain("No currently available, ready group is reported");
