@@ -689,3 +689,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Create a visual mockup for the intended end-to-end horizontal operational header.
 - [x] Replace the inset workspace header with a continuous full-width horizontal bar while retaining controls and behavior.
 - [x] Validate the new header on desktop and mobile, then document and synchronize the release.
+
+## Fleet selected-row rendering repair
+- [x] Audit the selected Fleet row markup and table styling that produces broken cell seams.
+- [x] Replace the artifact with a coherent accessible selected-row treatment without changing fleet behavior.
+- [x] Validate selection rendering and synchronize the repair.
