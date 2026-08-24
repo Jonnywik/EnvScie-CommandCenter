@@ -397,6 +397,13 @@ h1 { font-family: 'Space Grotesk'; font-size: 30px; letter-spacing: -0.05em; mar
 .sos-table-row strong, .sos-table-row small { display: block; }
 .sos-table-row strong { color: var(--ink); font-size: 11px; }
 .sos-table-row small { color: var(--muted); font-size: 10px; margin-top: 4px; line-height: 1.3; }
+.live-sos-controls select { min-width: 148px; }
+.queue-toggle { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 11px; font-weight: 700; white-space: nowrap; }
+.queue-toggle input { min-width: auto; accent-color: var(--teal); }
+.active-filter-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: -8px 0 14px; }
+.active-filter-chips span, .queue-flag { display: inline-flex; align-items: center; width: fit-content; margin-top: 6px; padding: 3px 6px; border: 1px solid #d8e5ee; border-radius: 999px; background: #f8fbfd; color: #56717e; font-size: 9px; font-style: normal; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; }
+.queue-flag.critical { border-color: #fecaca; background: #fff1f2; color: #be123c; }
+.mobile-triage-meta { display: none; }
 .response-group-summary { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 18px; }
 .response-group-summary .summary-strip { min-height: 68px; display: flex; flex-direction: column; justify-content: center; padding: 12px 14px; background: #fff; border: 1px solid var(--line); border-radius: 10px; }
 .response-group-summary .summary-strip strong { color: var(--ink); font-family: 'Space Grotesk'; font-size: 22px; line-height: 1; }
@@ -751,6 +758,9 @@ h1 { font-family: 'Space Grotesk'; font-size: 30px; letter-spacing: -0.05em; mar
   .sos-table-head { display: none; }
   .sos-table-row { grid-template-columns: 1fr auto; gap: 7px; }
   .sos-table-row > span:nth-child(2), .sos-table-row > span:nth-child(3) { display: none; }
+  .mobile-triage-meta { display: block; color: #58707a !important; font-weight: 700; }
+  .live-sos-controls select { min-width: min(100%, 220px); flex: 1 1 170px; }
+  .queue-toggle { width: 100%; min-height: 36px; padding: 0 2px; }
   .route-result { grid-template-columns: 1fr; }
   .route-result > div:nth-child(2) { text-align: left; }
   .route-result small { grid-column: auto; }

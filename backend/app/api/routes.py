@@ -66,6 +66,9 @@ from app.schemas.sos import (
     SosCreate,
     SosResponse,
     SosStatusUpdate,
+    SosVerificationCreate,
+    SosVerificationRecord,
+    SosVerificationSnapshot,
 )
 from app.services.auth import require_roles
 from app.services.audit import write_audit_event
@@ -99,6 +102,8 @@ from app.services.demo_data import (
     acknowledge_demo_notification,
     demo_notifications,
     demo_feed_health,
+    demo_sos_verifications,
+    record_demo_sos_verification,
     update_demo_feed_health,
 )
 from app.services.realtime import manager
@@ -112,6 +117,44 @@ from app.services.responder_safety import build_responder_safety_assessment
 
 router = APIRouter(prefix="/v1")
 settings = get_settings()
+
+
+async def _live_sos_resolution_blockers(session: AsyncSession, sos_id: str) -> list[str]:
+    active_dispatch = (await session.execute(text("""
+        SELECT lifecycle_status
+        FROM cfr.response_group_assignments
+        WHERE target_type = 'sos_request'
+          AND target_id = :sos_id
+          AND lifecycle_status IN ('pending_confirmation', 'confirmed', 'acknowledged', 'escalated')
+        LIMIT 1
+    """), {"sos_id": sos_id})).mappings().first()
+    incomplete_record = (await session.execute(text("""
+        SELECT i.id
+        FROM cfr.incidents i
+        INNER JOIN cfr.incident_sos_links l ON l.incident_id = i.id
+        WHERE l.sos_id = CAST(:sos_id AS uuid)
+          AND i.status <> 'closed'
+          AND (i.follow_up_owner IS NULL OR i.follow_up_due_at IS NULL)
+        LIMIT 1
+    """), {"sos_id": sos_id})).mappings().first()
+    blockers: list[str] = []
+    if active_dispatch is not None:
+        blockers.append(f"an active dispatch lifecycle ({active_dispatch['lifecycle_status']}) still requires a separate human review")
+    if incomplete_record is not None:
+        blockers.append("the linked Incident Command Record needs a follow-up owner and due date")
+    return blockers
+
+
+def _demo_sos_resolution_blockers(sos_id: str) -> list[str]:
+    lifecycle = demo_dispatch_lifecycle(sos_id)
+    active_dispatch = next((item for item in lifecycle["assignments"] if item["status"] in {"pending_confirmation", "confirmed", "acknowledged", "escalated"}), None)
+    record = next((item for item in demo_incidents()["incidents"] if sos_id in item["linked_sos_ids"] and item["status"] != "closed"), None)
+    blockers: list[str] = []
+    if active_dispatch is not None:
+        blockers.append(f"an active dispatch lifecycle ({active_dispatch['status']}) still requires a separate human review")
+    if record is not None and (not record.get("follow_up_owner") or not record.get("follow_up_due_at")):
+        blockers.append("the linked Incident Command Record needs a follow-up owner and due date")
+    return blockers
 
 
 @router.get("/maps/google-script", include_in_schema=False)
@@ -1902,7 +1945,13 @@ async def update_sos_status(
     session: AsyncSession | None = Depends(get_db),
     actor: UserIdentity = Depends(require_roles("dispatcher", "responder", "admin")),
 ) -> dict:
+    if payload.status in {"resolved", "false_alarm"} and len((payload.note or "").strip()) < 5:
+        raise HTTPException(status_code=422, detail="a human-entered reason of at least 5 characters is required for resolved or false-alarm SOS status")
     if settings.demo_mode:
+        if payload.status == "resolved":
+            blockers = _demo_sos_resolution_blockers(str(sos_id))
+            if blockers:
+                raise HTTPException(status_code=409, detail=f"SOS resolution is blocked until {', and '.join(blockers)}")
         try:
             incident = update_demo_sos_status(str(sos_id), payload.status)
         except ValueError as exc:
@@ -1933,6 +1982,10 @@ async def update_sos_status(
             status_code=409,
             detail=f"invalid SOS transition: {current_row['status']} -> {payload.status}",
         )
+    if payload.status == "resolved":
+        blockers = await _live_sos_resolution_blockers(session, str(sos_id))
+        if blockers:
+            raise HTTPException(status_code=409, detail=f"SOS resolution is blocked until {', and '.join(blockers)}")
     row = (await session.execute(text("""
         UPDATE cfr.sos_requests
         SET status = :status,
@@ -1971,6 +2024,68 @@ async def update_sos_status(
     event = {"event": "sos.status_changed", **dict(row), "note": payload.note}
     await manager.publish("lgu:sos", event)
     return dict(row)
+
+
+@router.get("/sos/{sos_id}/verification-records", response_model=SosVerificationSnapshot)
+async def sos_verification_snapshot(sos_id: UUID, session: AsyncSession | None = Depends(get_db)) -> SosVerificationSnapshot:
+    """Return operator-entered verification inputs without asserting their operational validity."""
+    if settings.demo_mode:
+        return SosVerificationSnapshot(**demo_sos_verifications(str(sos_id)))
+    if session is None:
+        raise HTTPException(status_code=503, detail="database unavailable")
+    rows = (await session.execute(text("""
+        SELECT id, sos_id, category, source_role, contact_method, source_observed_at, note,
+               reference_number, recorded_by_user_id, recorded_by_role, recorded_at, decision_limit
+        FROM cfr.sos_verification_records
+        WHERE sos_id = :sos_id
+        ORDER BY recorded_at DESC
+    """), {"sos_id": str(sos_id)})).mappings().all()
+    return SosVerificationSnapshot(generated_at=datetime.now(timezone.utc), source="database", records=[SosVerificationRecord(**dict(row)) for row in rows])
+
+
+@router.post("/sos/{sos_id}/verification-records", response_model=SosVerificationRecord, status_code=201)
+async def create_sos_verification_record(
+    sos_id: UUID,
+    payload: SosVerificationCreate,
+    session: AsyncSession | None = Depends(get_db),
+    actor: UserIdentity = Depends(require_roles("dispatcher", "responder", "admin")),
+) -> SosVerificationRecord:
+    """Append a human-reported verification input; this does not change SOS state or dispatch tasking."""
+    if settings.demo_mode:
+        record = record_demo_sos_verification(
+            str(sos_id), payload.category, payload.source_role, payload.contact_method,
+            payload.source_observed_at.isoformat() if payload.source_observed_at else None,
+            payload.note, payload.reference_number, str(actor.id), actor.role,
+        )
+        if record is None:
+            raise HTTPException(status_code=404, detail="SOS not found")
+        await manager.publish("lgu:sos", {"event": "sos.verification_recorded", "sos_id": str(sos_id), "record": record})
+        return SosVerificationRecord(**record)
+    if session is None:
+        raise HTTPException(status_code=503, detail="database unavailable")
+    exists = await session.scalar(text("SELECT 1 FROM cfr.sos_requests WHERE id = :sos_id"), {"sos_id": str(sos_id)})
+    if exists is None:
+        raise HTTPException(status_code=404, detail="SOS not found")
+    row = (await session.execute(text("""
+        INSERT INTO cfr.sos_verification_records (
+            sos_id, category, source_role, contact_method, source_observed_at, note,
+            reference_number, recorded_by_user_id, recorded_by_role
+        ) VALUES (
+            :sos_id, :category, :source_role, :contact_method, :source_observed_at, :note,
+            :reference_number, :actor_id, :actor_role
+        ) RETURNING id, sos_id, category, source_role, contact_method, source_observed_at, note,
+                    reference_number, recorded_by_user_id, recorded_by_role, recorded_at, decision_limit
+    """), {
+        "sos_id": str(sos_id), "category": payload.category, "source_role": payload.source_role,
+        "contact_method": payload.contact_method, "source_observed_at": payload.source_observed_at,
+        "note": payload.note, "reference_number": payload.reference_number,
+        "actor_id": str(actor.id), "actor_role": actor.role,
+    })).mappings().one()
+    await session.commit()
+    await write_audit_event(session, actor=actor, action="sos.verification_recorded", resource_type="sos_request", resource_id=str(sos_id), metadata={"category": payload.category, "contact_method": payload.contact_method})
+    record = SosVerificationRecord(**dict(row))
+    await manager.publish("lgu:sos", {"event": "sos.verification_recorded", "sos_id": str(sos_id), "record": record.model_dump(mode="json")})
+    return record
 
 
 @router.websocket("/ws/lgu")

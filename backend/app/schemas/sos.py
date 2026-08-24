@@ -83,6 +83,36 @@ class SosStatusUpdate(BaseModel):
     note: str | None = Field(default=None, max_length=500)
 
 
+class SosVerificationCreate(BaseModel):
+    category: str = Field(pattern=r"^(location_callback|barangay_contact|field_report|official_source|other)$")
+    source_role: str = Field(min_length=2, max_length=120)
+    contact_method: str = Field(min_length=2, max_length=80)
+    source_observed_at: datetime | None = None
+    note: str = Field(min_length=5, max_length=1000)
+    reference_number: str | None = Field(default=None, max_length=160)
+
+
+class SosVerificationRecord(BaseModel):
+    id: UUID
+    sos_id: UUID
+    category: str
+    source_role: str
+    contact_method: str
+    source_observed_at: datetime | None = None
+    note: str
+    reference_number: str | None = None
+    recorded_by_user_id: UUID | None = None
+    recorded_by_role: str | None = None
+    recorded_at: datetime
+    decision_limit: str
+
+
+class SosVerificationSnapshot(BaseModel):
+    generated_at: datetime
+    source: str
+    records: list[SosVerificationRecord]
+
+
 class RoutePoint(BaseModel):
     latitude: float
     longitude: float

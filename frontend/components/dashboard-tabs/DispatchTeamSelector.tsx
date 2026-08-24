@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { RecommendationResponse, ResponseGroup, SosIncident } from "../../lib/api";
+import { focusFirst, isolateBackground, trapFocus } from "./dialogFocus";
 
 function formatAge(timestamp: string) {
   const minutes = Math.max(0, Math.floor((Date.now() - new Date(timestamp).getTime()) / 60000));
@@ -21,45 +22,67 @@ function estimateEta(team: ResponseGroup, incident: SosIncident) {
   };
 }
 
-export function DispatchTeamSelector({ teams, incident, recommendation, loading, onSelect, onClose }: {
+export function DispatchTeamSelector({ teams, incident, recommendation, loading, onSelect, onClose, returnFocusTarget }: {
   teams: ResponseGroup[];
   incident: SosIncident;
   recommendation: RecommendationResponse | null;
   loading: boolean;
   onSelect: (team: ResponseGroup) => void;
   onClose: () => void;
+  returnFocusTarget?: HTMLElement | null;
 }) {
   const [query, setQuery] = useState("");
   const [availability, setAvailability] = useState<"available" | "limited" | "assigned" | "all">("available");
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const returnFocusRef = useRef<HTMLElement | null>(returnFocusTarget || (typeof document === "undefined" ? null : document.activeElement as HTMLElement | null));
   const filtered = useMemo(() => teams.filter((team) => {
     const matchesAvailability = availability === "all" || team.availability === availability;
     const terms = `${team.name} ${team.call_sign} ${team.vehicle_or_asset} ${team.specialties.join(" ")}`.toLowerCase();
     return matchesAvailability && terms.includes(query.trim().toLowerCase());
   }), [availability, query, teams]);
 
+  useEffect(() => {
+    const restoreBackground = isolateBackground(dialogRef.current);
+    focusFirst(dialogRef.current, searchRef.current);
+    return () => {
+      restoreBackground();
+      window.requestAnimationFrame(() => returnFocusRef.current?.isConnected && returnFocusRef.current.focus());
+    };
+  }, []);
+
   if (typeof document === "undefined") return null;
 
   return createPortal(
     <div
+      ref={dialogRef}
+      data-dispatch-team-selector="true"
       className="fixed inset-0 z-[70] overflow-y-auto bg-slate-950/75 p-3 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
-      aria-label="Dispatch team selector"
+      aria-labelledby="dispatch-team-selector-title"
+      aria-describedby="dispatch-team-selector-limit"
       onClick={(event) => event.stopPropagation()}
       onPointerDown={(event) => event.stopPropagation()}
+      onKeyDown={(event) => {
+        if (event.key === "Escape") {
+          event.preventDefault(); event.stopPropagation(); onClose(); return;
+        }
+        trapFocus(event.nativeEvent, dialogRef.current);
+      }}
     >
       <div className="mx-auto my-8 max-w-3xl rounded-2xl border border-orange-400/50 bg-slate-900 p-5 shadow-2xl">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="m-0 text-[10px] font-bold tracking-[.2em] text-orange-300">DISPATCH TEAM SELECTION</p>
-            <h2 className="m-0 mt-1 text-xl font-semibold text-white">Available teams near the reported incident</h2>
-            <p className="mb-0 mt-2 max-w-2xl text-xs leading-5 text-slate-300">Location-based ETA is recalculated from each reported team position to the incident coordinates. It is a planning estimate, not a live route, route-clearance, access, or field-safety finding.</p>
+            <h2 id="dispatch-team-selector-title" className="m-0 mt-1 text-xl font-semibold text-white">Available teams near the reported incident</h2>
+            <p id="dispatch-team-selector-limit" className="mb-0 mt-2 max-w-2xl text-xs leading-5 text-slate-300">Location-based ETA is recalculated from each reported team position to the incident coordinates. It is a planning estimate, not a live route, route-clearance, access, or field-safety finding.</p>
           </div>
           <button type="button" onClick={onClose} className="rounded-lg border border-white/15 px-3 py-2 text-sm text-slate-200">Close</button>
         </div>
 
         <div className="mt-4 grid gap-2 sm:grid-cols-[minmax(0,1fr)_180px]">
-          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search team, asset, call sign, or specialty" className="rounded-lg border border-white/15 bg-slate-950 px-3 py-2 text-sm text-white" />
+          <input ref={searchRef} aria-label="Search dispatch teams" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search team, asset, call sign, or specialty" className="rounded-lg border border-white/15 bg-slate-950 px-3 py-2 text-sm text-white" />
           <select aria-label="Dispatch team availability filter" value={availability} onChange={(event) => setAvailability(event.target.value as typeof availability)} className="rounded-lg border border-white/15 bg-slate-950 px-3 py-2 text-sm text-white">
             <option value="available">Available & ready</option>
             <option value="limited">Limited</option>

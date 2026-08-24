@@ -457,6 +457,85 @@ def test_demo_metrics_follow_sos_state_and_invalid_transition_is_rejected() -> N
     assert invalid.status_code == 409
 
 
+def test_false_alarm_and_resolution_require_human_entered_reasons() -> None:
+    created = client.post(
+        "/v1/sos",
+        json={
+            "device_public_id": "closure-reason-regression",
+            "emergency_type": "MEDICAL",
+            "message": "Closure-reason regression report.",
+            "latitude": 11.1264,
+            "longitude": 125.3892,
+            "accuracy_meters": 12,
+            "client_occurred_at": "2026-08-12T10:20:00Z",
+            "channel": "internet",
+        },
+    )
+    assert created.status_code == 201
+    sos_id = created.json()["id"]
+
+    missing_false_alarm_reason = client.patch(f"/v1/sos/{sos_id}/status", json={"status": "false_alarm"})
+    assert missing_false_alarm_reason.status_code == 422
+    assert "human-entered reason" in missing_false_alarm_reason.json()["detail"]
+
+    false_alarm = client.patch(f"/v1/sos/{sos_id}/status", json={"status": "false_alarm", "note": "Reporter confirmed this test signal was not an emergency."})
+    assert false_alarm.status_code == 200
+    assert false_alarm.json()["status"] == "false_alarm"
+
+    resolution_created = client.post(
+        "/v1/sos",
+        json={
+            "device_public_id": "resolution-reason-regression",
+            "emergency_type": "MEDICAL",
+            "message": "Resolution-reason regression report.",
+            "latitude": 11.1264,
+            "longitude": 125.3892,
+            "accuracy_meters": 12,
+            "client_occurred_at": "2026-08-12T10:20:00Z",
+            "channel": "internet",
+        },
+    )
+    assert resolution_created.status_code == 201
+    resolution_sos_id = resolution_created.json()["id"]
+    assert client.patch(f"/v1/sos/{resolution_sos_id}/status", json={"status": "acknowledged", "note": "Coordinator verified the report."}).status_code == 200
+    demo_data.update_demo_sos_status(resolution_sos_id, "dispatched")
+
+    missing_resolution_reason = client.patch(f"/v1/sos/{resolution_sos_id}/status", json={"status": "resolved"})
+    assert missing_resolution_reason.status_code == 422
+    resolved = client.patch(f"/v1/sos/{resolution_sos_id}/status", json={"status": "resolved", "note": "Coordinator recorded reported task completion for follow-up review."})
+    assert resolved.status_code == 200
+    assert resolved.json()["status"] == "resolved"
+
+
+def test_sos_verification_evidence_is_recorded_without_mutating_status() -> None:
+    login = client.post("/v1/auth/demo-login", json={"role": "dispatcher", "display_name": "Verification desk"})
+    assert login.status_code == 200
+    headers = {"Authorization": f"Bearer {login.json()['access_token']}"}
+    sos_id = client.get("/v1/dashboard/summary").json()["sos"][0]["id"]
+    original_status = client.get("/v1/dashboard/summary").json()["sos"][0]["status"]
+
+    created = client.post(
+        f"/v1/sos/{sos_id}/verification-records",
+        headers=headers,
+        json={
+            "category": "barangay_contact",
+            "source_role": "Barangay focal person",
+            "contact_method": "radio relay",
+            "note": "Focal person repeated the reported household location; conditions remain unverified.",
+            "reference_number": "DRRM-VERIFY-001",
+        },
+    )
+    assert created.status_code == 201
+    assert created.json()["sos_id"] == sos_id
+    assert created.json()["recorded_by_role"] == "dispatcher"
+    assert "not proof of field safety" in created.json()["decision_limit"]
+
+    snapshot = client.get(f"/v1/sos/{sos_id}/verification-records")
+    assert snapshot.status_code == 200
+    assert snapshot.json()["records"][0]["id"] == created.json()["id"]
+    assert client.get("/v1/dashboard/summary").json()["sos"][0]["status"] == original_status
+
+
 def test_demo_assignment_notifications_retry_acknowledge_and_audit() -> None:
     login = client.post("/v1/auth/demo-login", json={"role": "dispatcher", "display_name": "Demo dispatcher"})
     assert login.status_code == 200

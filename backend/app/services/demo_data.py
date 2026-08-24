@@ -90,6 +90,7 @@ DEMO_NOTIFICATIONS: list[dict] = []
 DEMO_DISPATCH_ASSIGNMENTS: list[dict] = []
 DEMO_FACILITY_VERIFICATIONS: list[dict] = []
 DEMO_INCIDENTS: list[dict] = []
+DEMO_SOS_VERIFICATIONS: list[dict] = []
 
 
 def _incident_events(incident_id: str) -> list[dict]:
@@ -106,6 +107,37 @@ def demo_incidents() -> dict:
         record["events"] = _incident_events(item["id"])
         records.append(record)
     return {"generated_at": datetime.now(timezone.utc).isoformat(), "source": "demo-seed", "incidents": records}
+
+
+def demo_sos_verifications(sos_id: str) -> dict:
+    records = [deepcopy(item) for item in DEMO_SOS_VERIFICATIONS if item["sos_id"] == sos_id]
+    records.sort(key=lambda item: item["recorded_at"], reverse=True)
+    return {"generated_at": datetime.now(timezone.utc).isoformat(), "source": "demo-seed", "records": records}
+
+
+def record_demo_sos_verification(
+    sos_id: str,
+    category: str,
+    source_role: str,
+    contact_method: str,
+    source_observed_at: str | None,
+    note: str,
+    reference_number: str | None,
+    actor_user_id: str | None,
+    actor_role: str | None,
+) -> dict | None:
+    if not any(item["id"] == sos_id for item in DEMO_SOS_QUEUE):
+        return None
+    record = {
+        "id": str(uuid4()), "sos_id": sos_id, "category": category, "source_role": source_role,
+        "contact_method": contact_method, "source_observed_at": source_observed_at, "note": note,
+        "reference_number": reference_number, "recorded_by_user_id": actor_user_id, "recorded_by_role": actor_role,
+        "recorded_at": datetime.now(timezone.utc).isoformat(),
+        "decision_limit": "This is an operator-recorded verification input, not proof of field safety, dispatch authority, route clearance, or incident validity.",
+    }
+    DEMO_SOS_VERIFICATIONS.insert(0, record)
+    record_demo_audit(actor_user_id=actor_user_id, actor_role=actor_role, action="sos.verification_recorded", resource_type="sos_request", resource_id=sos_id, metadata={"category": category, "contact_method": contact_method})
+    return deepcopy(record)
 
 
 def create_demo_incident_from_sos(sos_id: str, summary: str | None, follow_up_owner: str | None, follow_up_due_at: str | None, actor_user_id: str | None, actor_role: str | None) -> dict | None:

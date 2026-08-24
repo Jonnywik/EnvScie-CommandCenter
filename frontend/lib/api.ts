@@ -151,6 +151,23 @@ export type IncidentRecord = {
 
 export type IncidentSnapshot = { generated_at: string; source: "demo-seed" | "database"; incidents: IncidentRecord[] };
 
+export type SosVerificationCategory = "location_callback" | "barangay_contact" | "field_report" | "official_source" | "other";
+export type SosVerificationRecord = {
+  id: string;
+  sos_id: string;
+  category: SosVerificationCategory;
+  source_role: string;
+  contact_method: string;
+  source_observed_at?: string | null;
+  note: string;
+  reference_number?: string | null;
+  recorded_by_user_id?: string | null;
+  recorded_by_role?: UserIdentity["role"] | null;
+  recorded_at: string;
+  decision_limit: string;
+};
+export type SosVerificationSnapshot = { generated_at: string; source: string; records: SosVerificationRecord[] };
+
 export type DispatchTeam = {
   id: string;
   name: string;
@@ -844,6 +861,21 @@ export function createIncidentFromSos(sosId: string, payload: { summary?: string
 
 export function transitionIncident(incidentId: string, payload: { action: IncidentAction; note: string; follow_up_owner?: string; follow_up_due_at?: string }) {
   return request<IncidentRecord>(`/incidents/${encodeURIComponent(incidentId)}/transition`, { method: "POST", body: JSON.stringify(payload) });
+}
+
+export function getSosVerificationRecords(sosId: string) {
+  return request<SosVerificationSnapshot>(`/sos/${encodeURIComponent(sosId)}/verification-records`);
+}
+
+export function createSosVerificationRecord(sosId: string, payload: {
+  category: SosVerificationCategory;
+  source_role: string;
+  contact_method: string;
+  source_observed_at?: string;
+  note: string;
+  reference_number?: string;
+}) {
+  return request<SosVerificationRecord>(`/sos/${encodeURIComponent(sosId)}/verification-records`, { method: "POST", body: JSON.stringify(payload) });
 }
 
 export function getOperations() {

@@ -627,3 +627,12 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Enforce one pending, confirmed, acknowledged, or escalated dispatch assignment per SOS across database and demo paths.
 - [x] Surface the existing proposal in Triage Queue and block a second team-selection action until human cancellation or closure.
 - [x] Add regression coverage, hosted validation, documentation, and GitHub synchronization for duplicate-proposal prevention.
+
+## Approved Incidents workspace improvement roadmap
+- [x] Establish shared incident-workboard data boundaries and current workflow contracts without duplicating the dispatch lifecycle.
+- [x] Harden Triage Drawer and dispatch-selector focus behavior, Escape hierarchy, focus restoration, and in-flight mutation protection.
+- [x] Require an explicit reason and dependency review for SOS false-alarm and resolved transitions while preserving human authority.
+- [x] Add Live SOS sorting, active-filter visibility, clear-filter recovery, false-alarm review, and compact mobile triage metadata.
+- [x] Add a unified selected-incident workboard with required-next-action context, durable verification evidence, and safe closure dependencies.
+- [x] Add freshness, ownership, handover, communications, and decision-input context without treating any record as proof of field safety or delivery.
+- [x] Add regression, browser, responsive, accessibility, demo/live-parity, and safety-boundary validation; document and synchronize the release.

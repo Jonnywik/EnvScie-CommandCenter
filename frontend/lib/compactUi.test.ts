@@ -14,6 +14,9 @@ const workspaceSource = [
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/IncidentTriage.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/IncidentCommandRecord.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/DispatchTeamSelector.tsx"), "utf8"),
+  readFileSync(resolve(process.cwd(), "components/dashboard-tabs/TriageDrawer.tsx"), "utf8"),
+  readFileSync(resolve(process.cwd(), "components/dashboard-tabs/LiveSosQueue.tsx"), "utf8"),
+  readFileSync(resolve(process.cwd(), "components/dashboard-tabs/IncidentWorkboard.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/FleetSafety.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/Intelligence.tsx"), "utf8"),
 ].join("\n");
@@ -24,6 +27,19 @@ describe("compact operational interface", () => {
     expect(dashboardSource).not.toContain("⌨ Quick keys");
     expect(dashboardSource).toContain("<h1>{pageMeta[tab].title}</h1>");
     expect(dashboardSource).toContain("↻ Refresh");
+  });
+
+  it("keeps incident closure, verification, queue recovery, and nested dialogs human-controlled", () => {
+    expect(workspaceSource).toContain('aria-modal="true"');
+    expect(workspaceSource).toContain("trapFocus");
+    expect(workspaceSource).toContain("Confirm {pendingTransition");
+    expect(workspaceSource).toContain("Reason for this transition");
+    expect(workspaceSource).toContain("Clear filters");
+    expect(workspaceSource).toContain("false_alarm");
+    expect(workspaceSource).toContain("Incident workboard");
+    expect(workspaceSource).toContain("Record reported verification input");
+    expect(workspaceSource).toContain("does not establish field safety");
+    expect(stylesSource).toContain(".mobile-triage-meta");
   });
 
   it("hides guide-only descriptions while preserving critical manual-intake safety context", () => {
