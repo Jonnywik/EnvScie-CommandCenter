@@ -595,3 +595,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Build the responsive Incidents command record and high-volume inbox without replacing the existing triage safeguards.
 - [x] Add human closure, follow-up ownership, re-open rules, and shift-handover visibility without implicit cancellation or safety claims.
 - [x] Add regression coverage, production validation, documentation, and GitHub synchronization for the Incidents workspace release.
+
+## Dispatch team selection interaction
+- [x] Audit the existing triage recommendation cards and response-group availability contract for a safe selectable-team panel.
+- [x] Add a responsive team-selection panel that lists eligible available groups and creates only a pending dispatch proposal.
+- [x] Add regression coverage, hosted validation, documentation, and GitHub synchronization while preserving explicit human dispatch confirmation.

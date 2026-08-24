@@ -175,6 +175,11 @@ describe("compact operational interface", () => {
     expect(workspaceSource).toContain("Open dispatch confirmation");
     expect(workspaceSource).toContain("I confirm I am recording a human decision to task this group");
     expect(workspaceSource).toContain("Record reported unit acknowledgement");
+    expect(workspaceSource).toContain("Select dispatch team");
+    expect(workspaceSource).toContain("Select an available response group");
+    expect(workspaceSource).toContain("This creates a pending proposal");
+    expect(workspaceSource).toContain("No currently available, ready group is reported");
+    expect(workspaceSource).toContain("getResponseGroups");
     expect(workspaceSource).toContain("Immutable lifecycle timeline");
     expect(workspaceSource).toContain("Notification receipt is separate from a responder’s reported dispatch acknowledgement");
     expect(workspaceSource).toContain("getDispatchLifecycle");
