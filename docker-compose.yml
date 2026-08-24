@@ -1,20 +1,68 @@
 services:
   postgis:
     image: postgis/postgis:16-3.4
+    restart: unless-stopped
     environment:
-      POSTGRES_DB: cfr
-      POSTGRES_USER: cfr
-      POSTGRES_PASSWORD: cfr
-    ports:
-      - "5432:5432"
+      POSTGRES_DB: ${POSTGRES_DB:?Set POSTGRES_DB in .env.production}
+      POSTGRES_USER: ${POSTGRES_USER:?Set POSTGRES_USER in .env.production}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env.production}
     volumes:
       - cfr_postgis_data:/var/lib/postgresql/data
-      - ./db/001_init.sql:/docker-entrypoint-initdb.d/001_init.sql:ro
+      - ./db:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U cfr -d cfr"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
       timeout: 5s
       retries: 12
+
+  api:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL in .env.production}
+      DEMO_MODE: ${DEMO_MODE:?Set DEMO_MODE=false after completing all release gates}
+      ENVIRONMENT: ${ENVIRONMENT:-production}
+      CORS_ORIGINS: ${CORS_ORIGINS:?Set the reviewed dashboard origin in .env.production}
+      AUTH_SECRET: ${AUTH_SECRET:?Inject AUTH_SECRET through the approved secret manager}
+      SMS_GATEWAY_SHARED_SECRET: ${SMS_GATEWAY_SHARED_SECRET:?Inject SMS_GATEWAY_SHARED_SECRET through the approved secret manager}
+      ALERT_FEED_URL: ${ALERT_FEED_URL:-}
+      ALERT_FEED_SOURCE_NAME: ${ALERT_FEED_SOURCE_NAME:-PAGASA}
+      ALERT_FEED_TIMEOUT_SECONDS: ${ALERT_FEED_TIMEOUT_SECONDS:-8}
+      ALERT_STALE_AFTER_SECONDS: ${ALERT_STALE_AFTER_SECONDS:-900}
+      SMS_PROVIDER_URL: ${SMS_PROVIDER_URL:-}
+      SMS_PROVIDER_API_KEY: ${SMS_PROVIDER_API_KEY:-}
+      SMS_SENDER_ID: ${SMS_SENDER_ID:-BALANGIGA-DRRM}
+      PUSH_PROVIDER_URL: ${PUSH_PROVIDER_URL:-}
+      PUSH_PROVIDER_API_KEY: ${PUSH_PROVIDER_API_KEY:-}
+      NOTIFICATION_RETRY_MAX: ${NOTIFICATION_RETRY_MAX:-3}
+    depends_on:
+      postgis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/v1/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        API_PROXY_TARGET: ${API_PROXY_TARGET:-http://api:8000}
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000').then((response) => { if (!response.ok) process.exit(1) })"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
 
 volumes:
   cfr_postgis_data:

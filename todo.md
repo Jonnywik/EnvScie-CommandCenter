@@ -727,3 +727,9 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Define non-destructive audit criteria for data minimization, access control, auditability, export control, retention, and deletion readiness.
 - [x] Inspect the current demo configuration, data contracts, audit/export paths, and documented governance safeguards.
 - [x] Run compliance-oriented regression checks, document findings and remediation prerequisites, and synchronize the mock-audit record.
+
+## Deployment-readiness finalization
+- [x] Review the release candidate, deployment assets, configuration safeguards, and unresolved production activation gates.
+- [x] Run final backend, frontend, endpoint-integration, build, and recovery validation.
+- [x] Prepare a deployment handoff checklist, environment inventory, release evidence, and controlled activation steps.
+- [x] Synchronize the final release candidate and provide deployment handoff instructions.
