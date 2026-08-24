@@ -652,3 +652,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Audit all workspace headers, title treatments, utility controls, and mobile behavior to define the shared contract.
 - [x] Implement a reusable header that aligns Command Center identity, workspace context, appearance control, navigation, and operator status across every tab.
 - [x] Validate dark/light appearance, narrow-screen containment, keyboard access, and consistent rendering across all workspaces; document and synchronize the release.
+
+## Command Center remaining backlog review
+- [x] Audit outstanding delivery-ledger items, source-level placeholders, migrations, and operational decision limits without changing behavior.
+- [x] Rank remaining workflow, accessibility, data-quality, notification, map, and production-readiness gaps with clear ownership and acceptance criteria.
+- [x] Deliver and synchronize a remediation-ready backlog review without implementing the proposed work.
