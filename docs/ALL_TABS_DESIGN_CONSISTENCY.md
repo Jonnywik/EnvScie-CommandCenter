@@ -71,4 +71,10 @@ Both the reusable Command Center header emblem and the legacy dashboard brand ma
 
 Desktop checks confirmed a `42 px` emblem anchored at the left edge of the full-width header. The compact Incidents capture confirmed the smaller `34 px` emblem remains fully visible beside the appearance and operator controls at the narrow header width, while the navigation rail continues below the header without horizontal document overflow.
 
+## Circular transparent emblem standardization
+
+The former Map header rendered the shared emblem with `object-fit: contain`, revealing the square source-image frame behind the circular crest. The legacy header, reusable Command Center header, and Command Map header now share one image treatment: circular clipping, transparent background, centered `cover` fit, and no border.
+
+Hosted visual checks confirmed the same circular transparent emblem on Command Map, Live SOS, Field Response Fleet Safety, Provincial Weather, and DRRMO Intelligence. The compact Intelligence capture confirms the circular treatment is retained at `320 px`, with the emblem, return control, appearance control, and operator badge remaining contained above the scrollable navigation rail.
+
 Verification only used navigation and inspection controls. It did not invoke SOS, dispatch, notification, communications, route, resource, field-safety, or public-warning actions.

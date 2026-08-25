@@ -780,3 +780,9 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Stabilize the emblem position and dimensions without displacing responsive header controls.
 - [x] Validate stable placement across primary workspace tabs and narrow screen widths.
 - [x] Add regression coverage, document the correction, and synchronize the update.
+
+## All-tabs circular emblem and visual regression standardization
+- [x] Audit header emblem containers and image-fit treatment across Command Map, shared workspaces, and legacy tabs.
+- [x] Apply the circular transparent emblem treatment to every header variant.
+- [x] Run desktop and mobile visual regression checks across every primary navigation tab for layout and emblem consistency.
+- [x] Add regression coverage, document the all-tabs correction, and synchronize the update.
