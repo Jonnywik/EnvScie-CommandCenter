@@ -838,3 +838,14 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Run the full Command Center frontend suite, production build, and responsive map-overlay containment audit.
 - [x] Verify SMS payload encoding, signed gateway receipt handling, duplicate suppression, Command Center intake, and resident-safe status feedback without sending a live SMS.
 - [x] Document validation evidence, any verified layout correction, and remaining LGU provider receipt requirements.
+
+## Project paper presentation
+- [x] Distill the completed project paper into a concise, evidence-based presentation narrative and visual storyboard.
+- [x] Create a professional slide deck covering the resident mobile app, Command Center, shared workflow, limitations, and recommendations.
+- [x] Present the finished deck and record the delivery result.
+
+## Balangiga LGU and NGO Command Center implementation plan
+- [x] Research Balangiga’s disaster, economic, governance, and community context using authoritative current sources.
+- [x] Design the LGU operating model, NGO partnership structure, data-governance controls, and political safeguards for the Command Center.
+- [x] Create a phased, resource-aware roadmap with risks, decision gates, and practical implementation steps.
+- [x] Deliver the referenced implementation plan and record the result.
