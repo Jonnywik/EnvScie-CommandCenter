@@ -300,7 +300,7 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain(".command-map-topbar.command-center-header { position: fixed; z-index: 60; top: 0; left: 0; width: 100vw;");
     expect(stylesSource).toContain(".command-center-header-center { min-width: 0; }");
     expect(stylesSource).toContain(".dashboard-shell > .topbar { min-height: 78px;");
-    expect(stylesSource).toContain(".dashboard-shell:has(.unified-command-sidebar.is-collapsed) > .topbar");
+    expect(stylesSource).toContain(".dashboard-shell > .topbar { width: 100%; margin-left: 0; }");
     expect(stylesSource).toContain(".command-map-workspace .command-map-shell { height: calc(100dvh - var(--command-map-header-height) - 59px);");
     expect(stylesSource).toContain(".functional-view-selector");
     expect(stylesSource).toContain(".google-operational-map");

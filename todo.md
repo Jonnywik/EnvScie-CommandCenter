@@ -768,3 +768,9 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Remove the unnecessary content offset while retaining the full-width header and below-header sidebar.
 - [x] Validate Incidents and Community Safety layouts at desktop and mobile widths without overflow.
 - [x] Add regression coverage, document the correction, and synchronize the update.
+
+## Final legacy-shell standardization and overflow check
+- [x] Inspect legacy dashboard header/sidebar structure and verify the Incidents and Community Safety CSS application.
+- [x] Apply the full-width-header and top-shifted-sidebar contract to all remaining legacy workspace tabs.
+- [x] Run desktop and mobile UI checks across all workspace screens for overflow and layout inconsistencies.
+- [x] Add regression coverage, document the final correction, and synchronize the update.

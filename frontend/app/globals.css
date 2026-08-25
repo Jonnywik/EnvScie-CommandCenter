@@ -104,8 +104,7 @@ button { cursor: pointer; }
 .dashboard-shell > .topbar .connection-pill { padding: 5px 9px; }
 .dashboard-shell > .topbar .avatar { width: 34px; height: 34px; border: 1px solid rgba(130, 226, 225, .38); background: linear-gradient(135deg, #125f6a, #0d3444); color: #efffff; font-size: 10px; }
 @media (min-width: 981px) {
-  .dashboard-shell:has(.unified-command-sidebar.is-collapsed) > .topbar { width: calc(100% - 68px); margin-left: 68px; }
-  .dashboard-shell:not(:has(.unified-command-sidebar.is-collapsed)) > .topbar { width: calc(100% - 248px); margin-left: 248px; }
+  .dashboard-shell > .topbar { width: 100%; margin-left: 0; }
 }
 
 /* Shared Command Center workspace header: identity, workspace context, live state, and operator utilities. */

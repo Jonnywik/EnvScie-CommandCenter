@@ -59,4 +59,10 @@ The Legacy Incidents and Community Safety screens retained an unnecessary `32 px
 
 Hosted checks confirmed that Live SOS and Provincial Weather now begin cleanly below the shared header and beside the navigation rail. At `320 px`, `375 px`, and `430 px`, Community Safety continues to place the header above the horizontal navigation rail without document-level horizontal overflow.
 
+## Legacy topbar full-width correction
+
+The legacy dashboard shell previously constrained its `topbar` width to the space beside the collapsed or expanded sidebar. That rule created the split header shown in the reported Incidents and Community Safety reference. The topbar now has `width: 100%` and `margin-left: 0` at desktop widths, while the workspace navigation remains in normal flow below it.
+
+The layout was rechecked on Command Map, Live SOS, Provincial Weather, Field Response Fleet Safety, and DRRMO Intelligence. The primary workspace screens remained contained without new visual overflow; Community Safety was also measured at `320 px`, `375 px`, and `430 px`, with the header directly above its horizontally scrollable navigation rail and no document-level horizontal overflow.
+
 Verification only used navigation and inspection controls. It did not invoke SOS, dispatch, notification, communications, route, resource, field-safety, or public-warning actions.
