@@ -294,11 +294,11 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain("--command-map-header-clearance: 94px");
     expect(stylesSource).toContain("--command-map-dock-width: 68px");
     expect(stylesSource).toContain("--command-map-mobile-radar-reserve: 132px");
-    expect(stylesSource).toContain(".command-map-topbar.command-center-header { position: relative;");
+    expect(stylesSource).toContain(".command-map-topbar.command-center-header { position: fixed; z-index: 60; top: 0; left: 0; width: 100vw;");
     expect(stylesSource).toContain(".command-center-header-center { min-width: 0; }");
     expect(stylesSource).toContain(".dashboard-shell > .topbar { min-height: 78px;");
     expect(stylesSource).toContain(".dashboard-shell:has(.unified-command-sidebar.is-collapsed) > .topbar");
-    expect(stylesSource).toContain(".command-map-workspace .command-map-shell { height: calc(100dvh - 64px);");
+    expect(stylesSource).toContain(".command-map-workspace .command-map-shell { height: calc(100dvh - var(--command-map-header-height) - 59px);");
     expect(stylesSource).toContain(".functional-view-selector");
     expect(stylesSource).toContain(".google-operational-map");
     expect(stylesSource).toContain(".command-map-basemap-controls");
@@ -358,7 +358,10 @@ describe("compact operational interface", () => {
   });
 
   it("keeps narrow Command Map controls contained with safe space for the responder radar", () => {
-    expect(stylesSource).toContain(".command-map-shell { min-height: 100dvh; overflow: hidden;");
+    expect(stylesSource).toContain("--command-map-header-height: 78px;");
+    expect(stylesSource).toContain(".command-map-workspace > .unified-command-sidebar { min-height: calc(100dvh - var(--command-map-header-height)); margin-top: var(--command-map-header-height); }");
+    expect(stylesSource).toContain(".command-map-topbar.command-center-header { position: fixed; z-index: 60; top: 0; left: 0; width: 100vw;");
+    expect(stylesSource).toContain(".command-map-workspace .command-map-shell { height: calc(100dvh - var(--command-map-header-height) - 59px);");
     expect(stylesSource).toContain(".responder-radar { position: fixed");
     expect(stylesSource).toContain(".command-map-layer-drawer, .command-map-triage-drawer { width: min(258px, calc(100vw - 72px)); max-height: calc(100dvh - var(--command-map-mobile-layer-top) - var(--command-map-mobile-radar-reserve) - var(--command-map-mobile-overlay-gutter));");
     expect(stylesSource).toContain(".map-pin-sheet { top: auto; bottom: var(--command-map-mobile-radar-reserve);");

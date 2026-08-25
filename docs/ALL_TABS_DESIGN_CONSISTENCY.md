@@ -41,4 +41,10 @@ Automated regression coverage now verifies the common navigation/header contract
 
 All reviewed normal-text pairs meet or exceed the `4.5:1` WCAG AA contrast threshold used by the regression suite. The review covers shared shell elements; status and semantic alert colors retain their operational meanings and are not repurposed as neutral interface text.
 
+## Full-width Command Map header correction
+
+The Command Map header now occupies the entire top edge of the workspace rather than beginning after the navigation rail. The standardized sidebar begins below the fixed header, preserving the same map controls and workspace navigation without consuming header width.
+
+The corrected layout was compared with the supplied wide reference and checked in the hosted workspace. At `320 px`, `375 px`, and `430 px`, the header spans the viewport from left to right, the sidebar begins directly below it, header controls remain within bounds, and the document reports no horizontal overflow. The compact navigation rail remains horizontally scrollable when its workspace items exceed the available width.
+
 Verification only used navigation and inspection controls. It did not invoke SOS, dispatch, notification, communications, route, resource, field-safety, or public-warning actions.

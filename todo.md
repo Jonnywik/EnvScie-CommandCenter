@@ -750,3 +750,9 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Add automated regression coverage for the shared shell contract required by future workspace additions.
 - [x] Review and, where required, improve dark and light shared header/sidebar contrast for accessibility.
 - [x] Run final responsive and accessibility validation, document results, and synchronize the refinement.
+
+## Full-width header and sidebar reflow correction
+- [x] Inspect the supplied wide-header reference and reproduce the header/sidebar overflow condition.
+- [x] Reflow the shared shell so the header occupies the full available width above the sidebar on compact layouts.
+- [x] Validate contained navigation, header controls, and no document-level horizontal overflow at representative widths.
+- [x] Add regression coverage, document the correction, and synchronize the update.
