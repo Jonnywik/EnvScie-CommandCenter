@@ -797,3 +797,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Isolate the Live SOS horizontal overflow reproduced in Firefox and WebKit at 768 px and 900 px.
 - [x] Correct the tablet layout without changing SOS workflows or operational records.
 - [x] Re-run the multi-engine tablet audit and confirm all primary tabs are overflow-free.
+
+## Mobile alert-system integration verification
+- [x] Inventory mobile alert UI, notification registration, offline persistence, and alert-fetch integration.
+- [x] Trace backend alert delivery, SMS/push provider configuration, and test coverage without triggering notifications.
+- [x] Confirm the current integration status and document unconfigured production prerequisites.
