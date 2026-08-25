@@ -47,4 +47,10 @@ The Command Map header now occupies the entire top edge of the workspace rather 
 
 The corrected layout was compared with the supplied wide reference and checked in the hosted workspace. At `320 px`, `375 px`, and `430 px`, the header spans the viewport from left to right, the sidebar begins directly below it, header controls remain within bounds, and the document reports no horizontal overflow. The compact navigation rail remains horizontally scrollable when its workspace items exceed the available width.
 
+## All-tabs layout standardization
+
+The same full-width fixed-header and below-header sidebar contract now applies to Command Map, Incidents, Field Response, Community Safety, and Intelligence. This removes the prior distinction in which some contextual workspaces began their headers beside the navigation rail.
+
+On desktop, each workspace keeps a full-width operational header across the top and begins its vertical rail directly below. On compact screens, each workspace keeps the header at the top and reflows the same navigation into an overflow-safe horizontal rail beneath it. Hosted visual checks confirmed the shared arrangement on Command Map, Live SOS, Field Response Fleet Safety, Provincial Weather, and DRRMO Intelligence; the compact Intelligence check confirmed a `64 px` header directly above a `59 px` sidebar rail with no horizontal document overflow at `320 px`, `375 px`, or `430 px`.
+
 Verification only used navigation and inspection controls. It did not invoke SOS, dispatch, notification, communications, route, resource, field-safety, or public-warning actions.

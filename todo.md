@@ -756,3 +756,9 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Reflow the shared shell so the header occupies the full available width above the sidebar on compact layouts.
 - [x] Validate contained navigation, header controls, and no document-level horizontal overflow at representative widths.
 - [x] Add regression coverage, document the correction, and synchronize the update.
+
+## All-tabs header and sidebar shell standardization
+- [x] Audit each workspace against the full-width-header and below-header-sidebar layout contract.
+- [x] Apply a shared shell layout so every workspace header precedes the standardized sidebar.
+- [x] Validate consistent desktop and mobile behavior for Command Map, Incidents, Field Response, Community Safety, and Intelligence.
+- [x] Add regression coverage, document the all-tabs layout contract, and synchronize the update.
