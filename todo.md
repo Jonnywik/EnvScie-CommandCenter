@@ -807,3 +807,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Verify official mobile push platform requirements and current application boundaries.
 - [x] Design phased device enrollment, consent, backend delivery, offline fallback, and provider validation work.
 - [x] Deliver a step-by-step implementation plan with iOS and Android release gates.
+
+## Command Map incident-inspector containment correction
+- [x] Inspect the SOS alert inspector, close control, sidebar boundary, and responsive positioning that cause the reported overlap.
+- [x] Correct containment, stacking, and responsive offsets without changing incident operations.
+- [x] Validate desktop and narrow layouts, add regression coverage, and synchronize the correction.

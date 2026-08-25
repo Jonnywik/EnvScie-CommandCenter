@@ -36,4 +36,11 @@ describe("shared Command Center shell contrast", () => {
     expect(stylesSource).toContain("color: #486874;");
     expect(stylesSource).toContain("color: #0b6570;");
   });
+
+  it("constrains Command Map information-sheet content inside the panel track", () => {
+    expect(stylesSource).toContain(".map-pin-sheet { position: absolute;");
+    expect(stylesSource).toContain("grid-template-columns: minmax(0, 1fr);");
+    expect(stylesSource).toContain(".map-pin-sheet-heading { display: flex;");
+    expect(stylesSource).toContain(".map-pin-sheet-actions .tiny-button { min-width: 0; max-width: 100%; overflow-wrap: anywhere;");
+  });
 });
