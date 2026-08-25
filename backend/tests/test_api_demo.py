@@ -1,10 +1,14 @@
-from fastapi.testclient import TestClient
-
+import hashlib
+import hmac
+import time
 from datetime import datetime
+
+from fastapi.testclient import TestClient
 
 from app.main import app
 from app.api import routes
 from app.services.responder_safety import build_responder_safety_assessment
+from app.services.sos_codec import encode_sms_payload
 from app.services.weather_feeds import parse_pagasa_visayas_forecast
 from app.services import demo_data
 
@@ -533,6 +537,61 @@ def test_confirmed_command_center_dispatch_updates_mobile_sos_without_claiming_a
         json={"action": "cancel", "note": "Regression cleanup after confirming resident lifecycle feedback."},
     )
     assert cleanup.status_code == 200
+
+
+def test_signed_sms_gateway_receipt_enters_command_center_once_and_returns_resident_safe_status(monkeypatch) -> None:
+    gateway_secret = "sms-receipt-regression-secret"
+    monkeypatch.setattr(routes.settings, "sms_gateway_shared_secret", gateway_secret)
+    sender_phone = "+639171234567"
+    device_public_id = "cfrsms01"
+    nonce = "smsreceipt001"
+    message = encode_sms_payload(
+        device_public_id=device_public_id,
+        nonce=nonce,
+        emergency_type="MED",
+        latitude=11.1264,
+        longitude=125.3892,
+        accuracy_meters=25,
+        client_epoch=int(time.time()),
+    )
+    signature = hmac.new(gateway_secret.encode("utf-8"), f"{sender_phone}\n{message}".encode("utf-8"), hashlib.sha256).hexdigest()
+
+    rejected = client.post(
+        "/v1/sos/sms",
+        headers={"X-Gateway-Signature": "invalid"},
+        json={"sender_phone": sender_phone, "message": message},
+    )
+    assert rejected.status_code == 401
+
+    accepted = client.post(
+        "/v1/sos/sms",
+        headers={"X-Gateway-Signature": signature},
+        json={"sender_phone": sender_phone, "message": message},
+    )
+    duplicate = client.post(
+        "/v1/sos/sms",
+        headers={"X-Gateway-Signature": signature},
+        json={"sender_phone": sender_phone, "message": message},
+    )
+    assert accepted.status_code == 201
+    assert duplicate.status_code == 201
+    assert duplicate.json()["id"] == accepted.json()["id"]
+    assert accepted.json()["channel"] == "sms"
+
+    sos_id = accepted.json()["id"]
+    summary = client.get("/v1/dashboard/summary")
+    assert sum(item["id"] == sos_id for item in summary.json()["sos"]) == 1
+    incident = next(item for item in summary.json()["sos"] if item["id"] == sos_id)
+    assert incident["channel"] == "sms"
+
+    resident = client.get(
+        "/v1/sos/resident-status",
+        params={"device_public_id": device_public_id, "client_nonce": nonce},
+    )
+    assert resident.status_code == 200
+    assert resident.json()["status"] == "received"
+    assert "waiting for Command Center acknowledgement" in resident.json()["resident_message"]
+    assert "responder arrival" in resident.json()["decision_limit"]
 
 
 def test_coordinator_can_record_manual_emergency_and_it_enters_triage_queue() -> None:

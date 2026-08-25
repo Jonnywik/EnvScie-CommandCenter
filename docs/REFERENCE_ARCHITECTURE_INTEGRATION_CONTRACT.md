@@ -34,6 +34,12 @@ The resident-facing mobile experience must preserve a durable offline outbox, di
 
 The new regression coverage verifies device enrollment, idempotent mobile SOS creation, one-record visibility in the Command Center queue, resident-status redaction, acknowledgement feedback, confirmed-dispatch feedback, and the absence of responder-arrival claims. The complete backend suite passed with **51 tests**, the Command Center suite passed with **29 tests**, the optimized Next.js production build passed its lint and type checks, and the Expo mobile TypeScript check passed.
 
+## SMS Fallback Receipt Verification
+
+The SMS fallback is validated without transmitting a carrier message. The test suite creates a compact `CFR1` payload, signs the exact sender-and-payload envelope with a controlled gateway secret, and submits it to `POST /v1/sos/sms`. The API rejects an invalid signature, accepts a valid signed receipt, suppresses a duplicate receipt through the same device-and-nonce correlation, makes the one accepted SOS visible to the Command Center summary, and returns resident-safe `received` feedback through `GET /v1/sos/resident-status`.
+
+This verifies the **application-side LGU receipt workflow**, not a carrier or handset delivery. A real LGU receipt exists only when the configured inbound SMS gateway authenticates and forwards the handset-originated payload to the API. Until that happens, the mobile application continues to present the action as **SMS handoff recorded · awaiting LGU receipt**.
+
 ## Safety Constraints
 
 The current environment remains demo/training-bound. Provider transport, push receipt, gateway receipt, Command Center acknowledgement, response-team acknowledgement, dispatch confirmation, route clearance, and field arrival are distinct facts. None authorizes a public warning or proves resident safety, evacuation compliance, field conditions, or medical outcome.

@@ -2065,8 +2065,6 @@ async def receive_sms_sos(
     session: AsyncSession | None = Depends(get_db),
 ) -> SosResponse:
     _verify_gateway_signature(payload.sender_phone, payload.message, x_gateway_signature)
-    if session is None:
-        raise HTTPException(status_code=503, detail="database unavailable")
     try:
         decoded = decode_sms_payload(payload.message)
     except PayloadError as exc:
@@ -2078,6 +2076,26 @@ async def receive_sms_sos(
 
     client_occurred_at = datetime.fromtimestamp(decoded.client_epoch, tz=timezone.utc)
     dedupe_key = _dedupe_key("mobile_sos", decoded.device_public_id, decoded.nonce)
+    if settings.demo_mode:
+        incident = record_demo_sos(
+            emergency_type=decoded.emergency_type,
+            channel="sms",
+            latitude=decoded.latitude,
+            longitude=decoded.longitude,
+            accuracy_meters=decoded.accuracy_meters,
+            message="Received through SMS fallback",
+            device_public_id=decoded.device_public_id,
+            client_nonce=decoded.nonce,
+        )
+        await manager.publish("lgu:sos", {"event": "sos.received", **incident})
+        return SosResponse(
+            id=UUID(incident["id"]),
+            status=incident["status"],
+            received_at=datetime.fromisoformat(incident["received_at"]),
+            channel="sms",
+        )
+    if session is None:
+        raise HTTPException(status_code=503, detail="database unavailable")
     sos_id, status, received_at = await _persist_sos(
         session,
         device_public_id=decoded.device_public_id,

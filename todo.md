@@ -833,3 +833,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Trace the current Expo mobile, FastAPI backend, and Command Center flows against those contracts.
 - [x] Implement and test safe fixes for verified connection gaps without weakening offline SOS, SMS fallback, LGU approval, or audit boundaries.
 - [x] Document integration coverage, production boundaries, and synchronization evidence.
+
+## Command Map regression and SMS fallback receipt verification
+- [x] Run the full Command Center frontend suite, production build, and responsive map-overlay containment audit.
+- [x] Verify SMS payload encoding, signed gateway receipt handling, duplicate suppression, Command Center intake, and resident-safe status feedback without sending a live SMS.
+- [x] Document validation evidence, any verified layout correction, and remaining LGU provider receipt requirements.
