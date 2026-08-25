@@ -95,10 +95,10 @@ button { cursor: pointer; }
 .avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--mint); display: grid; place-items: center; font-weight: 700; color: var(--navy); border: 3px solid rgba(255,255,255,.22); }
 
 /* Legacy contextual pages retain their content but share the same visual shell as the dedicated workspaces. */
-.dashboard-shell > .topbar { min-height: 78px; padding: 10px 24px; border-bottom: 2px solid rgba(78, 228, 193, .62); box-shadow: 0 14px 30px rgba(0, 0, 0, .2); }
+.dashboard-shell > .topbar { position: sticky; z-index: 60; top: 0; min-height: 78px; padding: 10px 24px; border-bottom: 2px solid rgba(78, 228, 193, .62); box-shadow: 0 14px 30px rgba(0, 0, 0, .2); }
 .dashboard-shell > .topbar::after { display: none; }
 .dashboard-shell > .topbar .brand { min-width: 270px; gap: 11px; }
-.dashboard-shell > .topbar .brand-mark { width: 42px; height: 42px; box-shadow: none; }
+.dashboard-shell > .topbar .brand-mark { width: 42px; min-width: 42px; max-width: 42px; height: 42px; flex: 0 0 42px; box-shadow: none; }
 .dashboard-shell > .topbar .brand-title { font-size: 14px; letter-spacing: -.02em; }
 .dashboard-shell > .topbar .brand-subtitle { color: #86bdc3; font-size: 9px; font-weight: 800; letter-spacing: .13em; }
 .dashboard-shell > .topbar .connection-pill { padding: 5px 9px; }
@@ -110,7 +110,7 @@ button { cursor: pointer; }
 /* Shared Command Center workspace header: identity, workspace context, live state, and operator utilities. */
 .command-center-header { width: calc(100% + 24px); min-height: 78px; margin: -12px -12px 16px; display: grid; grid-template-columns: minmax(270px, 1fr) auto minmax(330px, 1fr); align-items: center; gap: 22px; padding: 10px 24px; border: 0; border-bottom: 2px solid rgba(78, 228, 193, .62); border-radius: 0; background: linear-gradient(102deg, #071923, #0b2535 72%, #0d4150); box-shadow: 0 14px 30px rgba(0, 0, 0, .2); backdrop-filter: blur(18px); }
 .command-center-header-brand { display: flex; min-width: 0; align-items: center; gap: 11px; }
-.command-center-header-brand img { width: 42px; height: 42px; flex: 0 0 auto; object-fit: contain; }
+.command-center-header-brand img { width: 42px; min-width: 42px; max-width: 42px; height: 42px; flex: 0 0 42px; object-fit: contain; }
 .command-center-header-brand > div { min-width: 0; display: grid; gap: 3px; }
 .command-center-header-brand strong { overflow: hidden; color: #efffff; font-family: 'Space Grotesk'; font-size: 14px; letter-spacing: -.02em; text-overflow: ellipsis; white-space: nowrap; }
 .command-center-header-brand span, .command-center-header-brand time { color: #86bdc3; font-size: 9px; font-weight: 800; letter-spacing: .13em; line-height: 1.35; text-transform: uppercase; }
@@ -885,7 +885,7 @@ html[data-appearance="light"] .field-response-fleet .bg-white { background: #fff
   .workspace-navigation-shell:not(.command-map-workspace) { --workspace-header-height: 64px; }
   .command-center-header { width: calc(100% + 28px); margin: -14px -14px 12px; grid-template-columns: minmax(0, 1fr) auto; gap: 7px; padding: 8px 10px; }
   .command-center-header-brand { gap: 8px; }
-  .command-center-header-brand img { width: 34px; height: 34px; }
+  .command-center-header-brand img { width: 34px; min-width: 34px; max-width: 34px; height: 34px; flex-basis: 34px; }
   .command-center-header-brand strong { font-size: 12px; }
   .command-center-header-brand span { display: none; }
   .command-center-header-actions { gap: 6px; }
@@ -910,7 +910,7 @@ html[data-appearance="light"] .field-response-fleet .bg-white { background: #fff
 @media (max-width: 360px) {
   .dashboard-shell > .topbar { min-height: 64px; padding: 8px 12px; gap: 8px; }
   .dashboard-shell > .topbar .brand { min-width: 0; flex: 1 1 auto; gap: 8px; }
-  .dashboard-shell > .topbar .brand-mark { width: 36px; height: 36px; }
+  .dashboard-shell > .topbar .brand-mark { width: 36px; min-width: 36px; max-width: 36px; height: 36px; flex-basis: 36px; }
   .dashboard-shell > .topbar .brand-title { font-size: 12px; }
   .dashboard-shell > .topbar .brand-subtitle { display: none; }
   .dashboard-shell > .topbar .topbar-actions { flex: 0 0 auto; gap: 6px; }

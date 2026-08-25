@@ -65,4 +65,10 @@ The legacy dashboard shell previously constrained its `topbar` width to the spac
 
 The layout was rechecked on Command Map, Live SOS, Provincial Weather, Field Response Fleet Safety, and DRRMO Intelligence. The primary workspace screens remained contained without new visual overflow; Community Safety was also measured at `320 px`, `375 px`, and `430 px`, with the header directly above its horizontally scrollable navigation rail and no document-level horizontal overflow.
 
+## Shared header emblem stabilization
+
+Both the reusable Command Center header emblem and the legacy dashboard brand mark now use an explicit non-shrinking flex basis with matching minimum and maximum dimensions. The legacy topbar is also sticky at the top of the workspace, so its emblem remains visible and aligned while the dashboard content scrolls.
+
+Desktop checks confirmed a `42 px` emblem anchored at the left edge of the full-width header. The compact Incidents capture confirmed the smaller `34 px` emblem remains fully visible beside the appearance and operator controls at the narrow header width, while the navigation rail continues below the header without horizontal document overflow.
+
 Verification only used navigation and inspection controls. It did not invoke SOS, dispatch, notification, communications, route, resource, field-safety, or public-warning actions.

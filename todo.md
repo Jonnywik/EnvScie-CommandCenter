@@ -774,3 +774,9 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Apply the full-width-header and top-shifted-sidebar contract to all remaining legacy workspace tabs.
 - [x] Run desktop and mobile UI checks across all workspace screens for overflow and layout inconsistencies.
 - [x] Add regression coverage, document the final correction, and synchronize the update.
+
+## Shared-header emblem stabilization
+- [x] Inspect current emblem placement across the shared and legacy header variants.
+- [x] Stabilize the emblem position and dimensions without displacing responsive header controls.
+- [x] Validate stable placement across primary workspace tabs and narrow screen widths.
+- [x] Add regression coverage, document the correction, and synchronize the update.
