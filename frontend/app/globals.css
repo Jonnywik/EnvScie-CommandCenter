@@ -901,6 +901,16 @@ html[data-appearance="light"] .field-response-fleet .bg-white { background: #fff
   .workboard-form, .workboard-timeline, .workboard-empty-timeline { padding: 11px; }
   .workboard-card .tiny-button { width: 100%; min-height: 38px; }
 }
+@media (max-width: 360px) {
+  .dashboard-shell > .topbar { min-height: 64px; padding: 8px 12px; gap: 8px; }
+  .dashboard-shell > .topbar .brand { min-width: 0; flex: 1 1 auto; gap: 8px; }
+  .dashboard-shell > .topbar .brand-mark { width: 36px; height: 36px; }
+  .dashboard-shell > .topbar .brand-title { font-size: 12px; }
+  .dashboard-shell > .topbar .brand-subtitle { display: none; }
+  .dashboard-shell > .topbar .topbar-actions { flex: 0 0 auto; gap: 6px; }
+  .dashboard-shell > .topbar .appearance-toggle { width: 36px; height: 32px; }
+  .dashboard-shell > .topbar .avatar { width: 30px; height: 30px; }
+}
 
 /* Command Map (Live Operations): map-first interface overhaul. */
 .command-map-workspace { --command-map-header-top: 16px; --command-map-header-clearance: 94px; --command-map-dock-width: 68px; --command-map-dock-gutter: 14px; --command-map-mobile-overlay-top: 151px; --command-map-mobile-layer-top: 104px; --command-map-mobile-radar-reserve: 132px; --command-map-mobile-overlay-gutter: 10px; height: 100dvh; overflow: hidden; background: #061117; }

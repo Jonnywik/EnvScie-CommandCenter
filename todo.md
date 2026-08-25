@@ -744,3 +744,9 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Standardize reusable shell components and scoped design tokens without changing tab-specific workflows or operational safety semantics.
 - [x] Validate desktop and mobile consistency in dark and light appearance, regression coverage, and hosted workspace rendering.
 - [x] Document and synchronize the shared design-consistency refinement.
+
+## Shared shell responsive accessibility verification
+- [x] Verify standardized sidebar, header, and contextual-navigation containment at representative small mobile widths.
+- [x] Add automated regression coverage for the shared shell contract required by future workspace additions.
+- [x] Review and, where required, improve dark and light shared header/sidebar contrast for accessibility.
+- [x] Run final responsive and accessibility validation, document results, and synchronize the refinement.

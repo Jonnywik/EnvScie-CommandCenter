@@ -55,6 +55,18 @@ describe("compact operational interface", () => {
     expect(stylesSource).toContain(".command-center-return { max-width: 118px;");
   });
 
+  it("keeps every workspace on the shared shell contract at desktop and mobile widths", () => {
+    expect(workspaceSource).toContain("CommandCenterNavigation");
+    expect(workspaceSource).toContain("CommandCenterHeader");
+    expect(workspaceSource).toContain('title="Command Map / Live Operations"');
+    expect(dashboardSource).toContain("<CommandCenterNavigation");
+    expect(stylesSource).toContain(".workspace-navigation-shell { display: flex;");
+    expect(stylesSource).toContain(".sidebar .unified-command-navigation { display: flex;");
+    expect(stylesSource).toContain("@media (max-width: 360px)");
+    expect(stylesSource).toContain(".dashboard-shell > .topbar { min-height: 64px;");
+    expect(stylesSource).toContain(".functional-view-selector { overflow-x: auto;");
+  });
+
   it("hides guide-only descriptions while preserving critical manual-intake safety context", () => {
     expect(stylesSource).toContain("Compact operational mode");
     expect(stylesSource).toContain(".page-heading > div > p");

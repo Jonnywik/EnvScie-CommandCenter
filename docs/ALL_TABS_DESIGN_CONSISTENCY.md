@@ -24,4 +24,21 @@ The legacy Community Safety contextual views retain their content components, bu
 
 Desktop visual checks covered Command Map, Incidents, Field Response, Community Safety, and Intelligence. A narrow-screen check recorded a `495 px` common header, a `467 px` contextual selector and panel, and no horizontal overflow. The frontend test suite passed 19 tests, TypeScript validation completed successfully, and the optimized Next.js production build completed successfully. No browser console error was reported during the checks.
 
+## Responsive and accessibility follow-up
+
+The shared shell was rechecked at `320 px`, `375 px`, and `430 px` CSS widths. In each case, the document had no horizontal overflow; the standardized sidebar remained a horizontally scrollable rail; and the header controls stayed within the visible shell. A specific `320 px` legacy-header adjustment now compacts the identity treatment and retains both the appearance and profile controls inside the viewport.
+
+Automated regression coverage now verifies the common navigation/header contract, compact `320 px` behavior, overflow-safe contextual selectors, and six shared header/sidebar color pairs. The complete frontend suite now contains 27 passing tests.
+
+| Shared surface | Appearance | Foreground / background | Reviewed contrast ratio |
+| --- | --- | --- | --- |
+| Header title | Dark | `#efffff` / `#071923` | `17.42:1` |
+| Sidebar label | Dark | `#c3dadd` / `#071923` | `12.28:1` |
+| Header utility | Dark | `#d9ffff` / `#0a3942` | `11.75:1` |
+| Header title | Light | `#0b2535` / `#f7fcfa` | `15.23:1` |
+| Sidebar label | Light | `#486874` / `#ffffff` | `5.99:1` |
+| Utility control | Light | `#0b6570` / `#ffffff` | `6.75:1` |
+
+All reviewed normal-text pairs meet or exceed the `4.5:1` WCAG AA contrast threshold used by the regression suite. The review covers shared shell elements; status and semantic alert colors retain their operational meanings and are not repurposed as neutral interface text.
+
 Verification only used navigation and inspection controls. It did not invoke SOS, dispatch, notification, communications, route, resource, field-safety, or public-warning actions.
