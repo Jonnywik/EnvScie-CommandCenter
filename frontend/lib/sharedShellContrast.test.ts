@@ -43,4 +43,11 @@ describe("shared Command Center shell contrast", () => {
     expect(stylesSource).toContain(".map-pin-sheet-heading { display: flex;");
     expect(stylesSource).toContain(".map-pin-sheet-actions .tiny-button { min-width: 0; max-width: 100%; overflow-wrap: anywhere;");
   });
+
+  it("suppresses competing Command Map overlays while a utility drawer is open", () => {
+    expect(stylesSource).toContain(".command-map-shell:has(.command-map-utility-panels .command-map-layer-rail.is-open) .map-pin-sheet");
+    expect(stylesSource).toContain(".command-map-shell:has(.command-map-utility-panels .command-map-filter-rail.is-open) .map-control-dock");
+    expect(stylesSource).toContain(".command-map-shell:has(.command-map-utility-panels .official-facility-layer.is-open) .broadcast-fab");
+    expect(stylesSource).toContain("visibility: hidden; opacity: 0; pointer-events: none;");
+  });
 });

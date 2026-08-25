@@ -812,3 +812,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Inspect the SOS alert inspector, close control, sidebar boundary, and responsive positioning that cause the reported overlap.
 - [x] Correct containment, stacking, and responsive offsets without changing incident operations.
 - [x] Validate desktop and narrow layouts, add regression coverage, and synchronize the correction.
+
+## Command Map frontend regression and overlap audit
+- [x] Run the complete frontend test suite and production build after the SOS inspector containment correction.
+- [x] Inspect the SOS inspector, facility sheet, map controls, utility drawers, legend, and broadcast control for residual overlap at desktop and narrow widths.
+- [x] Document the regression and geometry findings, correct any verified issue, and synchronize the result.
