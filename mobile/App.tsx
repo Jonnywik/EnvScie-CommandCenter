@@ -2,12 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, Alert as RNAlert, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
 import NetInfo, { NetInfoState } from "@react-native-community/netinfo";
 import * as Location from "expo-location";
-import { encodeSmsPayload, getSafeRoute, handoffToSms, refreshSnapshot, submitSosOnline } from "./src/api";
-import { enqueueSos, readOutbox, readSnapshot, updateOutboxItem, writeSnapshot } from "./src/storage";
+import { encodeSmsPayload, getResidentSosStatus, getSafeRoute, handoffToSms, refreshSnapshot, registerMobileDevice, submitSosOnline } from "./src/api";
+import { enqueueSos, readOrCreateDevicePublicId, readOutbox, readSnapshot, updateOutboxItem, writeSnapshot } from "./src/storage";
 import { Alert, CachedSnapshot, Connectivity, EvacuationCenter, LocationFix, SosOutboxItem } from "./src/types";
 
 const LGU_SMS_NUMBER = process.env.EXPO_PUBLIC_LGU_SMS_NUMBER || "";
-const DEVICE_PUBLIC_ID = "balangiga-demo-device";
 
 type Tab = "home" | "map" | "centers" | "toolkit";
 
@@ -31,8 +30,15 @@ function AlertCard({ alert }: { alert: Alert }) {
   return <View style={styles.alertCard}><View style={styles.alertRow}><View style={[styles.severityBar, { backgroundColor: severityColor(alert.severity) }]} /><View style={{ flex: 1 }}><View style={styles.alertTop}><Text style={styles.alertTitle}>{alert.title}</Text><Text style={[styles.severityLabel, { color: severityColor(alert.severity) }]}>{alert.severity}</Text></View><Text style={styles.alertBody}>{alert.body}</Text><Text style={styles.sourceLabel}>{alert.source_name} · {relativeTime(alert.issued_at)}</Text></View></View></View>;
 }
 
+function sosStatusLabel(item: SosOutboxItem) {
+  if (item.transport === "sms" && !item.serverSosId) return "SMS handoff recorded · awaiting LGU receipt";
+  if (item.residentMessage) return item.residentMessage;
+  if (item.deliveryState === "sent") return "SOS submitted · waiting for Command Center acknowledgement";
+  return item.deliveryState;
+}
+
 function HomeScreen({ alerts, outbox, connectivity, lastSyncAt, onSos }: { alerts: Alert[]; outbox: SosOutboxItem[]; connectivity: Connectivity; lastSyncAt: string | null; onSos: () => void }) {
-  return <ScrollView contentContainerStyle={styles.screenContent}><ConnectionBanner connectivity={connectivity} lastSyncAt={lastSyncAt} /><View style={styles.hero}><Text style={styles.eyebrow}>BALANGIGA COMMUNITY SAFETY</Text><Text style={styles.heroTitle}>Stay informed. Move early. Ask for help.</Text><Text style={styles.heroCopy}>Verified local alerts and offline emergency tools for coastal and mountainous communities.</Text><Pressable style={styles.sosButton} onPress={onSos}><Text style={styles.sosButtonLabel}>SOS</Text><Text style={styles.sosButtonSub}>Hold or tap to request help</Text></Pressable></View><View style={styles.sectionHeader}><Text style={styles.sectionTitle}>Verified alerts</Text><Text style={styles.sectionMeta}>{alerts.length} available</Text></View>{alerts.map((alert) => <AlertCard key={alert.id} alert={alert} />)}{outbox.length > 0 && <View style={styles.outboxCard}><Text style={styles.outboxTitle}>Emergency request status</Text>{outbox.slice(0, 2).map((item) => <View key={item.localId} style={styles.outboxRow}><Text style={styles.outboxType}>{item.emergencyType}</Text><Text style={styles.outboxStatus}>{item.deliveryState}</Text></View>)}</View>}</ScrollView>;
+  return <ScrollView contentContainerStyle={styles.screenContent}><ConnectionBanner connectivity={connectivity} lastSyncAt={lastSyncAt} /><View style={styles.hero}><Text style={styles.eyebrow}>BALANGIGA COMMUNITY SAFETY</Text><Text style={styles.heroTitle}>Stay informed. Move early. Ask for help.</Text><Text style={styles.heroCopy}>Verified local alerts and offline emergency tools for coastal and mountainous communities.</Text><Pressable style={styles.sosButton} onPress={onSos}><Text style={styles.sosButtonLabel}>SOS</Text><Text style={styles.sosButtonSub}>Hold or tap to request help</Text></Pressable></View><View style={styles.sectionHeader}><Text style={styles.sectionTitle}>Verified alerts</Text><Text style={styles.sectionMeta}>{alerts.length} available</Text></View>{alerts.map((alert) => <AlertCard key={alert.id} alert={alert} />)}{outbox.length > 0 && <View style={styles.outboxCard}><Text style={styles.outboxTitle}>Emergency request status</Text>{outbox.slice(0, 2).map((item) => <View key={item.localId} style={styles.outboxRow}><Text style={styles.outboxType}>{item.emergencyType}</Text><Text style={styles.outboxStatus}>{sosStatusLabel(item)}</Text></View>)}</View>}</ScrollView>;
 }
 
 function MapScreen({ centers }: { centers: EvacuationCenter[] }) {
@@ -73,6 +79,11 @@ export default function App() {
     let active = true;
     const synchronize = async () => {
       try {
+        await registerMobileDevice(await readOrCreateDevicePublicId());
+      } catch {
+        // A registration refresh must not block verified alerts, SOS retries, or the offline fallback.
+      }
+      try {
         const value = await refreshSnapshot();
         if (active) {
           setSnapshot(value);
@@ -96,6 +107,21 @@ export default function App() {
           });
         }
       }
+      const delivered = await readOutbox();
+      for (const item of delivered.filter((candidate) => candidate.deliveryState !== "queued" && candidate.deliveryState !== "sending" && candidate.deliveryState !== "failed")) {
+        if (!active) return;
+        try {
+          const status = await getResidentSosStatus(item);
+          await updateOutboxItem(item.localId, {
+            serverSosId: status.id,
+            deliveryState: status.status,
+            residentMessage: status.resident_message,
+            lastStatusAt: status.last_status_at,
+          });
+        } catch {
+          // A missing status remains meaningful for an SMS handoff until a verified gateway accepts it.
+        }
+      }
       if (active) setOutbox(await readOutbox());
     };
     void synchronize();
@@ -116,8 +142,9 @@ export default function App() {
       setLocation(nextLocation);
       const item: SosOutboxItem = {
         localId: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-        nonce: Math.random().toString(36).slice(2, 8),
-        devicePublicId: DEVICE_PUBLIC_ID,
+        nonce: `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`,
+        devicePublicId: await readOrCreateDevicePublicId(),
+        transport,
         emergencyType: "TRAPPED",
         shortMessage: "Resident requested emergency assistance.",
         location: nextLocation,
@@ -133,14 +160,14 @@ export default function App() {
         const response = await submitSosOnline(item);
         await updateOutboxItem(item.localId, { deliveryState: "sent", serverSosId: response.id });
         setOutbox((current) => current.map((value) => value.localId === item.localId ? { ...value, deliveryState: "sent", serverSosId: response.id } : value));
-        RNAlert.alert("SOS sent", "The LGU API accepted your emergency request. Keep your phone available.");
+        RNAlert.alert("SOS submitted", "The LGU API accepted your emergency request. It is waiting for Command Center acknowledgement. Keep your phone available.");
       } else {
         if (!LGU_SMS_NUMBER) throw new Error("EXPO_PUBLIC_LGU_SMS_NUMBER is not configured.");
         const payload = encodeSmsPayload(item);
         await handoffToSms(item, LGU_SMS_NUMBER);
         await updateOutboxItem(item.localId, { deliveryState: "sent" });
         setOutbox((current) => current.map((value) => value.localId === item.localId ? { ...value, deliveryState: "sent" } : value));
-        RNAlert.alert("SOS handed to SMS", `Keep this reference if asked: ${payload.slice(0, 28)}…`);
+        RNAlert.alert("SMS handoff opened", `The SMS handoff does not confirm LGU receipt. Keep this reference if asked: ${payload.slice(0, 28)}…`);
       }
     } catch (error) {
       if (queuedItem) {

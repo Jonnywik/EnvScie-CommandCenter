@@ -22,6 +22,7 @@ class AlertSeverity(StrEnum):
 
 class SosCreate(BaseModel):
     device_public_id: str | None = Field(default=None, max_length=128)
+    client_nonce: str | None = Field(default=None, min_length=8, max_length=64, pattern=r"^[A-Za-z0-9_-]+$")
     emergency_type: str = Field(min_length=1, max_length=32)
     message: str | None = Field(default=None, max_length=240)
     latitude: float = Field(ge=-90, le=90)
@@ -29,6 +30,13 @@ class SosCreate(BaseModel):
     accuracy_meters: float | None = Field(default=None, ge=0)
     client_occurred_at: datetime
     channel: SosChannel = SosChannel.internet
+
+
+class MobileDeviceRegistration(BaseModel):
+    """Minimal device correlation record; it intentionally carries no resident profile or location."""
+
+    device_public_id: str = Field(min_length=8, max_length=128, pattern=r"^[A-Za-z0-9_-]+$")
+    platform: str = Field(pattern=r"^(android|ios|unknown)$")
 
 
 class CoordinatorEmergencyCreate(BaseModel):
@@ -76,6 +84,19 @@ class SosResponse(BaseModel):
     status: str
     received_at: datetime
     channel: SosChannel
+
+
+class SosResidentStatus(BaseModel):
+    """Privacy-bounded SOS lifecycle feedback for the originating mobile device."""
+
+    id: UUID
+    status: str
+    received_at: datetime
+    acknowledged_at: datetime | None = None
+    resolved_at: datetime | None = None
+    last_status_at: datetime
+    resident_message: str
+    decision_limit: str
 
 
 class SosStatusUpdate(BaseModel):

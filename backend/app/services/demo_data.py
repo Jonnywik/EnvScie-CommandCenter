@@ -207,9 +207,23 @@ def record_demo_sos(
     longitude: float,
     accuracy_meters: float | None,
     message: str | None,
+    device_public_id: str | None = None,
+    client_nonce: str | None = None,
     severity: str = "critical",
     barangay: str = "Location pending verification",
 ) -> dict:
+    if device_public_id and client_nonce:
+        existing = next(
+            (
+                item
+                for item in DEMO_SOS_QUEUE
+                if item.get("device_public_id") == device_public_id
+                and item.get("client_nonce") == client_nonce
+            ),
+            None,
+        )
+        if existing is not None:
+            return deepcopy(existing)
     now = datetime.now(timezone.utc)
     incident = {
         "id": str(uuid4()),
@@ -225,6 +239,8 @@ def record_demo_sos(
         },
         "received_at": now.isoformat(),
         "summary": message or "Resident requested emergency assistance.",
+        "device_public_id": device_public_id,
+        "client_nonce": client_nonce,
     }
     DEMO_SOS_QUEUE.insert(0, incident)
     return incident
@@ -238,7 +254,13 @@ def update_demo_sos_status(sos_id: str, status: str) -> dict | None:
                 return item
             if not is_valid_sos_transition(current, status):
                 raise ValueError(f"invalid SOS transition: {current} -> {status}")
+            now = datetime.now(timezone.utc).isoformat()
             item["status"] = status
+            item["last_status_at"] = now
+            if status == "acknowledged":
+                item["acknowledged_at"] = now
+            if status in {"resolved", "false_alarm"}:
+                item["resolved_at"] = now
             return item
     return None
 

@@ -61,10 +61,12 @@ from app.schemas.incidents import IncidentEvent, IncidentFromSosRequest, Inciden
 from app.schemas.notifications import AssignmentNotification, NotificationAcknowledgement, NotificationSnapshot
 from app.schemas.sos import (
     CoordinatorEmergencyCreate,
+    MobileDeviceRegistration,
     RoutePoint,
     SafeRouteResponse,
     SmsSosRequest,
     SosCreate,
+    SosResidentStatus,
     SosResponse,
     SosStatusUpdate,
     SosVerificationCreate,
@@ -98,6 +100,7 @@ from app.services.demo_data import (
     record_demo_audit,
     record_demo_operations_action,
     record_demo_sos,
+    DEMO_SOS_QUEUE,
     update_demo_resource_position,
     update_demo_sos_status,
     acknowledge_demo_notification,
@@ -199,6 +202,17 @@ def _dedupe_key(*parts: object) -> str:
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
+def _resident_sos_message(status: str) -> str:
+    messages = {
+        "received": "Your SOS was received by the system and is waiting for Command Center acknowledgement.",
+        "acknowledged": "The Command Center acknowledged your SOS. Keep your phone available for official follow-up.",
+        "dispatched": "Help coordination is in progress. This does not confirm responder arrival or field safety.",
+        "resolved": "The Command Center recorded this SOS as resolved. Use official emergency contacts if more help is needed.",
+        "false_alarm": "The Command Center recorded this SOS as not requiring further response. Contact the LGU if this is incorrect.",
+    }
+    return messages.get(status, "Your SOS status was updated. Keep your phone available for official follow-up.")
+
+
 def _verify_gateway_signature(
     sender_phone: str,
     message: str,
@@ -250,7 +264,7 @@ async def _persist_sos(
             ST_SetSRID(ST_MakePoint(:longitude, :latitude), 4326),
             :accuracy_meters, :client_occurred_at, :dedupe_key, :raw_payload, CAST(:metadata AS jsonb)
         )
-        ON CONFLICT (dedupe_key) DO UPDATE SET received_at = cfr.sos_requests.received_at
+        ON CONFLICT (dedupe_key) DO UPDATE SET dedupe_key = cfr.sos_requests.dedupe_key
         RETURNING id, status, received_at
         """
     )
@@ -866,6 +880,10 @@ async def transition_dispatch_lifecycle(
             group = next((item for item in demo_response_groups()["groups"] if item["id"] == assignment["group_id"]), None)
             if group is not None:
                 await send_assignment_notification(group, assignment["target_type"], assignment["target_id"], assignment["assignment_note"], actor)
+            if assignment["target_type"] == "sos_request":
+                sos = update_demo_sos_status(assignment["target_id"], "dispatched")
+                if sos is not None:
+                    await manager.publish("lgu:sos", {"event": "sos.status_changed", **sos, "note": "A confirmed dispatch record was created."})
         await manager.publish("lgu:dispatch_lifecycle", {"event": f"dispatch.{assignment['status']}", "assignment": assignment})
         return DispatchLifecycleAssignment(**assignment)
     if session is None:
@@ -909,10 +927,25 @@ async def transition_dispatch_lifecycle(
         INSERT INTO cfr.response_group_assignment_events (assignment_id, event_type, from_status, to_status, note, actor_user_id, actor_role)
         VALUES (:assignment_id, :event_type, :from_status, :to_status, :note, :actor_id, :actor_role)
     """), {"assignment_id": str(assignment_uuid), "event_type": f"dispatch.{next_status}", "from_status": current, "to_status": next_status, "note": payload.note, "actor_id": str(actor.id), "actor_role": actor.role})
+    sos_status_event: dict[str, Any] | None = None
     if payload.action == "confirm":
         await session.execute(text("UPDATE cfr.resource_units SET state = 'en_route', current_assignment = :assignment WHERE id = :group_id"), {"assignment": row["assignment_note"] or f"Confirmed dispatch to {row['target_type']} {row['target_id']}", "group_id": str(row["group_id"])})
         if row["target_type"] == "sos_request":
-            await session.execute(text("UPDATE cfr.sos_requests SET status = 'dispatched', updated_at = now() WHERE id = CAST(:target_id AS uuid) AND status = 'acknowledged'"), {"target_id": row["target_id"]})
+            sos_status_event = (await session.execute(text("""
+                UPDATE cfr.sos_requests
+                SET status = 'dispatched'
+                WHERE id = CAST(:target_id AS uuid) AND status = 'acknowledged'
+                RETURNING id, status::text AS status, received_at, channel::text AS channel
+            """), {"target_id": row["target_id"]})).mappings().first()
+            if sos_status_event is not None:
+                await session.execute(text("""
+                    INSERT INTO cfr.sos_status_events (sos_id, from_status, to_status, actor_user_id, note)
+                    VALUES (:sos_id, 'acknowledged', 'dispatched', :actor_id, :note)
+                """), {
+                    "sos_id": str(sos_status_event["id"]),
+                    "actor_id": str(actor.id),
+                    "note": payload.note or "A confirmed dispatch record was created.",
+                })
     if payload.action in {"cancel", "close"}:
         await session.execute(text("UPDATE cfr.resource_units SET state = 'ready', current_assignment = NULL WHERE id = :group_id"), {"group_id": str(row["group_id"])})
     await write_audit_event(session, actor=actor, action=f"dispatch.{next_status}", resource_type="response_group_assignment", resource_id=str(assignment_uuid), metadata={"from_status": current, "note": payload.note, "operator_confirmed": payload.operator_confirmed})
@@ -923,6 +956,15 @@ async def transition_dispatch_lifecycle(
         group_snapshot = await response_groups_snapshot(session)
         group = next(item for item in group_snapshot.groups if item.id == str(row["group_id"]))
         await send_assignment_notification(group, row["target_type"], row["target_id"], row["assignment_note"], actor, session=session, assignment_id=str(assignment_uuid))
+    if sos_status_event is not None:
+        await manager.publish("lgu:sos", {
+            "event": "sos.status_changed",
+            "sos_id": str(sos_status_event["id"]),
+            "status": sos_status_event["status"],
+            "channel": sos_status_event["channel"],
+            "received_at": sos_status_event["received_at"].isoformat(),
+            "note": payload.note or "A confirmed dispatch record was created.",
+        })
     await manager.publish("lgu:dispatch_lifecycle", {"event": f"dispatch.{next_status}", "assignment": assignment.model_dump(mode="json")})
     return assignment
 
@@ -1782,6 +1824,27 @@ async def evacuation_centers(session: AsyncSession | None = Depends(get_db)) -> 
     return [dict(row) for row in rows]
 
 
+@router.post("/mobile/devices", status_code=201)
+async def register_mobile_device(
+    payload: MobileDeviceRegistration,
+    session: AsyncSession | None = Depends(get_db),
+) -> dict[str, str]:
+    """Register or refresh a pseudonymous device reference used only for mobile SOS correlation."""
+    if settings.demo_mode:
+        return {"device_public_id": payload.device_public_id, "platform": payload.platform, "status": "registered", "mode": "demo"}
+    if session is None:
+        raise HTTPException(status_code=503, detail="database unavailable")
+    row = (await session.execute(text("""
+        INSERT INTO cfr.registered_devices (device_public_id, platform, last_seen_at)
+        VALUES (:device_public_id, :platform, now())
+        ON CONFLICT (device_public_id) DO UPDATE
+        SET platform = EXCLUDED.platform, last_seen_at = now()
+        RETURNING device_public_id, platform
+    """), {"device_public_id": payload.device_public_id, "platform": payload.platform})).mappings().one()
+    await session.commit()
+    return {"device_public_id": row["device_public_id"], "platform": row["platform"], "status": "registered", "mode": "live"}
+
+
 @router.post("/sos", response_model=SosResponse, status_code=201)
 async def receive_internet_sos(payload: SosCreate, session: AsyncSession | None = Depends(get_db)) -> SosResponse:
     if settings.demo_mode:
@@ -1792,6 +1855,8 @@ async def receive_internet_sos(payload: SosCreate, session: AsyncSession | None 
             longitude=payload.longitude,
             accuracy_meters=payload.accuracy_meters,
             message=payload.message,
+            device_public_id=payload.device_public_id,
+            client_nonce=payload.client_nonce,
         )
         await manager.publish("lgu:sos", {"event": "sos.received", **incident})
         return SosResponse(
@@ -1802,12 +1867,16 @@ async def receive_internet_sos(payload: SosCreate, session: AsyncSession | None 
         )
     if session is None:
         raise HTTPException(status_code=503, detail="database unavailable")
-    dedupe_key = _dedupe_key(
-        payload.device_public_id or "anonymous",
-        payload.emergency_type,
-        payload.latitude,
-        payload.longitude,
-        payload.client_occurred_at.isoformat(),
+    dedupe_key = (
+        _dedupe_key("mobile_sos", payload.device_public_id or "anonymous", payload.client_nonce)
+        if payload.client_nonce
+        else _dedupe_key(
+            payload.device_public_id or "anonymous",
+            payload.emergency_type,
+            payload.latitude,
+            payload.longitude,
+            payload.client_occurred_at.isoformat(),
+        )
     )
     sos_id, status, received_at = await _persist_sos(
         session,
@@ -1822,6 +1891,7 @@ async def receive_internet_sos(payload: SosCreate, session: AsyncSession | None 
         channel=payload.channel.value,
         raw_payload=None,
         dedupe_key=dedupe_key,
+        metadata={"client_nonce": payload.client_nonce} if payload.client_nonce else None,
     )
     await manager.publish("lgu:sos", {
         "event": "sos.received",
@@ -1834,6 +1904,69 @@ async def receive_internet_sos(payload: SosCreate, session: AsyncSession | None 
         "received_at": received_at.isoformat(),
     })
     return SosResponse(id=sos_id, status=status, received_at=received_at, channel=payload.channel)
+
+
+@router.get("/sos/resident-status", response_model=SosResidentStatus)
+async def resident_sos_status(
+    device_public_id: str = Query(min_length=3, max_length=128),
+    client_nonce: str = Query(min_length=8, max_length=64, pattern=r"^[A-Za-z0-9_-]+$"),
+    session: AsyncSession | None = Depends(get_db),
+) -> SosResidentStatus:
+    """Return lifecycle feedback to the originating device without exposing operational detail."""
+    decision_limit = (
+        "This status confirms only the recorded Command Center workflow state. "
+        "It does not confirm responder arrival, field safety, evacuation, or a medical outcome."
+    )
+    if settings.demo_mode:
+        incident = next(
+            (
+                item
+                for item in DEMO_SOS_QUEUE
+                if item.get("device_public_id") == device_public_id
+                and item.get("client_nonce") == client_nonce
+            ),
+            None,
+        )
+        if incident is None:
+            raise HTTPException(status_code=404, detail="SOS status is not available for this device request")
+        received_at = datetime.fromisoformat(incident["received_at"])
+        return SosResidentStatus(
+            id=UUID(incident["id"]),
+            status=incident["status"],
+            received_at=received_at,
+            acknowledged_at=datetime.fromisoformat(incident["acknowledged_at"]) if incident.get("acknowledged_at") else None,
+            resolved_at=datetime.fromisoformat(incident["resolved_at"]) if incident.get("resolved_at") else None,
+            last_status_at=datetime.fromisoformat(incident.get("last_status_at") or incident["received_at"]),
+            resident_message=_resident_sos_message(incident["status"]),
+            decision_limit=decision_limit,
+        )
+    if session is None:
+        raise HTTPException(status_code=503, detail="database unavailable")
+    row = (await session.execute(text("""
+        SELECT s.id, s.status::text AS status, s.received_at, s.acknowledged_at, s.resolved_at,
+               COALESCE(event.created_at, s.received_at) AS last_status_at
+        FROM cfr.sos_requests s
+        INNER JOIN cfr.registered_devices d ON d.id = s.device_id
+        LEFT JOIN LATERAL (
+            SELECT created_at
+            FROM cfr.sos_status_events
+            WHERE sos_id = s.id
+            ORDER BY created_at DESC
+            LIMIT 1
+        ) event ON TRUE
+        WHERE d.device_public_id = :device_public_id
+          AND s.metadata ->> 'client_nonce' = :client_nonce
+        ORDER BY s.received_at DESC
+        LIMIT 1
+    """), {"device_public_id": device_public_id, "client_nonce": client_nonce})).mappings().first()
+    if row is None:
+        raise HTTPException(status_code=404, detail="SOS status is not available for this device request")
+    return SosResidentStatus(
+        id=row["id"], status=row["status"], received_at=row["received_at"],
+        acknowledged_at=row["acknowledged_at"], resolved_at=row["resolved_at"],
+        last_status_at=row["last_status_at"], resident_message=_resident_sos_message(row["status"]),
+        decision_limit=decision_limit,
+    )
 
 
 @router.post("/sos/manual", response_model=SosResponse, status_code=201)
@@ -1944,7 +2077,7 @@ async def receive_sms_sos(
         raise HTTPException(status_code=422, detail="SMS SOS payload is outside the accepted time window")
 
     client_occurred_at = datetime.fromtimestamp(decoded.client_epoch, tz=timezone.utc)
-    dedupe_key = _dedupe_key("sms", payload.sender_phone, decoded.device_public_id, decoded.nonce)
+    dedupe_key = _dedupe_key("mobile_sos", decoded.device_public_id, decoded.nonce)
     sos_id, status, received_at = await _persist_sos(
         session,
         device_public_id=decoded.device_public_id,
@@ -1958,6 +2091,7 @@ async def receive_sms_sos(
         channel="sms",
         raw_payload=payload.message,
         dedupe_key=dedupe_key,
+        metadata={"client_nonce": decoded.nonce},
     )
     await manager.publish("lgu:sos", {
         "event": "sos.received",

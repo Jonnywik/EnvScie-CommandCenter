@@ -1,6 +1,6 @@
 export type Connectivity = "online" | "offline";
 export type Transport = "internet" | "sms" | "none";
-export type SosDeliveryState = "queued" | "sending" | "sent" | "acknowledged" | "failed";
+export type SosDeliveryState = "queued" | "sending" | "sent" | "received" | "acknowledged" | "dispatched" | "resolved" | "false_alarm" | "failed";
 
 export type Alert = {
   id: string;
@@ -35,6 +35,7 @@ export type SosOutboxItem = {
   localId: string;
   nonce: string;
   devicePublicId: string;
+  transport: Exclude<Transport, "none">;
   emergencyType: string;
   shortMessage?: string;
   location: LocationFix;
@@ -43,6 +44,8 @@ export type SosOutboxItem = {
   retryCount: number;
   lastErrorCode?: string;
   serverSosId?: string;
+  residentMessage?: string;
+  lastStatusAt?: string;
 };
 
 export type CachedSnapshot = {

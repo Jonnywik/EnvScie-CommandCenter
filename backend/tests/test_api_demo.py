@@ -407,6 +407,134 @@ def test_demo_sos_creation_and_triage() -> None:
     assert updated.json()["status"] == "acknowledged"
 
 
+def test_mobile_sos_is_idempotently_visible_to_command_center_and_returns_bounded_status() -> None:
+    payload = {
+        "device_public_id": "mobile-contract-device",
+        "client_nonce": "mobile-contract-nonce-001",
+        "emergency_type": "TRAPPED",
+        "message": "Resident needs assistance after floodwater entered the home.",
+        "latitude": 11.1264,
+        "longitude": 125.3892,
+        "accuracy_meters": 20,
+        "client_occurred_at": "2026-08-25T01:20:00Z",
+        "channel": "internet",
+    }
+
+    enrollment = client.post(
+        "/v1/mobile/devices",
+        json={"device_public_id": payload["device_public_id"], "platform": "android"},
+    )
+    assert enrollment.status_code == 201
+    assert enrollment.json() == {
+        "device_public_id": payload["device_public_id"],
+        "platform": "android",
+        "status": "registered",
+        "mode": "demo",
+    }
+
+    created = client.post("/v1/sos", json=payload)
+    duplicate = client.post("/v1/sos", json=payload)
+
+    assert created.status_code == 201
+    assert duplicate.status_code == 201
+    sos_id = created.json()["id"]
+    assert duplicate.json()["id"] == sos_id
+    summary = client.get("/v1/dashboard/summary")
+    assert summary.status_code == 200
+    assert sum(item["id"] == sos_id for item in summary.json()["sos"]) == 1
+
+    status = client.get(
+        "/v1/sos/resident-status",
+        params={"device_public_id": payload["device_public_id"], "client_nonce": payload["client_nonce"]},
+    )
+    assert status.status_code == 200
+    resident = status.json()
+    assert resident["id"] == sos_id
+    assert resident["status"] == "received"
+    assert "waiting for Command Center acknowledgement" in resident["resident_message"]
+    assert "location" not in resident
+    assert "message" not in resident
+    assert "does not confirm responder arrival" in resident["decision_limit"]
+
+    wrong_nonce = client.get(
+        "/v1/sos/resident-status",
+        params={"device_public_id": payload["device_public_id"], "client_nonce": "wrong-nonce-001"},
+    )
+    assert wrong_nonce.status_code == 404
+
+    acknowledged = client.patch(
+        f"/v1/sos/{sos_id}/status",
+        json={"status": "acknowledged", "note": "Duty dispatcher acknowledged the incoming request."},
+    )
+    assert acknowledged.status_code == 200
+    refreshed = client.get(
+        "/v1/sos/resident-status",
+        params={"device_public_id": payload["device_public_id"], "client_nonce": payload["client_nonce"]},
+    )
+    assert refreshed.status_code == 200
+    assert refreshed.json()["status"] == "acknowledged"
+    assert "Keep your phone available" in refreshed.json()["resident_message"]
+
+
+def test_confirmed_command_center_dispatch_updates_mobile_sos_without_claiming_arrival() -> None:
+    payload = {
+        "device_public_id": "mobile-dispatch-contract-device",
+        "client_nonce": "mobile-dispatch-contract-nonce-001",
+        "emergency_type": "MEDICAL",
+        "message": "Resident requested urgent medical assistance.",
+        "latitude": 11.1264,
+        "longitude": 125.3892,
+        "accuracy_meters": 20,
+        "client_occurred_at": "2026-08-25T01:25:00Z",
+        "channel": "internet",
+    }
+    created = client.post("/v1/sos", json=payload)
+    assert created.status_code == 201
+    sos_id = created.json()["id"]
+    assert client.patch(
+        f"/v1/sos/{sos_id}/status",
+        json={"status": "acknowledged", "note": "Duty dispatcher acknowledged the request."},
+    ).status_code == 200
+
+    login = client.post("/v1/auth/demo-login", json={"role": "dispatcher", "display_name": "Mobile lifecycle dispatcher"})
+    assert login.status_code == 200
+    headers = {"Authorization": f"Bearer {login.json()['access_token']}"}
+    proposal = client.post(
+        "/v1/response-groups/assign",
+        headers=headers,
+        json={
+            "group_id": "group-delta",
+            "target_type": "sos_request",
+            "target_id": sos_id,
+            "assignment_note": "Human confirmation is required before this dispatch is recorded.",
+        },
+    )
+    assert proposal.status_code == 200
+    confirmed = client.post(
+        f"/v1/response-groups/assignments/{proposal.json()['assignment_id']}/transition",
+        headers=headers,
+        json={"action": "confirm", "operator_confirmed": True, "note": "Duty dispatcher confirmed the dispatch record."},
+    )
+    assert confirmed.status_code == 200
+    assert confirmed.json()["status"] == "confirmed"
+
+    resident = client.get(
+        "/v1/sos/resident-status",
+        params={"device_public_id": payload["device_public_id"], "client_nonce": payload["client_nonce"]},
+    )
+    assert resident.status_code == 200
+    assert resident.json()["status"] == "dispatched"
+    assert "Help coordination is in progress" in resident.json()["resident_message"]
+    assert "arrival" in resident.json()["resident_message"]
+
+    cleanup = client.post(
+        f"/v1/response-groups/assignments/{proposal.json()['assignment_id']}/transition",
+        headers=headers,
+        json={"action": "cancel", "note": "Regression cleanup after confirming resident lifecycle feedback."},
+    )
+    assert cleanup.status_code == 200
+
+
 def test_coordinator_can_record_manual_emergency_and_it_enters_triage_queue() -> None:
     created = client.post(
         "/v1/sos/manual",

@@ -822,3 +822,14 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Inspect the active frontend stylesheet, static asset, and build-output delivery paths that cause browser-default Command Map controls.
 - [x] Correct the verified rendering-path defect without altering Command Map operational behavior.
 - [x] Validate the restored tactical interface, frontend tests, production build, and repository synchronization.
+
+## Cloud-accessible Command Center session
+- [x] Verify the active Command Center service before exposing it through a cloud-accessible address.
+- [x] Expose and verify the Command Center through the Manus computer rather than localhost.
+- [x] Provide the active cloud-accessible address.
+
+## Mobile and Command Center integration audit
+- [x] Extract SOS, alert, dispatch, and response-hand-off contracts from the referenced disaster-risk-reduction architecture.
+- [x] Trace the current Expo mobile, FastAPI backend, and Command Center flows against those contracts.
+- [x] Implement and test safe fixes for verified connection gaps without weakening offline SOS, SMS fallback, LGU approval, or audit boundaries.
+- [x] Document integration coverage, production boundaries, and synchronization evidence.

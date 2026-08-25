@@ -1,4 +1,5 @@
 import * as SMS from "expo-sms";
+import { Platform } from "react-native";
 import { Alert, EvacuationCenter, LocationFix, SosOutboxItem, SyncBootstrap } from "./types";
 
 const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL || "http://localhost:8000/v1";
@@ -25,11 +26,20 @@ export async function refreshSnapshot() {
   };
 }
 
+export async function registerMobileDevice(devicePublicId: string) {
+  const platform = Platform.OS === "android" || Platform.OS === "ios" ? Platform.OS : "unknown";
+  return request<{ device_public_id: string; platform: string; status: string; mode: string }>("/mobile/devices", {
+    method: "POST",
+    body: JSON.stringify({ device_public_id: devicePublicId, platform }),
+  });
+}
+
 export async function submitSosOnline(item: SosOutboxItem) {
   return request<{ id: string; status: string }>("/sos", {
     method: "POST",
     body: JSON.stringify({
       device_public_id: item.devicePublicId,
+      client_nonce: item.nonce,
       emergency_type: item.emergencyType,
       message: item.shortMessage,
       latitude: item.location.latitude,
@@ -39,6 +49,25 @@ export async function submitSosOnline(item: SosOutboxItem) {
       channel: "internet",
     }),
   });
+}
+
+export type ResidentSosStatus = {
+  id: string;
+  status: "received" | "acknowledged" | "dispatched" | "resolved" | "false_alarm";
+  received_at: string;
+  acknowledged_at?: string | null;
+  resolved_at?: string | null;
+  last_status_at: string;
+  resident_message: string;
+  decision_limit: string;
+};
+
+export async function getResidentSosStatus(item: SosOutboxItem) {
+  const params = new URLSearchParams({
+    device_public_id: item.devicePublicId,
+    client_nonce: item.nonce,
+  });
+  return request<ResidentSosStatus>(`/sos/resident-status?${params.toString()}`);
 }
 
 function toBase36(value: number) {
