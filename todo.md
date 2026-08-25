@@ -817,3 +817,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Run the complete frontend test suite and production build after the SOS inspector containment correction.
 - [x] Inspect the SOS inspector, facility sheet, map controls, utility drawers, legend, and broadcast control for residual overlap at desktop and narrow widths.
 - [x] Document the regression and geometry findings, correct any verified issue, and synchronize the result.
+
+## Command Map unstyled-rendering restoration
+- [x] Inspect the active frontend stylesheet, static asset, and build-output delivery paths that cause browser-default Command Map controls.
+- [x] Correct the verified rendering-path defect without altering Command Map operational behavior.
+- [x] Validate the restored tactical interface, frontend tests, production build, and repository synchronization.
