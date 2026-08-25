@@ -802,3 +802,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Inventory mobile alert UI, notification registration, offline persistence, and alert-fetch integration.
 - [x] Trace backend alert delivery, SMS/push provider configuration, and test coverage without triggering notifications.
 - [x] Confirm the current integration status and document unconfigured production prerequisites.
+
+## Native iOS and Android push-notification implementation plan
+- [x] Verify official mobile push platform requirements and current application boundaries.
+- [x] Design phased device enrollment, consent, backend delivery, offline fallback, and provider validation work.
+- [x] Deliver a step-by-step implementation plan with iOS and Android release gates.
