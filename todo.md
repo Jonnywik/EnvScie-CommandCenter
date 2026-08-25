@@ -762,3 +762,9 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Apply a shared shell layout so every workspace header precedes the standardized sidebar.
 - [x] Validate consistent desktop and mobile behavior for Command Map, Incidents, Field Response, Community Safety, and Intelligence.
 - [x] Add regression coverage, document the all-tabs layout contract, and synchronize the update.
+
+## Incidents and Community Safety gutter correction
+- [x] Inspect the reported blank gutter and isolate the affected legacy workspace content offset.
+- [x] Remove the unnecessary content offset while retaining the full-width header and below-header sidebar.
+- [x] Validate Incidents and Community Safety layouts at desktop and mobile widths without overflow.
+- [x] Add regression coverage, document the correction, and synchronize the update.

@@ -53,4 +53,10 @@ The same full-width fixed-header and below-header sidebar contract now applies t
 
 On desktop, each workspace keeps a full-width operational header across the top and begins its vertical rail directly below. On compact screens, each workspace keeps the header at the top and reflows the same navigation into an overflow-safe horizontal rail beneath it. Hosted visual checks confirmed the shared arrangement on Command Map, Live SOS, Field Response Fleet Safety, Provincial Weather, and DRRMO Intelligence; the compact Intelligence check confirmed a `64 px` header directly above a `59 px` sidebar rail with no horizontal document overflow at `320 px`, `375 px`, or `430 px`.
 
+## Legacy workspace content gutter correction
+
+The Legacy Incidents and Community Safety screens retained an unnecessary `32 px` top content inset after the shared shell was moved to a fixed full-width header. The content gutter has been reduced to `14 px`, retaining deliberate breathing room while removing the visually excessive blank gap beneath the header.
+
+Hosted checks confirmed that Live SOS and Provincial Weather now begin cleanly below the shared header and beside the navigation rail. At `320 px`, `375 px`, and `430 px`, Community Safety continues to place the header above the horizontal navigation rail without document-level horizontal overflow.
+
 Verification only used navigation and inspection controls. It did not invoke SOS, dispatch, notification, communications, route, resource, field-safety, or public-warning actions.

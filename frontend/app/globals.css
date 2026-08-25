@@ -150,6 +150,7 @@ html[data-appearance="light"] .command-center-header { border-color: #4bb7ad; ba
 .sidebar-footer strong { display: block; color: var(--ink); font-size: 12px; margin-bottom: 5px; }
 
 .main-content { flex: 1; padding: 32px 34px 46px; max-width: 1700px; margin: 0 auto; width: 100%; }
+.dashboard-shell .main-content { padding-top: 14px; }
 .page-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; margin-bottom: 24px; }
 .eyebrow { color: var(--teal); font-size: 10px; text-transform: uppercase; letter-spacing: .16em; font-weight: 700; }
 h1, h2, h3, p { margin: 0; }
