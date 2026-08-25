@@ -62,6 +62,10 @@ describe("compact operational interface", () => {
     expect(dashboardSource).toContain("<CommandCenterNavigation");
     expect(stylesSource).toContain(".workspace-navigation-shell { display: flex;");
     expect(stylesSource).toContain(".sidebar .unified-command-navigation { display: flex;");
+    expect(stylesSource).toContain(".sidebar { width: 100%; min-width: 0; max-width: 100%; padding: 8px;");
+    expect(stylesSource).toContain(".sidebar .unified-command-navigation { display: flex; flex: 1 1 auto; width: auto; min-width: 0; max-width: 100%;");
+    expect(stylesSource).toContain(".nav-item { width: auto; flex: 0 0 auto; white-space: nowrap;");
+    expect(stylesSource).toContain(".live-sos-controls .queue-toggle input { width: auto; min-width: auto; flex: 0 0 auto; }");
     expect(stylesSource).toContain(".workspace-navigation-shell:not(.command-map-workspace) > .unified-command-sidebar { min-height: calc(100dvh - var(--workspace-header-height)); margin-top: var(--workspace-header-height); }");
     expect(stylesSource).toContain(".workspace-navigation-shell:not(.command-map-workspace) > main > .command-center-header { position: fixed; z-index: 60; top: 0; left: 0; width: 100vw;");
     expect(stylesSource).toContain(".dashboard-shell .main-content { padding-top: 14px; }");

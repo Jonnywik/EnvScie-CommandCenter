@@ -786,3 +786,14 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Apply the circular transparent emblem treatment to every header variant.
 - [x] Run desktop and mobile visual regression checks across every primary navigation tab for layout and emblem consistency.
 - [x] Add regression coverage, document the all-tabs correction, and synchronize the update.
+
+## Browser, accessibility, and tablet shell audit
+- [x] Inventory available browser engines and existing header/sidebar accessibility coverage.
+- [x] Add automated WCAG 2.1 AA and browser-compatible shared-shell safeguards where applicable.
+- [x] Verify circular emblem, header, and sidebar behavior at 768 px, 900 px, and 1024 px.
+- [x] Document browser-engine coverage, audit findings, and validation status.
+
+## Incidents tablet overflow found during browser audit
+- [x] Isolate the Live SOS horizontal overflow reproduced in Firefox and WebKit at 768 px and 900 px.
+- [x] Correct the tablet layout without changing SOS workflows or operational records.
+- [x] Re-run the multi-engine tablet audit and confirm all primary tabs are overflow-free.

@@ -77,4 +77,12 @@ The former Map header rendered the shared emblem with `object-fit: contain`, rev
 
 Hosted visual checks confirmed the same circular transparent emblem on Command Map, Live SOS, Field Response Fleet Safety, Provincial Weather, and DRRMO Intelligence. The compact Intelligence capture confirms the circular treatment is retained at `320 px`, with the emblem, return control, appearance control, and operator badge remaining contained above the scrollable navigation rail.
 
+## Firefox, WebKit, WCAG, and tablet audit
+
+The shared header/sidebar audit was executed with Playwright Firefox and WebKit at `768 px`, `900 px`, and `1024 px` across Command Map, Live SOS, Field Response Fleet Safety, Provincial Weather, and DRRMO Intelligence. Safari itself cannot execute in this Linux environment; the WebKit result is the closest available engine-level compatibility signal rather than a substitute for device-specific Safari release testing.
+
+The audit confirmed a circular transparent emblem (`50%` radius and centered `cover` fit), a header that precedes the sidebar in every tested tab, and no document-level horizontal overflow after repair. During the first pass, Firefox and WebKit exposed a Live SOS tablet overflow: the compact checkbox inherited the generic full-width input minimum. The targeted rule restores the checkbox to automatic width, keeping the control strip inside its container.
+
+Automated axe-core scans, limited to header and sidebar regions and configured for WCAG 2.0/2.1 A/AA tags, returned zero violations across both engines and all primary tabs. This supplements the repository's existing contrast regression checks; it does not replace a complete assistive-technology review of every operational workflow.
+
 Verification only used navigation and inspection controls. It did not invoke SOS, dispatch, notification, communications, route, resource, field-safety, or public-warning actions.
