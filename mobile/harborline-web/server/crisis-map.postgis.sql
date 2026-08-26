@@ -1,0 +1,5 @@
+-- Production PostGIS adapter: replace catalog filtering with this bbox predicate.
+-- SELECT layer, id, ST_AsGeoJSON(ST_Intersection(geom, ST_MakeEnvelope($1,$2,$3,$4,4326)))::json AS geometry, properties
+-- FROM crisis_map_features
+-- WHERE layer = ANY($5::text[]) AND active_from <= $6 AND (active_to IS NULL OR active_to >= $6)
+--   AND ST_Intersects(geom, ST_MakeEnvelope($1,$2,$3,$4,4326));

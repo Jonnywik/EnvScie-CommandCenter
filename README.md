@@ -51,6 +51,7 @@ These features support decisions; they do **not** automatically issue public ale
 | `db/001_init.sql` | PostGIS schema for users, hazards, evacuation centers, roads, alerts, and SOS requests |
 | `frontend` | Next.js LGU command-center dashboard |
 | `mobile` | Expo React Native resident application |
+| `mobile/harborline-web` | Harborline mobile-first civilian web companion for Balangiga, Eastern Samar |
 | `docs/architecture.md` | Approved architecture, spatial model, API contracts, UX tree, and bottleneck analysis |
 | `docs/ui-verification.md` | Local browser verification notes for the dashboard and SOS drawer |
 | `docs/COMMAND_CENTER_NON_TECHNICAL_GUIDE.md` | Plain-language Command Center operator guide |

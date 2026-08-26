@@ -1,0 +1,196 @@
+# Project TODO
+
+- [x] Establish the mobile-first DRRM information architecture and deep-navy, mint, and white design tokens.
+- [x] Build reusable, Figma-ready navigation, cards, status, alert, map, form, and feedback components.
+- [x] Implement a civilian home dashboard with live hazard status, urgent alerts, offline status, and low-battery state.
+- [x] Implement a map-centered hazard and evacuation-center locator with live display, capacity, accessibility, contacts, nearby-center search, geocoding, and directions handoff.
+- [x] Implement a civilian incident-report flow with category, device GPS, mandatory photo evidence, and offline queue feedback.
+- [x] Add secure object-storage upload and metadata persistence for incident photo evidence without embedding image bytes in database records.
+- [x] Implement one-tap SOS and family check-in interaction flows with event notification support.
+- [x] Implement offline preparedness checklists and volunteer onboarding entry points.
+- [x] Implement operations views for report triage, evacuation-center status updates, and geo-targeted alert composition.
+- [x] Implement geo-targeted emergency alert notification and family check-in notification workflows.
+- [x] Add database schema, server procedures, tests, and responsive state coverage for the implemented core flows.
+- [x] Verify the interface on desktop and mobile, resolve issues, and create the first completed project checkpoint.
+- [x] Refactor repeated alert, form, status, and feedback patterns into reusable DRRM domain components.
+- [x] Connect dashboard hazard and alert displays to typed query data rather than page-local static values.
+- [x] Persist device GPS coordinates and accuracy with the incident report submission payload.
+- [x] Add database-backed evacuation-center discovery, capacity reads, and center status updates.
+- [x] Replace the volunteer onboarding placeholder with a complete onboarding form and persisted profile entry.
+- [x] Use operator-entered alert form content and target selections when issuing a geo-targeted alert.
+- [x] Add recipient and delivery state tracking for queued family check-ins and geo-targeted alert events.
+- [x] Expand tests for evidence submission, alert issuance, family check-ins, and center-status workflows.
+- [x] Re-run responsive verification and create the required completed project checkpoint.
+- [x] Replace duplicated page-level alert, form, and feedback markup with shared DRRM domain components.
+- [x] Add query-backed nearby center ranking for a captured or searched location.
+- [x] Add a center-status update router test and verify the mutation contract.
+- [x] Replace remaining page-specific Home, report, preparedness, and operations feedback/form patterns with shared DRRM components.
+- [x] Save the completed project checkpoint after the final component verification.
+- [x] Refactor the remaining Home and incident-report page-specific feedback and form patterns into shared DRRM components.
+- [x] Run final validation and save the completed project checkpoint.
+- [x] Rework global navigation, primary actions, and hierarchy around mobile thumb reach and single-column emergency flows.
+- [x] Optimize civilian and operations routes for compact mobile layouts, touch targets, safe-area spacing, and mobile-specific action placement.
+- [x] Verify the refined layout on mobile and desktop breakpoints, update tests as needed, and save the mobile-first refinement checkpoint.
+- [x] Move Alerts into the mobile bottom tab navigation and place Report in the centered emergency tab position.
+- [x] Verify the revised mobile navigation layout and save the navigation refinement checkpoint.
+- [x] Research authoritative Balangiga, Eastern Samar coverage, emergency, and response-directory references.
+- [x] Localize civilian coverage, hazard context, evacuation guidance, and response references for Balangiga residents.
+- [x] Verify the Balangiga-localized experience on mobile and desktop, then save the localization checkpoint.
+- [x] Add a settings route with persistent English, Filipino, and Waray language preferences.
+- [x] Add persistent light and dark appearance controls and theme-aware interface styling.
+- [x] Apply selected language and appearance preferences across shared navigation and citizen-facing core screens.
+- [x] Verify language and theme switching on mobile and desktop, then save the settings refinement checkpoint.
+- [x] Localize Alerts, locator, incident reporting, preparedness, and volunteer onboarding for English, Filipino, and Waray.
+- [x] Complete dark-mode coverage for hardcoded citizen-route surfaces, text, borders, forms, and status cards.
+- [x] Validate localized light and dark views across all citizen-facing routes before checkpointing.
+- [x] Add persistent large-text and high-contrast accessibility preferences in Settings.
+- [x] Apply accessibility preferences across the emergency navigation, forms, cards, and readiness routes.
+- [x] Translate full preparedness checklists and survival guides into Filipino and Waray for offline use.
+- [x] Verify accessibility and guide translations on mobile and desktop, then save the accessibility checkpoint.
+- [x] Verify high-contrast large-text Settings and preparedness views at the desktop breakpoint.
+- [x] Save the completed accessibility and guide translation checkpoint.
+- [x] Add a resident-completed one-page emergency-plan editor with household contacts, meeting points, and readiness notes.
+- [x] Add a print-ready preview and downloadable emergency-plan file that remains usable offline.
+- [x] Verify the emergency-plan flow on mobile and desktop, then save the printable-plan checkpoint.
+- [x] Inventory and replace every remaining English-only label, form field, action, preview, and downloadable-plan string with locale-driven content.
+- [x] Localize the printable emergency plan and downloadable one-page document for English, Filipino, and Waray.
+- [x] Verify every citizen route and printable-plan output in Filipino and Waray, then save the full-localization checkpoint.
+- [x] Replace DOM-mutation localization fallbacks with explicit locale-driven copy in all citizen routes and controls.
+- [x] Audit Home, Alerts, Map, Report, Prepare, Volunteer, Settings, and Emergency Plan for Filipino and Waray labels, fields, actions, and accessibility text.
+- [x] Replace remaining DOM-mutation fallback translations with explicit locale-driven strings in citizen routes and controls.
+- [x] Verify Filipino and Waray Settings controls and document full route-by-route localization coverage.
+- [x] Save the verified full-localization checkpoint.
+- [x] Refactor the remaining Home, Alerts, Map, Report, Prepare, and Volunteer copy to explicit locale-driven component strings.
+- [x] Document Filipino and Waray labels, placeholders, buttons, and accessibility text coverage for each citizen route.
+- [x] Save the completed full-localization checkpoint after the component-level audit.
+- [x] Build the mobile-first Crisis Map tab with Caloocan/CAMANAVA region context and offline map-state presentation.
+- [x] Add layer visibility controls, bottom-sheet toggles, Emergency Default, and Clear All presets.
+- [x] Add typed weather, hazard, evacuation-center, and response-team map feature contracts with backend query foundations.
+- [x] Add Crisis Map tests and verify mobile and desktop layer-control interactions before saving the implementation checkpoint.
+- [x] Bind Crisis Map overlay markers and geometry to typed query results rather than decorative static markers.
+- [x] Add functional base-map fallback states and map layer/preset interaction test coverage.
+- [x] Save the verified data-driven Crisis Map implementation checkpoint.
+- [x] Render Crisis Map polygons and markers directly from typed query features and their coordinates/properties.
+- [x] Add functional base-map fallback presentation and executable layer-control interaction coverage.
+- [x] Re-verify the Crisis Map and save the completed query-rendered implementation checkpoint.
+- [x] Add a functional map-surface fallback and bind visible overlays to the live feature query.
+- [x] Add executable UI-level coverage for layer toggles, Emergency Default, and Clear All behavior.
+- [x] Run final verification and save the completed Crisis Map implementation checkpoint.
+- [x] Superseded: use hybrid PAGASA advisory provenance and free Open-Meteo context with cached fallback; retain LGU response-team placeholders pending an authorized feed.
+- [x] Superseded: replace Mapbox with the selected free OpenStreetMap map surface and cached regional fallback asset.
+- [x] Add tap-driven evacuation-center and response-team detail sheets using map feature properties.
+- [x] Test hybrid feed resilience, layer/detail interactions, and map offline fallback states before saving the live-map checkpoint.
+- [x] Add deterministic detail-sheet selection and dismissal test coverage for center and response placeholders.
+- [x] Add deterministic offline tile-failure coverage for the cached regional snapshot fallback.
+- [x] Re-verify the fallback state, checkpoint the completed map, and deliver the final update.
+- [x] Add executable UI tests for Crisis Map marker selection, detail-sheet dismissal, and cached snapshot rendering beneath overlays.
+- [x] Re-run validation and prepare the corrected offline-map implementation for checkpoint and final delivery.
+- [x] Replace Mapbox integration scope with a free OpenStreetMap-based map surface and cache-aware offline fallback.
+- [x] Label LGU response-team markers as placeholder data while preserving a future live-feed adapter contract.
+- [x] Add interactive evacuation-center and response-team detail sheets on marker selection.
+- [x] Replace Mapbox integration scope with a free OpenStreetMap-based map surface and cache-aware offline fallback.
+- [x] Label LGU response-team markers as placeholder data while preserving a future live-feed adapter contract.
+- [x] Add interactive evacuation-center and response-team detail sheets on marker selection.
+- [x] Add hybrid PAGASA advisory provenance, free Open-Meteo/NOAA forecast context, LGU-confirmed zone metadata, and cached outage continuity.
+- [x] Surface hybrid weather source freshness and advisory provenance in Crisis Map.
+- [x] Verify the hybrid weather states and save the weather-integration checkpoint.
+- [x] Add explicit OpenStreetMap tile failure and offline-snapshot fallback behavior.
+- [x] Surface detailed PAGASA advisory and Open-Meteo forecast source freshness, timestamps, and cached-fallback status.
+- [x] Re-verify offline and hybrid weather states, then save the completed weather-integration checkpoint.
+- [x] Render a cached regional visual snapshot beneath query overlays when OpenStreetMap tiles fail.
+- [x] Verify the offline regional snapshot state and save the completed hybrid weather checkpoint.
+- [x] Add hybrid PAGASA advisory provenance, free Open-Meteo/NOAA forecast context, LGU-confirmed zone metadata, and cached outage continuity.
+- [x] Surface hybrid weather source freshness and advisory provenance in Crisis Map.
+- [x] Define Balangiga, Eastern Samar and adjacent-area Crisis Map feature coverage with severity metadata.
+- [x] Add multi-select severity filters for hazard and safe-zone overlays in the mobile layer sheet.
+- [x] Add a mobile-friendly download action that saves the cached Balangiga regional map snapshot locally.
+- [x] Replace CAMANAVA/Caloocan Crisis Map presentation and remaining regional references with Balangiga and adjacent-area context.
+- [x] Add automated coverage and responsive verification for severity filters, map download, and Balangiga regional map states.
+- [x] Define Balangiga barangay-level road-closure and incident map feature records with severity and source status.
+- [x] Add road-closure and incident layer toggles, map rendering, and accessible detail sheets.
+- [x] Add automated coverage and responsive verification for the new interactive map layers.
+- [x] Verify road-closure and incident layers, map filters, and detail-sheet layout at the desktop breakpoint.
+- [x] Define persistence contracts for resident incident photos, LGU closure updates, and closure-aware route results.
+- [x] Add secure resident photo uploads and evidence viewing in incident marker details.
+- [x] Add an LGU closure-update submission workflow that publishes verified updates to the road-closure layer.
+- [x] Add safe-route guidance that uses verified closures to avoid blocked segments.
+- [x] Add automated coverage and responsive verification for evidence, verification, and safe-route map interactions.
+- [x] Extend closure-aware route results with estimated travel time and sanitized turn-by-turn steps.
+- [x] Render accessible route time and maneuver guidance in the mobile safe-route sheet.
+- [x] Add automated coverage and responsive verification for turn-by-turn safe-route guidance.
+- [x] Aggregate multi-leg road-network route timing and maneuvers across closure detours.
+- [x] Add executable multi-leg route tests and capture mobile/desktop guidance-sheet verification.
+- [x] Define a dedicated directions-tab destination catalog for evacuation centers and disaster-response offices or groups.
+- [x] Build a directions-first map screen with selectable destinations, route guidance, ETA, and turn-by-turn steps.
+- [x] Move map navigation into a distinct mobile tab while retaining Crisis Map as the situational-awareness layer.
+- [x] Add automated coverage and responsive verification for the dedicated directions tab.
+- [x] Render numbered turn-by-turn instructions directly in the dedicated Directions tab after a route is calculated.
+- [x] Add UI tests for Directions destination selection, separate navigation, fallback actions, and route guidance display.
+- [x] Capture and record completed mobile and desktop Directions-tab verification with route steps visible.
+- [x] Add page-level UI tests for destination selection, separate Directions navigation, fallback handoff, and route-result display.
+- [x] Test the real Directions and Crisis navigation configuration without mocking the shared navigation module.
+- [x] Add a successful route-calculation page test that renders ETA and turn-by-turn steps in the Directions tab.
+- [x] Add destination search by evacuation-center name, barangay, and landmark terms.
+- [x] Render current evacuation-center capacity and operational availability on Directions map markers and destination cards.
+- [x] Add automated coverage and responsive verification for search results and live center-status marker states.
+- [x] Render explicit capacity and availability text directly beside evacuation-center markers on the Directions map.
+- [x] Add integration coverage for rendered Directions marker capacity and availability states.
+- [x] Render full capacity and availability text directly on primary Directions map markers.
+- [x] Add primary Directions map marker integration coverage for capacity and availability content.
+- [x] Add contact and accessibility details, including medical support and wheelchair access, to evacuation-center popup data and presentation.
+- [x] Warn users during active navigation when the selected evacuation center becomes full or closed.
+- [x] Add automated coverage and responsive verification for enriched popups and selected-center capacity alerts.
+- [x] Clear the tracked evacuation center when navigation switches to a response office so capacity alerts only follow the active route.
+- [x] Add a regression test for switching from an evacuation-center route to a response-office route.
+- [x] Review the referenced Code for Resilience dark-mode interface and identify transferable theme traits.
+- [x] Apply the referenced dark-mode visual direction to Harborline’s tokens and shared components without reducing emergency accessibility.
+- [x] Test the adapted theme at mobile and desktop breakpoints, then save a checkpoint.
+- [x] Add a persistent Settings slider that lets residents select an app-wide text scale.
+- [x] Apply the selected scale without weakening the existing large-text and high-contrast accessibility modes.
+- [x] Add automated coverage and responsive verification for the text-size slider, then save a checkpoint.
+- [x] Audit existing evacuation, operations, notification, offline, and map foundations against the approved roadmap.
+- [x] Add verified evacuation-center operational metadata, controlled publishing, and immutable audit history.
+- [x] Build resident-facing center freshness/trust states and authorized operations center-management controls.
+- [x] Add full/closed-center alternative recommendations, household readiness preferences, and route replacement actions.
+- [x] Document the opt-in alert, offline emergency-pack, and queue-status release prerequisites; defer activation until an LGU authority, consent policy, and delivery configuration are supplied.
+- [x] Document the low-bandwidth map and incident-follow-up operational prerequisites; retain existing free-map fallback and source-aware reference states until a local operating policy is supplied.
+- [x] Document the expanded privacy, role, and diagnostics prerequisites; retain existing admin publication guards and center audit entries until a retention policy, role roster, and monitoring destination are supplied.
+- [x] Add comprehensive automated, responsive, offline, and accessibility validation for the delivered verified-center foundation.
+- [x] Save the completed verified-center foundation checkpoint after final verification.
+- [x] Review the Directions map for destination context, route clarity, and mobile-control refinements.
+- [x] Improve active-destination focus, map guidance, and mobile map controls without weakening center-status safety states.
+- [x] Add regression coverage and mobile/desktop verification for the refined Directions map, then save a checkpoint.
+- [x] Add a one-tap full-screen Directions map mode optimized for mobile devices.
+- [x] Show verified road-closure context directly along or beside the active route without overstating route precision.
+- [x] Add walking and motorcycle travel-mode choices with clear provider and fallback behavior.
+- [x] Add automated coverage and mobile/desktop verification for full-screen controls, closures, and travel modes, then save a checkpoint.
+- [x] Add a deliberate confirmation dialog before a civilian incident report is sent or queued offline.
+- [x] Localize the report-review details and preserve existing photo validation, secure upload, and offline outbox behavior.
+- [x] Add automated coverage and responsive verification for confirm, cancel, online, offline, large-text, and high-contrast report submission states, then save a checkpoint.
+- [x] Define the approved SOS/report command-center contract, roles, lifecycle, and policy boundaries.
+- [x] Add SOS case, assignment, action-audit, and contact-attempt persistence with an additive migration.
+- [x] Add typed SOS and unified command-center procedures with role-gated lifecycle actions and durable event records.
+- [x] Build the civilian confirmed-SOS flow and command-center active-response queue, detail, acknowledgement, assignment, and resolution controls.
+- [x] Add automated, localization, offline, authorization, and responsive validation for mobile-to-command-center report/SOS workflows.
+- [x] Save the completed mobile SOS and command-center integration checkpoint.
+- [x] Define privacy-first emergency-circle consent, membership, visibility, and retention boundaries.
+- [x] Add emergency-circle, membership, status, and expiring consent-based location-ping persistence with an additive migration.
+- [x] Add typed procedures for creating/joining circles, updating status, sharing/stopping location, and reading authorized member snapshots.
+- [x] Build a mobile-first emergency-circle interface with member status, last-update time, and consent-based map pins.
+- [x] Add automated authorization, privacy, location-sharing, responsive, and accessibility validation for emergency circles.
+- [x] Save the completed emergency-circle checkpoint.
+- [x] Require owner approval before pending emergency-circle join requests become active memberships.
+- [x] Deliver durable, circle-specific SOS alerts only to approved emergency-circle members.
+- [x] Add authorization, privacy, interface, and responsive validation for approval and circle SOS workflows.
+- [x] Save the completed owner-approval and circle-SOS checkpoint.
+- [x] Add owner-authorized removal of approved emergency-circle members without permitting owner self-removal.
+- [x] Add owner-authorized invite-code rotation that invalidates prior codes.
+- [x] Add accessible pulsing and user-initiated audio cues for active Circle SOS alerts.
+- [x] Add authorization, interaction, localization, and responsive validation for circle security controls and SOS alert cues.
+- [x] Save the completed circle security and SOS-cue checkpoint.
+- [x] Give the active mobile navigation tab a distinct, high-visibility color treatment based on the supplied reference.
+- [x] Verify mobile active-tab contrast, responsive presentation, and navigation regression coverage.
+- [x] Save the completed mobile active-tab styling checkpoint.
+- [ ] Export Harborline into the user-confirmed GitHub repository or folder arrangement.
+- [ ] Attach the exported repository to the user-confirmed GitHub project grouping.
+- [ ] Verify the GitHub handoff and document the repository location.
