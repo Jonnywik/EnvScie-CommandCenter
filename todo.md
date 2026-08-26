@@ -855,3 +855,9 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Draft a role-, safeguarding-, and privacy-aware Balangiga NGO–LGU MoU template for legal review.
 - [x] Write a plain-language speaker script for presenting the LGU and NGO implementation plan.
 - [x] Validate, synchronize, and deliver the three initial-rollout materials.
+
+## Balangiga alert-dispatch governance and live-provider activation plan
+- [x] Verify governing DRRM, privacy, APNs, FCM, Expo, and SMS gateway requirements for the planned charter, SOPs, and provider activation plan.
+- [x] Draft a legal-review LGU Command Center charter and SOPs for alert publication, dispatch authority, logging, escalation, and corrective action.
+- [x] Prepare a staged, no-send, provider-neutral APNs/FCM/SMS gateway technical activation plan with options, credential controls, webhook verification, and release gates.
+- [x] Validate, synchronize, and deliver the governance drafts and technical plan.
