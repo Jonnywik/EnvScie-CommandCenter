@@ -849,3 +849,9 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Design the LGU operating model, NGO partnership structure, data-governance controls, and political safeguards for the Command Center.
 - [x] Create a phased, resource-aware roadmap with risks, decision gates, and practical implementation steps.
 - [x] Deliver the referenced implementation plan and record the result.
+
+## Balangiga initial-rollout implementation materials
+- [x] Create a detailed 30-day operational checklist and stakeholder mapping matrix for the initial Command Center rollout.
+- [x] Draft a role-, safeguarding-, and privacy-aware Balangiga NGO–LGU MoU template for legal review.
+- [x] Write a plain-language speaker script for presenting the LGU and NGO implementation plan.
+- [x] Validate, synchronize, and deliver the three initial-rollout materials.
