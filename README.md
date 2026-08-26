@@ -1,6 +1,28 @@
 # Code for Resilience
 
-Code for Resilience is a disaster-management platform foundation for Balangiga, Eastern Samar. It combines a FastAPI/PostGIS backend, a Next.js LGU command-center dashboard, and a React Native/Expo resident application designed for intermittent connectivity, power loss, typhoons, storm surge, and flash-flood conditions.
+> **A disaster-management platform foundation for decision support, resilient workflows, and explicitly bounded operations.**
+
+Code for Resilience combines a FastAPI/PostGIS backend, a Next.js command-center dashboard, and a React Native/Expo resident application designed for intermittent connectivity, power loss, typhoons, storm surge, and flash-flood conditions. It is a development and pilot foundation—not a certified emergency-service deployment.
+
+**[Documentation index](docs/INDEX.md)** · **[Architecture](docs/architecture.md)** · **[Portfolio Command Center](https://github.com/Jonnywik/Jonnywik.github.io)**
+
+## Project signal
+
+| System role | Source trace | Design focus |
+| --- | --- | --- |
+| Resilient public-service foundation | `backend/app` → `frontend` → `mobile` → `docs/architecture.md` | Decision support, offline-aware workflows, and clear limits on automated action. |
+
+## Animated interface preview
+
+![Animated Resilience Command Center preview showing a sanitized demo-mode operations interface](docs/assets/command-center-preview.gif)
+
+> **Sanitized demo-mode preview.** This animation is generated from the authentic product interface with neutral demo labels. It contains no real municipality, operator, incident, location, coordinate, credential, or live emergency data, and it does not represent a live operations system.
+
+## Static interface reference
+
+![Resilience Command Center — sanitized illustrative demo interface](docs/assets/command-center-demo.png)
+
+> The full-resolution reference frame preserves the same demo-mode and non-live-operations boundary.
 
 ## Implemented in this iteration
 
