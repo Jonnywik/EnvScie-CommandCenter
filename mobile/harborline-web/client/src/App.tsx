@@ -59,7 +59,7 @@ function App() {
         defaultTheme="light"
         switchable
       >
-        <LocaleProvider><AccessibilityProvider><CrisisMapProvider><TooltipProvider><Toaster /><Router /></TooltipProvider></CrisisMapProvider></AccessibilityProvider></LocaleProvider>
+        <LocaleProvider><AccessibilityProvider><CrisisMapProvider><div className="drrm-app-load min-h-screen"><TooltipProvider><Toaster /><Router /></TooltipProvider></div></CrisisMapProvider></AccessibilityProvider></LocaleProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );

@@ -122,12 +122,9 @@ html.dark.high-contrast { --background: #000000; --foreground: #ffffff; --card: 
   .container { padding-left: 0.875rem; padding-right: 0.875rem; }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .drrm-enter { animation: drrm-enter 360ms cubic-bezier(0.23,1,0.32,1) both; }
-  @keyframes drrm-enter { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
-}
-
 @media (prefers-reduced-motion: no-preference) {
+  .drrm-app-load { animation: drrm-app-load 340ms cubic-bezier(0.23, 1, 0.32, 1) both; }
+  .drrm-enter { animation: drrm-enter 360ms cubic-bezier(0.23, 1, 0.32, 1) both; }
   .circle-sos-alert {
     animation: circle-sos-pulse 1.35s cubic-bezier(0.23, 1, 0.32, 1) infinite;
   }
@@ -135,6 +132,20 @@ html.dark.high-contrast { --background: #000000; --foreground: #ffffff; --card: 
   .circle-sos-alert-icon {
     animation: circle-sos-icon-pulse 1.35s cubic-bezier(0.23, 1, 0.32, 1) infinite;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drrm-app-load, .drrm-enter, .circle-sos-alert, .circle-sos-alert-icon { animation: none !important; }
+}
+
+@keyframes drrm-app-load {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes drrm-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes circle-sos-pulse {
