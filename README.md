@@ -8,6 +8,12 @@ The repository now contains a runnable FastAPI service with demo mode, dashboard
 
 The demo mode is intentional. It allows the dashboard and mobile client to be developed and reviewed without a running PostgreSQL/PostGIS container or imported municipal GIS layers. Set `DEMO_MODE=false` only after the database, data imports, migrations, and authentication are ready.
 
+## Interface preview
+
+![Resilience Command Center — sanitized illustrative demo interface](docs/assets/command-center-demo.png)
+
+> **Sanitized demo-mode capture.** This image uses neutral demo labels and contains no real municipality, operator, incident, location, coordinate, credential, or live emergency data. The interface is a development and pilot foundation; it is not a live emergency-service deployment.
+
 ## Current Command Center capabilities
 
 The LGU dashboard provides nine operational workspaces: Overview, Live SOS, Verified Alerts, Provincial Weather, Risk Map, Evacuation Centers, Resources, Response Groups, and Communications. Current decision-support additions include PAGASA weather and tropical-cyclone context, RainViewer radar display, static Project NOAH hazard references, operator-triggered high-flood-risk assessment, and explainable responder-safety assessment for verified SOS incidents.
