@@ -24,6 +24,10 @@ Code for Resilience combines a FastAPI/PostGIS backend, a Next.js command-center
 
 > The full-resolution reference frame preserves the same demo-mode and non-live-operations boundary.
 
+### Refreshing the preview
+
+The animation is rebuilt only from `docs/assets/command-center-demo.png`, which must remain a **sanitized demo-mode** capture. Run `pnpm preview:refresh` from `frontend`, or open **Actions → Refresh sanitized README preview → Run workflow**. The workflow uploads the rebuilt GIF as an artifact by default; select **Commit the rebuilt GIF** only after reviewing the source capture and confirming it contains no live, local, or sensitive operational context.
+
 ## Implemented in this iteration
 
 The repository now contains a runnable FastAPI service with demo mode, dashboard summary APIs, verified alert and evacuation-center APIs, internet SOS intake, signed SMS SOS decoding, safe-route lookup, WebSocket event fan-out, and dispatcher status transitions. The Next.js dashboard renders the command-center information architecture and is connected to those endpoints. The Expo mobile app includes a durable local snapshot, an SOS outbox, connectivity monitoring, offline emergency toolkit screens, evacuation-center browsing, location capture, internet SOS submission, and SMS handoff.
