@@ -861,3 +861,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Draft a legal-review LGU Command Center charter and SOPs for alert publication, dispatch authority, logging, escalation, and corrective action.
 - [x] Prepare a staged, no-send, provider-neutral APNs/FCM/SMS gateway technical activation plan with options, credential controls, webhook verification, and release gates.
 - [x] Validate, synchronize, and deliver the governance drafts and technical plan.
+
+## Command Center alert-publication training curriculum
+- [x] Translate the alert-publication charter and SOP into role-specific learning outcomes and safety boundaries for MDRRMO dispatchers and barangay captains.
+- [x] Develop the training agenda, facilitation notes, practical exercises, knowledge checks, and readiness assessment.
+- [x] Validate, synchronize, and deliver the complete curriculum.
