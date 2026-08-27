@@ -866,3 +866,8 @@ The regional satellite-map source package is `regional-satellite-map-handoff.tar
 - [x] Translate the alert-publication charter and SOP into role-specific learning outcomes and safety boundaries for MDRRMO dispatchers and barangay captains.
 - [x] Develop the training agenda, facilitation notes, practical exercises, knowledge checks, and readiness assessment.
 - [x] Validate, synchronize, and deliver the complete curriculum.
+
+## Self-hosted Command Center run guide
+- [x] Inspect current frontend/backend scripts, environment requirements, database assumptions, and existing run documentation.
+- [x] Write a step-by-step local installation, startup, verification, troubleshooting, and shutdown guide that does not require Manus computer access.
+- [x] Validate the documented commands against the repository and deliver the guide.
