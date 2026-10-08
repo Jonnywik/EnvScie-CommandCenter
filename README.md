@@ -16,7 +16,7 @@ Code for Resilience combines a FastAPI/PostGIS backend, a Next.js command-center
 
 ![Animated Resilience Command Center preview showing a sanitized demo-mode operations interface](docs/assets/command-center-preview.gif)
 
-> **Sanitized demo-mode preview.** This animation is generated from the authentic product interface with neutral demo labels. It contains no real municipality, operator, incident, location, coordinate, credential, or live emergency data, and it does not represent a live operations system.
+> **Demo-mode preview, not live operations.** This capture comes from the authentic product interface, using public Esri satellite imagery, neutral demo labels, and illustrative hazard, SOS, center, and resource records. The geographic background does not imply a municipal deployment or a real incident. No real operator, credential, or live emergency data is shown; imagery attribution remains visible.
 
 ## Static interface reference
 
@@ -26,7 +26,7 @@ Code for Resilience combines a FastAPI/PostGIS backend, a Next.js command-center
 
 ### Refreshing the preview
 
-The animation is rebuilt only from `docs/assets/command-center-demo.png`, which must remain a **sanitized demo-mode** capture. Run `pnpm preview:refresh` from `frontend`, or open **Actions → Refresh sanitized README preview → Run workflow**. The workflow uploads the rebuilt GIF as an artifact by default; select **Commit the rebuilt GIF** only after reviewing the source capture and confirming it contains no live, local, or sensitive operational context.
+The animation is rebuilt only from `docs/assets/command-center-demo.png`, which must remain a **sanitized demo-mode** capture. Before replacing that PNG, run the app with `DEMO_MODE=true`, choose the Satellite basemap, wait for the imagery to finish loading, and visually confirm that the map and demo markers are visible. Keep a clear DEMO / NOT LIVE label and the imagery attribution; do not capture live operational records or credentials. The Google layer stays hidden until its tiles render, so a missing Google proxy configuration must not cover the Esri fallback. Run `pnpm preview:refresh` from `frontend`, or open **Actions → Refresh sanitized README preview → Run workflow**. The workflow uploads the rebuilt GIF as an artifact by default; select **Commit the rebuilt GIF** only after reviewing the source capture and confirming it contains no sensitive operational context.
 
 ## Implemented in this iteration
 
