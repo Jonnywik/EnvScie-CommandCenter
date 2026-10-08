@@ -238,6 +238,8 @@ h1 { font-family: 'Space Grotesk'; font-size: 30px; letter-spacing: -0.05em; mar
 .gis-basemap-controls { padding-right: 7px; border-right: 1px solid var(--line); }
 .gis-map-shell { position: relative; overflow: hidden; background: #153d4d; cursor: grab; touch-action: none; overscroll-behavior: contain; overscroll-behavior-block: contain; outline: none; }
 .google-operational-map { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; background: #0b1e26; touch-action: none; }.google-operational-map .gm-style { font-family: 'Space Grotesk', sans-serif; }
+/* Keep the initialized Google layer sized, but never cover the fallback until tiles render. */
+.gis-map-shell:not(.is-google-map-ready) > .google-operational-map { visibility: hidden; pointer-events: none; }
 .gis-map-shell:active { cursor: grabbing; }
 .gis-map-shell:focus-visible { box-shadow: inset 0 0 0 3px rgba(78, 228, 193, .78); }
 .gis-map-canvas { display: block; width: 100%; height: auto; min-height: 300px; background: #153d4d; user-select: none; }

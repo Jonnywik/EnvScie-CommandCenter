@@ -21,9 +21,15 @@ const workspaceSource = [
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/FleetSafety.tsx"), "utf8"),
   readFileSync(resolve(process.cwd(), "components/dashboard-tabs/Intelligence.tsx"), "utf8"),
 ].join("\n");
-const stylesSource = readFileSync(resolve(process.cwd(), "app/globals.css"), "utf8");
+const stylesSource = readFileSync(resolve(process.cwd(), "app/globals.css"), "utf8").replace(/\r\n/g, "\n");
 
 describe("compact operational interface", () => {
+  it("keeps the fallback visible until Google tiles render and when the loader fails", () => {
+    expect(workspaceSource).toContain('googleMapTilesReady && !googleMapError ? "is-google-map-ready" : ""');
+    expect(workspaceSource).toContain("(!googleMapTilesReady || googleMapError) && <svg");
+    expect(stylesSource).toContain(".gis-map-shell:not(.is-google-map-ready) > .google-operational-map { visibility: hidden; pointer-events: none; }");
+  });
+
   it("removes the quick-guide entry point while retaining the active workspace title and refresh control", () => {
     expect(dashboardSource).not.toContain("⌨ Quick keys");
     expect(dashboardSource).toContain("<h1>{pageMeta[tab].title}</h1>");
